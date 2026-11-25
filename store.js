@@ -902,6 +902,10 @@ function getOrders() {
     }
 }
 
+function getOrderById(orderId) {
+    return getOrders().find(o => o.id === orderId || o.orderId === orderId) || null;
+}
+
 function saveOrders(orders) {
     localStorage.setItem(STORAGE_KEYS.ORDERS, JSON.stringify(orders));
 }
@@ -1109,9 +1113,11 @@ function saveReviews(reviews) {
 
 function addReview(reviewPayload) {
     const reviews = getReviews();
+    const isDelivery = reviewPayload.type === "delivery";
+
     const newRev = {
         id: "REV" + Date.now(),
-        type: reviewPayload.type || "item", // 'item' or 'delivery'
+        type: reviewPayload.type || "item",
         orderId: reviewPayload.orderId || "",
         productId: reviewPayload.productId || null,
         productName: reviewPayload.productName || "",
@@ -1119,12 +1125,29 @@ function addReview(reviewPayload) {
         riderName: reviewPayload.riderName || "",
         userId: reviewPayload.userId || "guest",
         userName: reviewPayload.userName || "Customer",
-        rating: Number(reviewPayload.rating || 5),
-        issue: reviewPayload.issue || "Product Quality",
-        comment: reviewPayload.comment || "",
         date: new Date().toISOString().split("T")[0],
         hidden: false
     };
+
+    if (isDelivery) {
+        // Delivery review fields
+        newRev.speedRating = Number(reviewPayload.speedRating || 5);
+        newRev.riderRating = Number(reviewPayload.riderRating || 5);
+        newRev.packageCondition = reviewPayload.packageCondition || "Good";
+        newRev.remarks = reviewPayload.remarks || "";
+        // Legacy compatibility
+        newRev.rating = Math.round((newRev.speedRating + newRev.riderRating) / 2);
+        newRev.issue = newRev.packageCondition;
+        newRev.comment = newRev.remarks;
+    } else {
+        // Item review fields
+        newRev.rating = Number(reviewPayload.rating || 5);
+        newRev.issues = Array.isArray(reviewPayload.issues) ? reviewPayload.issues :
+                        (reviewPayload.issue ? [reviewPayload.issue] : []);
+        newRev.comment = reviewPayload.comment || "";
+        // Legacy compatibility
+        newRev.issue = newRev.issues.length > 0 ? newRev.issues[0] : "Product Quality";
+    }
 
     reviews.unshift(newRev);
     saveReviews(reviews);
@@ -1184,6 +1207,11 @@ function updateTicket(ticketId, newStatus, adminResponse = null) {
     return true;
 }
 
+// Alias for backward compatibility (used by admin/support.html)
+function updateSupportTicket(ticketId, updates) {
+    return updateTicket(ticketId, updates?.status, updates?.adminResponse ?? null);
+}
+
 // ============================================================
 // CUSTOMER SERVICE ANALYTICS (Section 39)
 // ============================================================
@@ -1199,8 +1227,13 @@ function getCustomerServiceAnalytics() {
         ? (itemReviews.reduce((sum, r) => sum + Number(r.rating || 5), 0) / itemReviews.length).toFixed(1)
         : "5.0";
 
+    // For delivery reviews, calculate average of speedRating and riderRating
     const avgDeliveryRating = deliveryReviews.length > 0
-        ? (deliveryReviews.reduce((sum, r) => sum + Number(r.rating || 5), 0) / deliveryReviews.length).toFixed(1)
+        ? (deliveryReviews.reduce((sum, r) => {
+            const speed = Number(r.speedRating || 5);
+            const rider = Number(r.riderRating || 5);
+            return sum + (speed + rider) / 2;
+        }, 0) / deliveryReviews.length).toFixed(1)
         : "5.0";
 
     const openTickets = tickets.filter(t => t.status === "Open").length;
@@ -1208,11 +1241,12 @@ function getCustomerServiceAnalytics() {
     const resolvedTickets = tickets.filter(t => t.status === "Resolved" || t.status === "Closed").length;
     const urgentTickets = tickets.filter(t => t.priority === "Urgent" && t.status !== "Resolved" && t.status !== "Closed").length;
 
-    // Most Reported Issue
+    // Most Reported Issue - use description or category as fallback since issue field may not be set
     const issueMap = {};
     tickets.forEach(t => {
-        if (t.issue) {
-            issueMap[t.issue] = (issueMap[t.issue] || 0) + 1;
+        const issueKey = t.issue || t.description || t.category || "General Issue";
+        if (issueKey) {
+            issueMap[issueKey] = (issueMap[issueKey] || 0) + 1;
         }
     });
     let mostReportedIssue = "None";
@@ -1320,6 +1354,7 @@ window.GroceryStore = {
     calculateTotals,
     // Orders
     getOrders,
+    getOrderById,
     saveOrders,
     createOrder,
     updateOrderStatus,
@@ -1339,6 +1374,7 @@ window.GroceryStore = {
     saveSupportTickets,
     createSupportTicket,
     updateTicket,
+    updateSupportTicket,
     // Analytics
     getCustomerServiceAnalytics,
     // Coupons & Offers

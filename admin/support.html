@@ -300,18 +300,59 @@
 
     document.getElementById("respondTicketForm").addEventListener("submit", function(e) {
         e.preventDefault();
+
+        const submitBtn = this.querySelector('button[type="submit"]');
+        const originalText = submitBtn.textContent;
+
         const ticketId = document.getElementById("modalTicketId").value;
         const status = document.getElementById("modalStatusSelect").value;
         const adminResponse = document.getElementById("modalResponseText").value.trim();
 
-        window.GroceryStore.updateSupportTicket(ticketId, {
-            status,
-            adminResponse
-        });
+        if (!adminResponse) {
+            alert("Please enter a response message for the customer.");
+            return;
+        }
 
-        closeRespondModal();
-        renderTickets();
+        // Loading state
+        submitBtn.disabled = true;
+        submitBtn.textContent = "Saving...";
+
+        try {
+            window.GroceryStore.updateSupportTicket(ticketId, { status, adminResponse });
+
+            // Success feedback
+            showToast("✅ Response saved & status updated");
+
+            closeRespondModal();
+            renderTickets();
+        } catch (err) {
+            console.error("Failed to update ticket:", err);
+            showToast("❌ Failed to save response. Check console.", "#d9534f");
+        } finally {
+            submitBtn.disabled = false;
+            submitBtn.textContent = originalText;
+        }
     });
+
+    // Toast helper
+    function showToast(message, bgColor = "#17241b") {
+        let toast = document.getElementById("toast");
+        if (!toast) {
+            toast = document.createElement("div");
+            toast.id = "toast";
+            toast.style.cssText = `position:fixed;bottom:24px;right:24px;padding:12px 22px;border-radius:8px;font-size:14px;font-weight:600;color:#fff;z-index:99999;box-shadow:0 8px 24px rgba(0,0,0,0.2);transition:opacity .3s,transform .3s;`;
+            document.body.appendChild(toast);
+        }
+        toast.style.background = bgColor;
+        toast.textContent = message;
+        toast.style.display = "block";
+        toast.style.opacity = "1";
+        clearTimeout(window.__toastTimer);
+        window.__toastTimer = setTimeout(() => {
+            toast.style.opacity = "0";
+            setTimeout(() => toast.style.display = "none", 300);
+        }, 2500);
+    }
 
     // Listeners
     document.getElementById("ticketSearchInput").addEventListener("input", renderTickets);
