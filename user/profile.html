@@ -155,8 +155,8 @@
             <span id="cartCount">0</span>
         </a>
         <a href="support.html" class="login-link">🎧 Support</a>
-        <a href="profile.html" class="login-link" style="color:#19a463;font-weight:bold;">👤 Profile</a>
-        <button type="button" onclick="logout()" class="register-link" style="border:none;background:none;cursor:pointer;">
+        <a href="profile.html" class="login-link active">👤 Profile</a>
+        <button type="button" onclick="logout()" class="register-link plain">
             Logout
         </button>
     </div>
@@ -174,7 +174,7 @@
             </div>
         </div>
 
-        <h3 style="font-size:16px;margin-bottom:14px;color:#333;">Account Details</h3>
+        <h3 class="section-header">Account Details</h3>
         <div class="info-grid">
             <div class="info-item">
                 <small>Full Name</small>
@@ -197,30 +197,30 @@
             </div>
         </div>
 
-        <h3 style="font-size:16px;margin-bottom:14px;color:#333;">Activity Overview</h3>
+        <h3 class="section-header">Activity Overview</h3>
         <div class="stats-row">
             <div class="stat-card">
                 <div class="num" id="statTotalOrders">0</div>
                 <div class="label">Total Orders</div>
             </div>
             <div class="stat-card">
-                <div class="num" id="statActiveOrders" style="color:#d97706;">0</div>
+                <div class="num text-amber-medium" id="statActiveOrders">0</div>
                 <div class="label">In Progress</div>
             </div>
             <div class="stat-card">
-                <div class="num" id="statDeliveredOrders" style="color:#148550;">0</div>
+                <div class="num text-green-medium" id="statDeliveredOrders">0</div>
                 <div class="label">Delivered</div>
             </div>
         </div>
 
         <div class="profile-actions">
-            <a href="orders.html" class="primary-btn" style="text-decoration:none;padding:12px 22px;">
+            <a href="orders.html" class="primary-btn block">
                 📦 View My Orders
             </a>
-            <a href="dashboard.html" class="secondary-btn" style="text-decoration:none;padding:12px 22px;">
+            <a href="dashboard.html" class="secondary-btn block">
                 Shop Groceries
             </a>
-            <button onclick="logout()" class="secondary-btn" style="border-color:#d9534f;color:#d9534f;cursor:pointer;padding:12px 22px;">
+            <button onclick="logout()" class="secondary-btn block danger">
                 Logout from Account
             </button>
         </div>

@@ -386,6 +386,320 @@ button, input, select, textarea {
 .tbl-btn-danger { background: #fef2f2; color: #dc2626; }
 .tbl-btn-danger:hover { background: #fee2e2; }
 
+.tbl-btn-success { background: #ecfdf5; color: #059669; }
+.tbl-btn-success:hover { background: #d1fae5; }
+
+.tbl-btn-secondary { background: #f3f4f6; color: #374151; }
+.tbl-btn-secondary:hover { background: #e5e7eb; }
+
+/* ============================================================
+   CUSTOM COMPONENTS (Rider Support)
+   ============================================================ */
+
+/* Category Badges */
+.category-badge {
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    display: inline-block;
+}
+.cat-payment { background: #fef3c7; color: #92400e; }
+.cat-app { background: #dbeafe; color: #1e40af; }
+.cat-order { background: #dcfce7; color: #166534; }
+.cat-vehicle { background: #f3e8ff; color: #7c3aed; }
+.cat-support { background: #fee2e2; color: #991b1b; }
+.cat-other { background: #f3f6f4; color: #555; }
+
+/* Priority Badges */
+.priority-badge {
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    display: inline-block;
+}
+.priority-low { background: #dcfce7; color: #166534; }
+.priority-medium { background: #fef3c7; color: #92400e; }
+.priority-high { background: #fee2e2; color: #991b1b; }
+.priority-urgent { background: #991b1b; color: #fff; }
+
+/* Status Badges */
+.status-badge {
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    display: inline-block;
+}
+.status-open { background: #dbeafe; color: #1e40af; }
+.status-in-progress { background: #fef3c7; color: #92400e; }
+.status-resolved { background: #dcfce7; color: #166534; }
+.status-closed { background: #f3f6f4; color: #666; }
+
+/* Issue ID Cell */
+.issue-id-cell {
+    font-family: monospace;
+    font-size: 12px;
+    color: #666;
+}
+
+/* Rider Info */
+.rider-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.rider-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #19a463, #158b50);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: 600;
+}
+.rider-name {
+    font-weight: 600;
+    color: #1a2a1e;
+}
+.rider-id {
+    font-size: 11px;
+    color: #888;
+}
+
+/* Detail Modal Sections */
+.detail-section {
+    margin-bottom: 24px;
+}
+.detail-section h4 {
+    font-size: 14px;
+    font-weight: 700;
+    color: #1a2a1e;
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #eef2ee;
+}
+.detail-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+}
+.detail-item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+.detail-label {
+    font-size: 12px;
+    color: #888;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+.detail-value {
+    font-size: 14px;
+    color: #1a2a1e;
+    font-weight: 500;
+}
+
+/* Messages List in Detail Modal */
+.messages-list {
+    max-height: 300px;
+    overflow-y: auto;
+}
+.message-item {
+    padding: 12px;
+    background: #fafcfb;
+    border: 1px solid #eef2ee;
+    border-radius: 8px;
+    margin-bottom: 8px;
+}
+.message-item.admin {
+    background: #ede9fe;
+    border-color: #ddd6fe;
+}
+.message-item.rider {
+    background: #dcfce7;
+    border-color: #cde8d5;
+}
+.message-item.system {
+    background: #fef3c7;
+    border-color: #fde68a;
+    text-align: center;
+    font-size: 12px;
+    color: #92400e;
+}
+
+/* Chat Panel (Slide-in) */
+.chat-panel {
+    position: fixed;
+    top: 0;
+    right: 0;
+    height: 100vh;
+    width: 420px;
+    max-width: 100vw;
+    background: #fff;
+    border-left: 1px solid #eef2ee;
+    box-shadow: -4px 0 24px rgba(0, 0, 0, 0.1);
+    display: none;
+    flex-direction: column;
+    z-index: 10000;
+    transform: translateX(100%);
+    transition: transform 0.3s ease;
+}
+.chat-panel.open {
+    display: flex;
+    transform: translateX(0);
+}
+.chat-panel-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 20px;
+    background: #f9fbf9;
+    border-bottom: 1px solid #eef2ee;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+.chat-panel-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: #1a2a1e;
+}
+.chat-panel-rider {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    color: #666;
+}
+.chat-panel-messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+.admin-message {
+    display: flex;
+    gap: 10px;
+    max-width: 85%;
+}
+.admin-message.own {
+    align-self: flex-end;
+    flex-direction: row-reverse;
+}
+.message-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    flex-shrink: 0;
+}
+.admin-message.own .message-avatar {
+    background: #19a463;
+    color: white;
+}
+.admin-message.rider .message-avatar {
+    background: #dcfce7;
+    color: #166534;
+}
+.message-content {
+    background: #f3f6f4;
+    border: 1px solid #eef2ee;
+    border-radius: 12px;
+    padding: 12px 16px;
+}
+.admin-message.own .message-content {
+    background: #e8f5e9;
+    border-color: #c8e6c9;
+}
+.admin-message.rider .message-content {
+    background: #dcfce7;
+    border-color: #cde8d5;
+}
+.message-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 4px;
+    font-size: 11px;
+}
+.message-sender {
+    font-weight: 700;
+    color: #1a2a1e;
+}
+.message-time {
+    color: #999;
+}
+.message-text {
+    font-size: 13px;
+    color: #333;
+    line-height: 1.5;
+}
+.chat-panel-input {
+    display: flex;
+    gap: 12px;
+    padding: 16px 20px;
+    background: #fff;
+    border-top: 1px solid #eef2ee;
+}
+.chat-panel-input input {
+    flex: 1;
+    padding: 12px 16px;
+    border: 1px solid #eef2ee;
+    border-radius: 999px;
+    font-size: 14px;
+    outline: none;
+}
+.chat-panel-input input:focus {
+    border-color: #19a463;
+    box-shadow: 0 0 0 3px rgba(25, 164, 99, 0.1);
+}
+.chat-panel-send {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: #19a463;
+    color: white;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    transition: all 0.2s;
+}
+.chat-panel-send:hover {
+    background: #158b50;
+}
+
+/* Filter Group */
+.filter-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.filter-group label {
+    font-size: 13px;
+    font-weight: 600;
+    color: #555;
+}
+
 /* ============================================================
    MODALS
    ============================================================ */
@@ -527,6 +841,1027 @@ button, input, select, textarea {
     background: #158b50;
 }
 
+/* ============================================================
+   RIDER MODULE SHARED STYLES
+   ============================================================ */
+
+/* Rider Navbar - Green theme matching GroceryGo brand */
+.rider-navbar {
+    background: linear-gradient(135deg, #19a463 0%, #158b50 100%);
+    color: white;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    box-shadow: 0 2px 12px rgba(25, 164, 99, 0.3);
+}
+
+.rider-navbar-inner {
+    padding: 0 4%;
+    height: 70px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.rider-brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.rider-logo {
+    font-size: 22px;
+}
+
+.rider-badge {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 3px 8px;
+    border-radius: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Rider Nav Menu Tabs */
+.rider-nav-links {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    overflow-x: auto;
+    padding: 4px 0;
+}
+
+.rider-nav-item {
+    padding: 8px 14px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.9);
+    white-space: nowrap;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.rider-nav-item:hover {
+    background: rgba(255, 255, 255, 0.15);
+    color: white;
+}
+
+.rider-nav-item.active {
+    background: rgba(255, 255, 255, 0.25);
+    color: white;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+}
+
+.rider-nav-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-shrink: 0;
+}
+
+.rider-availability-toggle {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 14px;
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.rider-availability-toggle .status-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    transition: all 0.2s;
+}
+
+.rider-availability-toggle .status-dot.available {
+    background: #4ade80;
+    box-shadow: 0 0 8px #4ade80;
+}
+
+.rider-availability-toggle .status-dot.busy {
+    background: #fbbf24;
+    box-shadow: 0 0 8px #fbbf24;
+}
+
+.rider-availability-toggle .status-dot.offline {
+    background: #ef4444;
+    box-shadow: 0 0 8px #ef4444;
+}
+
+.rider-profile-pill {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 12px;
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 999px;
+}
+
+.rider-logout-btn {
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    color: white;
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.rider-logout-btn:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+/* Rider Main Container */
+.rider-main {
+    padding: 30px 4% 60px;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.rider-page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 26px;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+
+.rider-page-header h1 {
+    font-size: 26px;
+    color: #1a2a1e;
+    margin-bottom: 4px;
+}
+
+.rider-page-header p {
+    color: #666;
+    font-size: 14px;
+}
+
+/* Rider Stats Grid */
+.rider-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 18px;
+    margin-bottom: 30px;
+}
+
+/* Reuse .stat-card, .stat-top, .stat-icon, .stat-val, .stat-label from admin */
+/* Rider-specific icon colors */
+.icon-rider-green { background: #eaf8f0; color: #19a463; }
+.icon-rider-blue { background: #eff6ff; color: #3b82f6; }
+.icon-rider-amber { background: #fffbeb; color: #d97706; }
+.icon-rider-purple { background: #faf5ff; color: #9333ea; }
+
+/* Rider Cards */
+.rider-card {
+    background: white;
+    border: 1px solid #e6ede8;
+    border-radius: 14px;
+    padding: 24px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.02);
+    margin-bottom: 26px;
+}
+
+.rider-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.rider-card-header h2 {
+    font-size: 18px;
+    color: #1a2a1e;
+}
+
+/* Rider Tables - reuse .table-responsive, .admin-table */
+.rider-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+    text-align: left;
+}
+
+.rider-table th {
+    background: #f7faf8;
+    color: #555;
+    font-weight: 700;
+    padding: 13px 14px;
+    border-bottom: 2px solid #e8eee9;
+    white-space: nowrap;
+}
+
+.rider-table td {
+    padding: 14px;
+    border-bottom: 1px solid #f0f4f1;
+    color: #333;
+    vertical-align: middle;
+}
+
+.rider-table tr:hover {
+    background: #fbfdfc;
+}
+
+/* Rider Status Pills - reuse .pill from admin */
+.pill-rider-pending { background: #fef3c7; color: #92400e; }
+.pill-rider-assigned { background: #dbeafe; color: #1e40af; }
+.pill-rider-picked { background: #f3e8ff; color: #7c3aed; }
+.pill-rider-delivered { background: #dcfce7; color: #166534; }
+.pill-rider-cancelled { background: #fee2e2; color: #991b1b; }
+.pill-rider-available { background: #dcfce7; color: #166534; }
+.pill-rider-busy { background: #fef3c7; color: #92400e; }
+.pill-rider-offline { background: #fee2e2; color: #991b1b; }
+
+/* Rider Action Buttons */
+.rider-action-btn-group {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+.rider-tbl-btn {
+    border: none;
+    padding: 6px 10px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s;
+}
+
+.rider-tbl-btn-accept { background: #ecfdf5; color: #059669; }
+.rider-tbl-btn-accept:hover { background: #d1fae5; }
+
+.rider-tbl-btn-reject { background: #fef2f2; color: #dc2626; }
+.rider-tbl-btn-reject:hover { background: #fee2e2; }
+
+.rider-tbl-btn-start { background: #eff6ff; color: #2563eb; }
+.rider-tbl-btn-start:hover { background: #dbeafe; }
+
+.rider-tbl-btn-deliver { background: #faf5ff; color: #9333ea; }
+.rider-tbl-btn-deliver:hover { background: #e9d5ff; }
+
+.rider-tbl-btn-view { background: #f3f4f6; color: #374151; }
+.rider-tbl-btn-view:hover { background: #e5e7eb; }
+
+/* Rider Empty State */
+.rider-empty-state {
+    text-align: center;
+    padding: 48px 24px;
+    color: #888;
+}
+
+.rider-empty-state-icon {
+    font-size: 48px;
+    margin-bottom: 16px;
+}
+
+/* Rider Quick Actions */
+.rider-quick-actions {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.rider-action-card {
+    background: white;
+    border: 1px solid #e6ede8;
+    border-radius: 14px;
+    padding: 24px;
+    text-align: center;
+    text-decoration: none;
+    transition: all 0.2s;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.02);
+}
+
+.rider-action-card:hover {
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+    border-color: #19a463;
+    transform: translateY(-2px);
+}
+
+.rider-action-icon {
+    font-size: 36px;
+    margin-bottom: 12px;
+    display: block;
+}
+
+.rider-action-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: #1a2a1e;
+    margin-bottom: 6px;
+}
+
+.rider-action-desc {
+    font-size: 13px;
+    color: #666;
+}
+
+/* Rider Notifications Dropdown */
+.rider-notification-bell {
+    position: relative;
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.15);
+    transition: all 0.2s;
+}
+
+.rider-notification-bell:hover {
+    background: rgba(255, 255, 255, 0.25);
+}
+
+.rider-notification-badge {
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    min-width: 18px;
+    height: 18px;
+    background: #ef4444;
+    color: white;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 5px;
+}
+
+/* Rider Modals - reuse .modal-overlay, .modal-container from admin */
+.rider-modal-content {
+    background: white;
+    border-radius: 14px;
+    width: 100%;
+    max-width: 620px;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+}
+
+.rider-modal-header {
+    padding: 20px 24px;
+    border-bottom: 1px solid #eef2ef;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.rider-modal-header h3 {
+    font-size: 18px;
+    color: #1a2a1e;
+}
+
+.rider-modal-close {
+    background: #f0f4f1;
+    border: none;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.rider-modal-body {
+    padding: 24px;
+}
+
+.rider-modal-footer {
+    padding: 16px 24px;
+    border-top: 1px solid #eef2ef;
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    background: #fbfdfc;
+}
+
+/* Rider Toast */
+.rider-toast {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    padding: 12px 22px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #fff;
+    z-index: 99999;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+    transition: opacity .3s, transform .3s;
+    display: none;
+}
+
+.rider-toast.show {
+    display: block;
+    opacity: 1;
+}
+
+/* Rider Login/Register Pages - Match auth.css pattern */
+.rider-auth-page {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 30px;
+    background: linear-gradient(135deg, #eefaf2, #f8fbf9);
+}
+
+.rider-auth-wrapper {
+    width: 100%;
+    max-width: 1050px;
+    min-height: 620px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    background: #ffffff;
+    border-radius: 22px;
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(28, 80, 45, 0.12);
+}
+
+.rider-auth-left {
+    position: relative;
+    padding: 55px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    background: linear-gradient(145deg, #168f54, #21a861);
+    color: white;
+    overflow: hidden;
+}
+
+.rider-auth-left::before {
+    content: "";
+    position: absolute;
+    width: 260px;
+    height: 260px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.08);
+    top: -90px;
+    right: -70px;
+}
+
+.rider-auth-left::after {
+    content: "";
+    position: absolute;
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.06);
+    bottom: -70px;
+    left: -70px;
+}
+
+.rider-auth-logo {
+    position: relative;
+    z-index: 1;
+    font-size: 31px;
+    font-weight: bold;
+    margin-bottom: 35px;
+}
+
+.rider-auth-left-content {
+    position: relative;
+    z-index: 1;
+}
+
+.rider-auth-left-content h2 {
+    font-size: 42px;
+    line-height: 1.15;
+    margin-bottom: 20px;
+}
+
+.rider-auth-left-content p {
+    max-width: 430px;
+    color: rgba(255, 255, 255, 0.88);
+    font-size: 16px;
+    line-height: 1.7;
+    margin-bottom: 30px;
+}
+
+.rider-auth-features {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.rider-auth-feature {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.rider-auth-feature-icon {
+    width: 42px;
+    height: 42px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 10px;
+    font-size: 21px;
+}
+
+.rider-auth-feature-text strong {
+    display: block;
+    font-size: 14px;
+    margin-bottom: 2px;
+}
+
+.rider-auth-feature-text small {
+    color: rgba(255, 255, 255, 0.75);
+    font-size: 12px;
+}
+
+.rider-auth-right {
+    padding: 55px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.rider-auth-title {
+    margin-bottom: 28px;
+}
+
+.rider-auth-title h1 {
+    font-size: 30px;
+    margin-bottom: 7px;
+}
+
+.rider-auth-title p {
+    color: #777;
+    font-size: 14px;
+}
+
+.rider-auth-form {
+    width: 100%;
+}
+
+.rider-input-group {
+    margin-bottom: 18px;
+}
+
+.rider-input-group label {
+    display: block;
+    font-size: 13px;
+    font-weight: bold;
+    margin-bottom: 7px;
+    color: #333;
+}
+
+.rider-input-wrapper {
+    position: relative;
+}
+
+.rider-input-wrapper .rider-input-icon {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 16px;
+    opacity: 0.75;
+}
+
+.rider-input-group input {
+    width: 100%;
+    height: 48px;
+    padding: 0 15px 0 43px;
+    border: 1px solid #dddddd;
+    border-radius: 9px;
+    outline: none;
+    background: #fbfcfb;
+    font-size: 14px;
+    transition: 0.2s;
+}
+
+.rider-input-group input:focus {
+    border-color: #19a463;
+    background: white;
+    box-shadow: 0 0 0 3px rgba(25, 164, 99, 0.10);
+}
+
+.rider-remember-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 2px 0 20px;
+}
+
+.rider-remember {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #666;
+    font-size: 13px;
+    cursor: pointer;
+}
+
+.rider-remember input {
+    width: 15px;
+    height: 15px;
+    accent-color: #19a463;
+    cursor: pointer;
+}
+
+.rider-auth-btn {
+    width: 100%;
+    height: 50px;
+    border: none;
+    border-radius: 9px;
+    background: linear-gradient(135deg, #19a463, #158b50);
+    color: white;
+    font-size: 15px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.rider-auth-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 8px 20px rgba(25, 164, 99, 0.20);
+}
+
+.rider-auth-btn:active {
+    transform: translateY(0);
+}
+
+/* Secondary button variant for auth switch */
+.rider-auth-btn.rider-secondary-btn {
+    background: #fff;
+    color: #19a463;
+    border: 2px solid #19a463;
+}
+
+.rider-auth-btn.rider-secondary-btn:hover {
+    background: #f0fdf4;
+    transform: translateY(-1px);
+    box-shadow: 0 8px 20px rgba(25, 164, 99, 0.15);
+}
+
+/* Switch buttons container */
+.rider-auth-switch-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 8px;
+}
+
+.rider-auth-message {
+    min-height: 20px;
+    text-align: center;
+    margin-top: 12px;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.rider-auth-divider {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 22px 0;
+}
+
+.rider-auth-divider span {
+    height: 1px;
+    flex: 1;
+    background: #eeeeee;
+}
+
+.rider-auth-divider p {
+    color: #999;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.rider-auth-switch {
+    text-align: center;
+    color: #777;
+    font-size: 13px;
+}
+
+.rider-auth-switch a {
+    color: #19a463;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+.rider-auth-switch a:hover {
+    text-decoration: underline;
+}
+
+.rider-back-home {
+    display: inline-block;
+    margin-bottom: 20px;
+    color: #19a463;
+    font-size: 13px;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+.rider-back-home:hover {
+    text-decoration: underline;
+}
+
+.rider-password-note {
+    color: #999;
+    font-size: 11px;
+    margin-top: 5px;
+}
+
+/* Rider Register Form - additional fields */
+.rider-form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+.rider-form-row .rider-input-group {
+    margin-bottom: 16px;
+}
+
+/* Rider Access Code Input */
+.rider-access-code-group {
+    margin-bottom: 18px;
+}
+
+.rider-access-code-group .rider-access-code-input {
+    width: 100%;
+    height: 48px;
+    padding: 0 15px 0 43px;
+    border: 1px solid #dddddd;
+    border-radius: 9px;
+    outline: none;
+    background: #fbfcfb;
+    font-size: 14px;
+    transition: 0.2s;
+    letter-spacing: 4px;
+    text-align: center;
+    font-weight: 700;
+}
+
+.rider-access-code-group .rider-access-code-input:focus {
+    border-color: #19a463;
+    background: white;
+    box-shadow: 0 0 0 3px rgba(25, 164, 99, 0.10);
+}
+
+/* Rider Register - Vehicle Selection */
+.rider-vehicle-options {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    gap: 10px;
+    margin-top: 8px;
+}
+
+.rider-vehicle-option {
+    position: relative;
+}
+
+.rider-vehicle-option input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.rider-vehicle-option label {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    padding: 16px 12px;
+    border: 2px solid #e2ebe4;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.2s;
+    background: #fbfdfc;
+}
+
+.rider-vehicle-option input:checked + label {
+    border-color: #19a463;
+    background: #f0fdf4;
+    box-shadow: 0 0 0 3px rgba(25, 164, 99, 0.1);
+}
+
+.rider-vehicle-option label:hover {
+    border-color: #19a463;
+}
+
+.rider-vehicle-icon {
+    font-size: 28px;
+}
+
+.rider-vehicle-name {
+    font-size: 12px;
+    font-weight: 600;
+    color: #333;
+}
+
+/* ============================================================
+   ADMIN DASHBOARD SPECIFIC STYLES
+   ============================================================ */
+
+/* Header Action Button Variants */
+.header-action-btn.secondary {
+    background: #2c3e32;
+}
+
+.header-action-btn.secondary:hover {
+    background: #1a2a1e;
+}
+
+.header-action-btn.small {
+    font-size: 12px;
+    padding: 6px 12px;
+}
+
+.header-action-btn.small.primary {
+    background: #19a463;
+}
+
+.header-action-btn.small.primary:hover {
+    background: #158b50;
+}
+
+.header-action-btn.small.secondary {
+    background: #2c3e32;
+}
+
+.header-action-btn.small.secondary:hover {
+    background: #1a2a1e;
+}
+
+/* Admin Card Variants */
+.admin-card.highlight {
+    background: #fafdfb;
+    border: 1.5px solid #d4ebd9;
+}
+
+.admin-card.no-margin-bottom {
+    margin-bottom: 0;
+}
+
+.card-title-bar.divided {
+    border-bottom: 1px solid #e1efe4;
+    padding-bottom: 16px;
+    margin-bottom: 16px;
+}
+
+.card-title-bar .action-group {
+    display: flex;
+    gap: 10px;
+}
+
+/* Card Link Style */
+.card-link {
+    color: #19a463;
+    font-weight: 700;
+    font-size: 13px;
+    transition: color 0.2s;
+}
+
+.card-link:hover {
+    color: #158b50;
+}
+
+/* Stat Value Variants */
+.stat-val.large-text {
+    font-size: 15px;
+    line-height: 1.2;
+    font-weight: 700;
+}
+
+/* Two Column Grid Layout */
+.two-col-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+}
+
+@media (max-width: 900px) {
+    .two-col-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Flex utilities for inline style replacements */
+.flex-gap-10 {
+    display: flex;
+    gap: 10px;
+}
+
+.flex-gap-10-wrap {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+/* Stats Grid Variants */
+.stats-grid.compact {
+    margin-top: 16px;
+    margin-bottom: 0;
+}
+
+/* Text utilities */
+.text-green {
+    color: #148550;
+}
+
+.text-muted {
+    color: #666;
+}
+
+/* Responsive */
+@media (max-width: 850px) {
+    .rider-auth-wrapper {
+        grid-template-columns: 1fr;
+        max-width: 520px;
+    }
+    .rider-auth-left {
+        min-height: 300px;
+        padding: 40px;
+    }
+    .rider-auth-left-content h2 {
+        font-size: 32px;
+    }
+    .rider-auth-features {
+        display: none;
+    }
+    .rider-auth-right {
+        padding: 40px;
+    }
+    .rider-nav-links {
+        display: none;
+    }
+}
+
+@media (max-width: 500px) {
+    .rider-auth-page {
+        padding: 15px;
+    }
+    .rider-auth-wrapper {
+        border-radius: 15px;
+    }
+    .rider-auth-left {
+        padding: 30px;
+    }
+    .rider-auth-left-content h2 {
+        font-size: 28px;
+    }
+    .rider-auth-left-content p {
+        font-size: 14px;
+    }
+    .rider-auth-right {
+        padding: 30px 22px;
+    }
+    .rider-auth-title h1 {
+        font-size: 26px;
+    }
+    .rider-form-row {
+        grid-template-columns: 1fr;
+    }
+    .rider-main {
+        padding: 20px 4% 40px;
+    }
+    .rider-page-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    .rider-stats-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+    .rider-card-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    .rider-quick-actions {
+        grid-template-columns: 1fr;
+    }
+}
+
 @media (max-width: 900px) {
     .admin-navbar-inner {
         flex-direction: column;
@@ -539,5 +1874,144 @@ button, input, select, textarea {
     }
     .modal-form-grid {
         grid-template-columns: 1fr;
+    }
+}
+
+/* ============================================================
+   RIDER AUTH INLINE STYLES MOVED TO CSS
+   ============================================================ */
+
+/* Error/Success Message Styles */
+.error-message {
+    display: none;
+    color: #dc2626;
+    font-size: 12px;
+    margin-top: 6px;
+    font-weight: 500;
+}
+
+.error-message.visible {
+    display: block;
+}
+
+.rider-input-group input.error,
+.rider-input-group select.error {
+    border-color: #dc2626;
+    background: #fef2f2;
+}
+
+.rider-input-group input.success,
+.rider-input-group select.success {
+    border-color: #19a463;
+}
+
+/* Password Toggle Button */
+.toggle-password {
+    position: absolute;
+    right: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 18px;
+    color: #888;
+    padding: 4px;
+}
+
+.toggle-password:hover {
+    color: #19a463;
+}
+
+/* Forgot Password Link */
+.forgot-link {
+    color: #19a463;
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.forgot-link:hover {
+    color: #158b50;
+    text-decoration: underline;
+}
+
+/* Rider Info Box */
+.rider-info-box {
+    background: #f0f7f3;
+    border: 1px solid #cde8d5;
+    border-radius: 10px;
+    padding: 16px;
+    margin-bottom: 24px;
+    font-size: 13px;
+    color: #1e7046;
+    line-height: 1.6;
+}
+
+.rider-info-box strong {
+    display: block;
+    margin-bottom: 6px;
+    color: #148550;
+}
+
+/* Rider ID Display */
+.rider-id-display {
+    background: #f4faf6;
+    border: 2px solid #d6ece0;
+    border-radius: 10px;
+    padding: 14px 16px;
+    font-family: 'Monospace', monospace;
+    font-size: 18px;
+    font-weight: 700;
+    color: #19a463;
+    letter-spacing: 1px;
+    text-align: center;
+    margin-top: 8px;
+}
+
+.rider-id-label {
+    display: block;
+    font-size: 12px;
+    color: #777;
+    font-weight: 500;
+    margin-bottom: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Access Code Input */
+.rider-access-code-input {
+    text-transform: uppercase;
+    letter-spacing: 4px;
+    font-weight: 700;
+    font-size: 16px !important;
+    text-align: center;
+}
+
+/* Loading Button State */
+.rider-auth-btn.loading {
+    position: relative;
+    color: transparent;
+}
+
+.rider-auth-btn.loading::after {
+    content: "";
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    top: 50%;
+    left: 50%;
+    margin-left: -10px;
+    margin-top: -10px;
+    border: 2px solid transparent;
+    border-top-color: #ffffff;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
     }
 }

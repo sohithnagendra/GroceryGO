@@ -1,0 +1,1275 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GroceryGo - Issues & Support</title>
+    <link rel="stylesheet" href="../admin.css">
+    <style>
+        /* Issues-specific extensions to shared admin.css classes */
+
+        /* Tabs - using shared admin.css .tabs pattern */
+        .tabs {
+            display: flex;
+            gap: 4px;
+            margin-bottom: 24px;
+            border-bottom: 1px solid #eef2ee;
+            padding-bottom: 4px;
+        }
+
+        .tab {
+            padding: 12px 20px;
+            background: none;
+            border: none;
+            font-size: 14px;
+            font-weight: 600;
+            color: #666;
+            cursor: pointer;
+            border-radius: 8px 8px 0 0;
+            transition: all 0.2s;
+            position: relative;
+        }
+
+        .tab:hover {
+            color: #19a463;
+            background: #f4faf6;
+        }
+
+        .tab.active {
+            color: #19a463;
+            background: #f4faf6;
+        }
+
+        .tab.active::after {
+            content: "";
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: #19a463;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Issue Cards */
+        .issues-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .issue-card {
+            background: #fafcfb;
+            border: 1px solid #eef2ee;
+            border-radius: 12px;
+            padding: 20px;
+            transition: all 0.2s;
+        }
+
+        .issue-card:hover {
+            border-color: #cde8d5;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+        }
+
+        .issue-header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 16px;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
+        }
+
+        .issue-title-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex: 1;
+        }
+
+        .issue-id {
+            font-size: 12px;
+            font-weight: 700;
+            color: #666;
+            background: #eef2ee;
+            padding: 4px 10px;
+            border-radius: 6px;
+        }
+
+        .issue-title {
+            font-size: 15px;
+            font-weight: 700;
+            color: #1a2a1e;
+        }
+
+        .issue-category {
+            font-size: 11px;
+            font-weight: 700;
+            padding: 4px 10px;
+            border-radius: 999px;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        .cat-payment { background: #fef3c7; color: #92400e; }
+        .cat-app { background: #dbeafe; color: #1e40af; }
+        .cat-order { background: #dcfce7; color: #166534; }
+        .cat-vehicle { background: #f3e8ff; color: #7c3aed; }
+        .cat-support { background: #fee2e2; color: #991b1b; }
+        .cat-other { background: #f3f6f4; color: #555; }
+
+        .issue-priority {
+            font-size: 11px;
+            font-weight: 700;
+            padding: 4px 10px;
+            border-radius: 999px;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        .priority-low { background: #dcfce7; color: #166534; }
+        .priority-medium { background: #fef3c7; color: #92400e; }
+        .priority-high { background: #fee2e2; color: #991b1b; }
+        .priority-urgent { background: #991b1b; color: #fff; }
+
+        .issue-meta {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+            margin-bottom: 12px;
+            font-size: 12px;
+            color: #666;
+        }
+
+        .issue-meta span {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .issue-description {
+            font-size: 13px;
+            color: #444;
+            line-height: 1.6;
+            margin-bottom: 16px;
+        }
+
+        .issue-status-bar {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding-top: 12px;
+            border-top: 1px solid #eef2ee;
+            flex-wrap: wrap;
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .status-indicator::before {
+            content: "";
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+
+        .status-indicator.open::before { background: #3b82f6; }
+        .status-indicator.in-progress::before { background: #f59e0b; }
+        .status-indicator.resolved::before { background: #19a463; }
+        .status-indicator.closed::before { background: #666; }
+
+        .issue-actions {
+            display: flex;
+            gap: 8px;
+            margin-left: auto;
+        }
+
+        /* Chat */
+        .chat-container {
+            display: flex;
+            flex-direction: column;
+            height: 500px;
+            background: #fafcfb;
+            border: 1px solid #eef2ee;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .chat-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 20px;
+            background: #fff;
+            border-bottom: 1px solid #eef2ee;
+        }
+
+        .chat-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #1a2a1e;
+        }
+
+        .chat-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+            color: #666;
+        }
+
+        .chat-status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #19a463;
+        }
+
+        .chat-status-dot.offline {
+            background: #999;
+        }
+
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .message {
+            display: flex;
+            gap: 10px;
+            max-width: 85%;
+        }
+
+        .message.own {
+            align-self: flex-end;
+            flex-direction: row-reverse;
+        }
+
+        .message-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+
+        .message.own .message-avatar {
+            background: #19a463;
+            color: white;
+        }
+
+        .message.other .message-avatar {
+            background: #eef2ee;
+            color: #666;
+        }
+
+        .message-content {
+            background: #fff;
+            border: 1px solid #eef2ee;
+            border-radius: 12px;
+            padding: 12px 16px;
+        }
+
+        .message.own .message-content {
+            background: #dcfce7;
+            border-color: #cde8d5;
+        }
+
+        .message-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 4px;
+            font-size: 11px;
+        }
+
+        .message-sender {
+            font-weight: 700;
+            color: #1a2a1e;
+        }
+
+        .message-time {
+            color: #999;
+        }
+
+        .message-text {
+            font-size: 13px;
+            color: #333;
+            line-height: 1.5;
+        }
+
+        .message-system {
+            align-self: center;
+            text-align: center;
+            color: #888;
+            font-size: 12px;
+            padding: 8px;
+        }
+
+        .chat-input-area {
+            display: flex;
+            gap: 12px;
+            padding: 16px 20px;
+            background: #fff;
+            border-top: 1px solid #eef2ee;
+        }
+
+        .chat-input {
+            flex: 1;
+            padding: 12px 16px;
+            border: 1px solid #eef2ee;
+            border-radius: 999px;
+            font-size: 14px;
+            outline: none;
+        }
+
+        .chat-input:focus {
+            border-color: #19a463;
+            box-shadow: 0 0 0 3px rgba(25, 164, 99, 0.1);
+        }
+
+        .chat-send-btn {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: #19a463;
+            color: white;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            transition: all 0.2s;
+        }
+
+        .chat-send-btn:hover {
+            background: #158b50;
+        }
+
+        /* Create Issue Form */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 6px;
+        }
+
+        .form-input,
+        .form-select,
+        .form-textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #eef2ee;
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: inherit;
+            background: #fff;
+            transition: all 0.2s;
+        }
+
+        .form-input:focus,
+        .form-select:focus,
+        .form-textarea:focus {
+            outline: none;
+            border-color: #19a463;
+            box-shadow: 0 0 0 3px rgba(25, 164, 99, 0.1);
+        }
+
+        .form-textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .form-hint {
+            font-size: 12px;
+            color: #888;
+            margin-top: 4px;
+        }
+
+        /* Empty state */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #888;
+        }
+
+        .empty-state-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+            opacity: 0.5;
+        }
+
+        .empty-state-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .empty-state-desc {
+            font-size: 14px;
+            margin-bottom: 24px;
+        }
+
+        /* Toast for issues page */
+        #toast {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            padding: 12px 22px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #fff;
+            z-index: 99999;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+            transition: opacity .3s, transform .3s;
+            display: none;
+        }
+
+        /* Responsive - only custom overrides */
+        @media (max-width: 750px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .issue-header {
+                flex-direction: column;
+                gap: 8px;
+            }
+
+            .issue-actions {
+                margin-left: 0;
+                width: 100%;
+                justify-content: flex-start;
+            }
+
+            .chat-messages {
+                padding: 16px;
+            }
+
+            .message {
+                max-width: 95%;
+            }
+
+            .chat-input-area {
+                padding: 12px 16px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- RIDER NAVBAR -->
+    <header class="rider-navbar">
+        <div class="rider-navbar-inner">
+            <div class="rider-brand">
+                <div class="rider-logo">🛵</div>
+                <div>
+                    <div style="font-size:18px;font-weight:800;">GroceryGo</div>
+                    <span class="rider-badge">Rider Portal</span>
+                </div>
+            </div>
+
+            <nav class="rider-nav-links">
+                <a href="dashboard.html" class="rider-nav-item">📊 Dashboard</a>
+                <a href="orders.html" class="rider-nav-item">📦 My Orders</a>
+                <a href="earnings.html" class="rider-nav-item">💰 Earnings</a>
+                <a href="history.html" class="rider-nav-item">📜 History</a>
+                <a href="performance.html" class="rider-nav-item">📈 Performance</a>
+                <a href="availability.html" class="rider-nav-item">🕐 Availability</a>
+                <a href="issues.html" class="rider-nav-item active">🎫 Issues</a>
+                <a href="profile.html" class="rider-nav-item">👤 Profile</a>
+            </nav>
+
+            <div class="rider-nav-actions">
+                <div class="rider-availability-toggle">
+                    <span class="status-dot" id="availabilityDot"></span>
+                    <span id="availabilityText">Available</span>
+                    <select id="availabilitySelect" style="background:transparent;border:none;color:white;font-weight:600;font-size:13px;padding:4px;cursor:pointer;">
+                        <option value="Available">Available</option>
+                        <option value="Busy">Busy</option>
+                        <option value="Offline">Offline</option>
+                    </select>
+                </div>
+
+                <div class="notification-bell" onclick="toggleNotifications()">
+                    🔔
+                    <span class="notification-badge" id="notificationBadge" style="display:none;">0</span>
+                </div>
+
+                <div class="rider-profile-pill">
+                    <span>🛵</span>
+                    <span id="riderProfileName">Rider</span>
+                </div>
+                <button class="rider-logout-btn" onclick="riderLogout()">Logout</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- NOTIFICATIONS DROPDOWN -->
+    <div id="notificationsDropdown" class="gg-modal-overlay" style="display:none; max-width:400px; margin: 80px auto 0; width: 90%;">
+        <div class="gg-modal-content" style="max-height:500px; overflow:hidden;">
+            <div style="display:flex; align-items:center; justify-content:space-between; padding:16px 20px; border-bottom:1px solid #eef2ee;">
+                <h3 style="font-size:16px;font-weight:700;color:#1a2a1e;">🔔 Notifications</h3>
+                <button class="gg-modal-close" onclick="closeNotifications()">×</button>
+            </div>
+            <div id="notificationsList" style="max-height:400px; overflow-y:auto; padding:8px;">
+            </div>
+        </div>
+    </div>
+
+    <main class="rider-main">
+        <div class="rider-page-header">
+            <div>
+                <h1>Issues & Support</h1>
+                <p>Report issues, track tickets, and chat with support team</p>
+            </div>
+        </div>
+
+        <!-- STATS -->
+        <div class="rider-stats-grid">
+            <div class="stat-card">
+                <div class="stat-top">
+                    <div class="stat-icon icon-blue">🎫</div>
+                    <span class="pill pill-blue">Open</span>
+                </div>
+                <div class="stat-val" id="statOpenIssues">0</div>
+                <div class="stat-label">Open Issues</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-top">
+                    <div class="stat-icon icon-amber">⏳</div>
+                    <span class="pill pill-amber">Progress</span>
+                </div>
+                <div class="stat-val" id="statInProgressIssues">0</div>
+                <div class="stat-label">In Progress</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-top">
+                    <div class="stat-icon icon-green">✅</div>
+                    <span class="pill pill-green">Resolved</span>
+                </div>
+                <div class="stat-val" id="statResolvedIssues">0</div>
+                <div class="stat-label">Resolved This Month</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-top">
+                    <div class="stat-icon icon-red">🚨</div>
+                    <span class="pill pill-red">Urgent</span>
+                </div>
+                <div class="stat-val" id="statUrgentIssues">0</div>
+                <div class="stat-label">Urgent Priority</div>
+            </div>
+        </div>
+
+        <!-- TABS -->
+        <div class="tabs">
+            <button class="tab active" data-tab="my-issues">My Issues</button>
+            <button class="tab" data-tab="create-issue">Create Issue</button>
+            <button class="tab" data-tab="chat-support">Chat Support</button>
+        </div>
+
+        <!-- MY ISSUES TAB -->
+        <div class="tab-content active" id="tab-my-issues">
+            <div class="rider-card">
+                <div class="card-header">
+                    <h2>📋 My Issues</h2>
+                </div>
+                <div class="card-body">
+                    <div class="issues-list" id="issuesList">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- CREATE ISSUE TAB -->
+        <div class="tab-content" id="tab-create-issue">
+            <div class="rider-card">
+                <div class="card-header">
+                    <h2>➕ Create New Issue</h2>
+                </div>
+                <div class="card-body">
+                    <form id="createIssueForm">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Category</label>
+                                <select class="form-select" id="issueCategory" required>
+                                    <option value="">Select category</option>
+                                    <option value="payment">💰 Payment & Earnings</option>
+                                    <option value="app">📱 App Technical Issues</option>
+                                    <option value="order">📦 Order Related</option>
+                                    <option value="vehicle">🛵 Vehicle & Equipment</option>
+                                    <option value="support">🎧 General Support</option>
+                                    <option value="other">📝 Other</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Priority</label>
+                                <select class="form-select" id="issuePriority" required>
+                                    <option value="">Select priority</option>
+                                    <option value="low">Low - Minor inconvenience</option>
+                                    <option value="medium" selected>Medium - Affects work</option>
+                                    <option value="high">High - Urgent attention needed</option>
+                                    <option value="urgent">Urgent - Critical issue</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Subject</label>
+                            <input type="text" class="form-input" id="issueSubject" placeholder="Brief summary of the issue" required maxlength="100">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Description</label>
+                            <textarea class="form-textarea" id="issueDescription" placeholder="Describe the issue in detail. Include order IDs, error messages, steps to reproduce, etc." required></textarea>
+                            <div class="form-hint">Be specific - this helps us resolve your issue faster</div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Related Order (Optional)</label>
+                            <input type="text" class="form-input" id="issueOrderId" placeholder="Order ID if related to a specific delivery">
+                        </div>
+                        <div style="display:flex; gap:12px; justify-content:flex-end;">
+                            <button type="button" class="btn btn-secondary" onclick="clearForm()">Clear</button>
+                            <button type="submit" class="btn btn-primary">Submit Issue</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- CHAT SUPPORT TAB -->
+        <div class="tab-content" id="tab-chat-support">
+            <div class="rider-card">
+                <div class="card-header">
+                    <h2>💬 Chat with Support</h2>
+                </div>
+                <div class="card-body" style="padding:0;">
+                    <div class="chat-container" id="chatContainer">
+                        <div class="chat-header">
+                            <div class="chat-title">Support Chat</div>
+                            <div class="chat-status">
+                                <span class="chat-status-dot" id="supportStatusDot"></span>
+                                <span id="supportStatusText">Support Online</span>
+                            </div>
+                        </div>
+                        <div class="chat-messages" id="chatMessages">
+                        </div>
+                        <div class="chat-input-area">
+                            <input type="text" class="chat-input" id="chatInput" placeholder="Type your message..." onkeypress="handleChatKeypress(event)">
+                            <button class="chat-send-btn" onclick="sendChatMessage()">➤</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- ISSUE DETAIL MODAL -->
+    <div id="issueDetailModal" class="gg-modal-overlay" style="display:none;">
+        <div class="gg-modal-content" style="max-width:600px; max-height:80vh; overflow-y:auto;">
+            <div style="display:flex; align-items:center; justify-content:space-between; padding:16px 20px; border-bottom:1px solid #eef2ee;">
+                <h3 style="font-size:16px;font-weight:700;color:#1a2a1e;">Issue Details</h3>
+                <button class="gg-modal-close" onclick="closeIssueDetailModal()">×</button>
+            </div>
+            <div id="issueDetailContent" style="padding:20px;">
+            </div>
+        </div>
+    </div>
+
+    <!-- SCRIPTS -->
+    <script src="../store.js"></script>
+    <script src="auth.js"></script>
+
+    <script>
+        (function() {
+            // 1. Guard Page
+            const rider = window.GroceryRiderAuth.protectPage();
+            if (!rider) return;
+
+            // 2. Initialize UI
+            document.getElementById("riderProfileName").textContent = rider.name.split(" ")[0];
+            const availability = rider.availability || "Available";
+            document.getElementById("availabilitySelect").value = availability;
+            updateAvailabilityUI(availability);
+
+            loadNotifications();
+
+            // 3. Load Issues
+            loadIssues();
+
+            // 4. Load Chat
+            loadChat();
+
+            // 5. Event Listeners
+            document.getElementById("availabilitySelect").addEventListener("change", function() {
+                updateAvailability(this.value);
+            });
+
+            // Tab switching
+            document.querySelectorAll(".tab").forEach(tab => {
+                tab.addEventListener("click", function() {
+                    document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
+                    document.querySelectorAll(".tab-content").forEach(c => c.classList.remove("active"));
+                    this.classList.add("active");
+                    document.getElementById("tab-" + this.dataset.tab).classList.add("active");
+
+                    if (this.dataset.tab === "my-issues") {
+                        loadIssues();
+                    } else if (this.dataset.tab === "chat-support") {
+                        loadChat();
+                    }
+                });
+            });
+
+            // Create issue form
+            document.getElementById("createIssueForm").addEventListener("submit", function(e) {
+                e.preventDefault();
+                submitIssue();
+            });
+
+            function updateAvailabilityUI(status) {
+                const dot = document.getElementById("availabilityDot");
+                const text = document.getElementById("availabilityText");
+
+                dot.className = "status-dot";
+                if (status === "Available") dot.classList.add("available");
+                else if (status === "Busy") dot.classList.add("busy");
+                else dot.classList.add("offline");
+
+                text.textContent = status;
+            }
+
+            function updateAvailability(newStatus) {
+                const riders = window.GroceryRiderAuth.getRiders();
+                const riderIndex = riders.findIndex(r => r.id === rider.id);
+                if (riderIndex !== -1) {
+                    riders[riderIndex].availability = newStatus;
+                    window.GroceryRiderAuth.saveRiders(riders);
+
+                    const sessionRider = window.GroceryRiderAuth.getCurrentRider();
+                    sessionRider.availability = newStatus;
+                    window.GroceryRiderAuth.setCurrentRider(sessionRider, true);
+
+                    updateAvailabilityUI(newStatus);
+                    showToast("Status updated to " + newStatus);
+                }
+            }
+
+            function loadIssues() {
+                const issues = window.GroceryStore.getRiderIssues(rider.id);
+                const list = document.getElementById("issuesList");
+
+                // Update stats
+                const open = issues.filter(i => i.status === "open").length;
+                const inProgress = issues.filter(i => i.status === "in-progress").length;
+                const resolved = issues.filter(i => i.status === "resolved" && isThisMonth(i.createdAt)).length;
+                const urgent = issues.filter(i => i.priority === "urgent" && i.status !== "resolved" && i.status !== "closed").length;
+
+                document.getElementById("statOpenIssues").textContent = open;
+                document.getElementById("statInProgressIssues").textContent = inProgress;
+                document.getElementById("statResolvedIssues").textContent = resolved;
+                document.getElementById("statUrgentIssues").textContent = urgent;
+
+                if (issues.length === 0) {
+                    list.innerHTML = `
+                        <div class="empty-state">
+                            <div class="empty-state-icon">🎫</div>
+                            <div class="empty-state-title">No Issues Yet</div>
+                            <div class="empty-state-desc">You haven't reported any issues. Create one if you need help!</div>
+                            <button class="btn btn-primary" onclick="switchTab('create-issue')">Create First Issue</button>
+                        </div>
+                    `;
+                    return;
+                }
+
+                // Sort: open/in-progress first, then by priority, then by date
+                const priorityOrder = { urgent: 0, high: 1, medium: 2, low: 3 };
+                const statusOrder = { open: 0, "in-progress": 1, resolved: 2, closed: 3 };
+                issues.sort((a, b) => {
+                    const statusDiff = statusOrder[a.status] - statusOrder[b.status];
+                    if (statusDiff !== 0) return statusDiff;
+                    const priorityDiff = priorityOrder[a.priority] - priorityOrder[b.priority];
+                    if (priorityDiff !== 0) return priorityDiff;
+                    return new Date(b.createdAt) - new Date(a.createdAt);
+                });
+
+                list.innerHTML = issues.map(issue => `
+                    <div class="issue-card" onclick="openIssueDetail('${issue.id}')">
+                        <div class="issue-header">
+                            <div class="issue-title-row">
+                                <span class="issue-id">#${issue.id.slice(-6).toUpperCase()}</span>
+                                <span class="issue-title">${escapeHtml(issue.subject)}</span>
+                                <span class="issue-category cat-${issue.category}">${getCategoryLabel(issue.category)}</span>
+                                <span class="issue-priority priority-${issue.priority}">${issue.priority}</span>
+                            </div>
+                        </div>
+                        <div class="issue-meta">
+                            <span>📅 ${formatDateTime(issue.createdAt)}</span>
+                            <span>📍 ${getStatusLabel(issue.status)}</span>
+                            ${issue.orderId ? `<span>📦 ${escapeHtml(issue.orderId)}</span>` : ""}
+                        </div>
+                        <div class="issue-description">${escapeHtml(issue.description).substring(0, 200)}${issue.description.length > 200 ? "..." : ""}</div>
+                        <div class="issue-status-bar">
+                            <span class="status-indicator ${issue.status}">${getStatusLabel(issue.status)}</span>
+                            ${issue.updatedAt && issue.updatedAt !== issue.createdAt ? `<span style="font-size:12px;color:#888;">Updated: ${formatDateTime(issue.updatedAt)}</span>` : ""}
+                            <div class="issue-actions">
+                                <button class="btn btn-small btn-secondary" onclick="event.stopPropagation(); openIssueDetail('${issue.id}')">View</button>
+                                ${issue.status === "resolved" ? `<button class="btn btn-small btn-primary" onclick="event.stopPropagation(); closeIssue('${issue.id}')">Mark Closed</button>` : ""}
+                            </div>
+                        </div>
+                    </div>
+                `).join("");
+            }
+
+            function submitIssue() {
+                const category = document.getElementById("issueCategory").value;
+                const priority = document.getElementById("issuePriority").value;
+                const subject = document.getElementById("issueSubject").value.trim();
+                const description = document.getElementById("issueDescription").value.trim();
+                const orderId = document.getElementById("issueOrderId").value.trim();
+
+                if (!category || !priority || !subject || !description) {
+                    showToast("Please fill all required fields", "#ef4444");
+                    return;
+                }
+
+                const issue = {
+                    id: "ISS" + Date.now().toString(36) + Math.random().toString(36).substr(2, 4),
+                    riderId: rider.id,
+                    riderName: rider.name,
+                    category,
+                    priority,
+                    subject,
+                    description,
+                    orderId: orderId || null,
+                    status: "open",
+                    createdAt: new Date().toISOString(),
+                    updatedAt: new Date().toISOString(),
+                    messages: []
+                };
+
+                const issues = window.GroceryStore.getRiderIssues(rider.id);
+                issues.push(issue);
+                window.GroceryStore.saveRiderIssues(rider.id, issues);
+
+                // Notify admins
+                window.GroceryStore.addRiderNotification(rider.id, {
+                    type: "issue_created",
+                    title: "Issue Submitted",
+                    message: `Your issue "${subject}" has been submitted. Our team will review it shortly.`,
+                    issueId: issue.id
+                });
+
+                // Also create a system notification for admins
+                notifyAdminsOfNewIssue(issue);
+
+                clearForm();
+                loadIssues();
+                switchTab("my-issues");
+                showToast("Issue submitted successfully!");
+            }
+
+            function clearForm() {
+                document.getElementById("createIssueForm").reset();
+                document.getElementById("issuePriority").value = "medium";
+            }
+
+            function openIssueDetail(issueId) {
+                const issues = window.GroceryStore.getRiderIssues(rider.id);
+                const issue = issues.find(i => i.id === issueId);
+                if (!issue) return;
+
+                const content = document.getElementById("issueDetailContent");
+                content.innerHTML = `
+                    <div style="margin-bottom:20px;">
+                        <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap; margin-bottom:12px;">
+                            <span class="issue-id">#${issue.id.slice(-6).toUpperCase()}</span>
+                            <span class="issue-title" style="font-size:18px;">${escapeHtml(issue.subject)}</span>
+                            <span class="issue-category cat-${issue.category}">${getCategoryLabel(issue.category)}</span>
+                            <span class="issue-priority priority-${issue.priority}">${issue.priority}</span>
+                        </div>
+                        <div class="issue-meta">
+                            <span>📅 Created: ${formatDateTime(issue.createdAt)}</span>
+                            <span>📍 Status: ${getStatusLabel(issue.status)}</span>
+                            ${issue.orderId ? `<span>📦 Order: ${escapeHtml(issue.orderId)}</span>` : ""}
+                            ${issue.assignedAdmin ? `<span>👤 Assigned: ${escapeHtml(issue.assignedAdmin)}</span>` : ""}
+                        </div>
+                    </div>
+                    <div style="padding:16px; background:#fafcfb; border-radius:8px; margin-bottom:20px;">
+                        <div style="font-weight:600;color:#333;margin-bottom:8px;">Description</div>
+                        <div style="white-space:pre-wrap;color:#444;line-height:1.6;">${escapeHtml(issue.description)}</div>
+                    </div>
+                    <div style="border-top:1px solid #eef2ee; padding-top:16px;">
+                        <div style="font-weight:600;color:#333;margin-bottom:12px;">Conversation</div>
+                        <div id="issueMessages" style="max-height:300px; overflow-y:auto;">
+                            ${renderIssueMessages(issue.messages || [])}
+                        </div>
+                        <div style="display:flex; gap:12px; margin-top:16px; padding-top:16px; border-top:1px solid #eef2ee;">
+                            <input type="text" class="form-input" id="replyInput" placeholder="Add a comment..." style="flex:1;">
+                            <button class="btn btn-primary" onclick="addIssueReply('${issue.id}')">Send</button>
+                        </div>
+                    </div>
+                `;
+
+                document.getElementById("issueDetailModal").style.display = "flex";
+            }
+
+            function renderIssueMessages(messages) {
+                if (messages.length === 0) {
+                    return '<div style="text-align:center;color:#888;padding:20px;">No messages yet</div>';
+                }
+                return messages.map(m => `
+                    <div style="margin-bottom:16px; padding:12px; background:#fff; border-radius:8px; border:1px solid #eef2ee;">
+                        <div style="display:flex; align-items:center; gap:8px; margin-bottom:4px; font-size:12px;">
+                            <span style="font-weight:700;color:#1a2a1e;">${escapeHtml(m.sender)}</span>
+                            <span style="color:#888;">${formatDateTime(m.timestamp)}</span>
+                            ${m.isAdmin ? '<span style="background:#dbeafe;color:#1e40af;padding:2px 8px;border-radius:999px;font-size:10px;font-weight:700;">ADMIN</span>' : ''}
+                        </div>
+                        <div style="color:#333;line-height:1.5;">${escapeHtml(m.text)}</div>
+                    </div>
+                `).join("");
+            }
+
+            function addIssueReply(issueId) {
+                const input = document.getElementById("replyInput");
+                const text = input.value.trim();
+                if (!text) return;
+
+                const issues = window.GroceryStore.getRiderIssues(rider.id);
+                const issue = issues.find(i => i.id === issueId);
+                if (!issue) return;
+
+                const message = {
+                    sender: rider.name,
+                    senderId: rider.id,
+                    text: text,
+                    timestamp: new Date().toISOString(),
+                    isAdmin: false
+                };
+
+                issue.messages = issue.messages || [];
+                issue.messages.push(message);
+                issue.updatedAt = new Date().toISOString();
+
+                // If issue was resolved, reopen it
+                if (issue.status === "resolved") {
+                    issue.status = "open";
+                }
+
+                window.GroceryStore.saveRiderIssues(rider.id, issues);
+
+                // Notify admins of reply
+                notifyAdminsOfReply(issue, message);
+
+                input.value = "";
+                openIssueDetail(issueId);
+                showToast("Reply sent");
+            }
+
+            function closeIssue(issueId) {
+                if (!confirm("Mark this issue as closed?")) return;
+
+                const issues = window.GroceryStore.getRiderIssues(rider.id);
+                const issue = issues.find(i => i.id === issueId);
+                if (!issue) return;
+
+                issue.status = "closed";
+                issue.updatedAt = new Date().toISOString();
+                window.GroceryStore.saveRiderIssues(rider.id, issues);
+
+                loadIssues();
+                closeIssueDetailModal();
+                showToast("Issue marked as closed");
+            }
+
+            window.closeIssueDetailModal = function() {
+                document.getElementById("issueDetailModal").style.display = "none";
+            };
+
+            function switchTab(tabName) {
+                document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
+                document.querySelectorAll(".tab-content").forEach(c => c.classList.remove("active"));
+                document.querySelector(`.tab[data-tab="${tabName}"]`).classList.add("active");
+                document.getElementById("tab-" + tabName).classList.add("active");
+
+                if (tabName === "my-issues") loadIssues();
+                else if (tabName === "chat-support") loadChat();
+            }
+
+            // CHAT SUPPORT
+            function loadChat() {
+                const chat = window.GroceryStore.getRiderChat(rider.id) || { messages: [], supportOnline: true };
+                renderChatMessages(chat.messages || []);
+
+                const statusDot = document.getElementById("supportStatusDot");
+                const statusText = document.getElementById("supportStatusText");
+                if (chat.supportOnline) {
+                    statusDot.classList.remove("offline");
+                    statusText.textContent = "Support Online";
+                } else {
+                    statusDot.classList.add("offline");
+                    statusText.textContent = "Support Offline";
+                }
+            }
+
+            function renderChatMessages(messages) {
+                const container = document.getElementById("chatMessages");
+                if (messages.length === 0) {
+                    container.innerHTML = `
+                        <div class="message-system">
+                            Welcome to GroceryGo Support! How can we help you today?
+                        </div>
+                    `;
+                    return;
+                }
+
+                container.innerHTML = messages.map(m => `
+                    <div class="message ${m.isRider ? "own" : "other"}">
+                        <div class="message-avatar">${m.isRider ? "🛵" : "👨‍💼"}</div>
+                        <div class="message-content">
+                            <div class="message-header">
+                                <span class="message-sender">${escapeHtml(m.sender)}</span>
+                                <span class="message-time">${formatTime(m.timestamp)}</span>
+                            </div>
+                            <div class="message-text">${escapeHtml(m.text)}</div>
+                        </div>
+                    </div>
+                `).join("");
+
+                container.scrollTop = container.scrollHeight;
+            }
+
+            function sendChatMessage() {
+                const input = document.getElementById("chatInput");
+                const text = input.value.trim();
+                if (!text) return;
+
+                const chat = window.GroceryStore.getRiderChat(rider.id) || { messages: [], supportOnline: true };
+                const message = {
+                    sender: rider.name,
+                    isRider: true,
+                    text: text,
+                    timestamp: new Date().toISOString()
+                };
+
+                chat.messages.push(message);
+                window.GroceryStore.saveRiderChat(rider.id, chat);
+
+                // Simulate admin response after 2 seconds
+                setTimeout(() => {
+                    simulateAdminResponse(chat, text);
+                }, 2000);
+
+                input.value = "";
+                renderChatMessages(chat.messages);
+            }
+
+            function simulateAdminResponse(chat, userMessage) {
+                const responses = [
+                    "Thanks for reaching out! Let me check on that for you.",
+                    "I understand your concern. Let me look into this right away.",
+                    "Thanks for the details. I'll escalate this to the relevant team.",
+                    "I've noted your issue. Our team will investigate and get back to you soon.",
+                    "That's a great question. Let me find the answer for you."
+                ];
+
+                const adminMessage = {
+                    sender: "Support Team",
+                    isRider: false,
+                    text: responses[Math.floor(Math.random() * responses.length)],
+                    timestamp: new Date().toISOString()
+                };
+
+                chat.messages.push(adminMessage);
+                window.GroceryStore.saveRiderChat(rider.id, chat);
+                renderChatMessages(chat.messages);
+
+                // Add notification
+                window.GroceryStore.addRiderNotification(rider.id, {
+                    type: "chat_message",
+                    title: "New Support Message",
+                    message: `Support Team: ${adminMessage.text.substring(0, 50)}...`
+                });
+                loadNotifications();
+            }
+
+            function handleChatKeypress(e) {
+                if (e.key === "Enter") {
+                    sendChatMessage();
+                }
+            }
+
+            // Admin notification helpers
+            function notifyAdminsOfNewIssue(issue) {
+                // Store in a global admin issues list (in localStorage)
+                const adminIssues = JSON.parse(localStorage.getItem("groceryGoAdminIssues") || "[]");
+                adminIssues.push({
+                    ...issue,
+                    notifiedAt: new Date().toISOString()
+                });
+                localStorage.setItem("groceryGoAdminIssues", JSON.stringify(adminIssues));
+            }
+
+            function notifyAdminsOfReply(issue, message) {
+                const adminIssues = JSON.parse(localStorage.getItem("groceryGoAdminIssues") || "[]");
+                const adminIssue = adminIssues.find(i => i.id === issue.id);
+                if (adminIssue) {
+                    adminIssue.messages = issue.messages;
+                    adminIssue.updatedAt = issue.updatedAt;
+                    adminIssue.status = issue.status;
+                    adminIssue.lastRiderReply = new Date().toISOString();
+                }
+                localStorage.setItem("groceryGoAdminIssues", JSON.stringify(adminIssues));
+            }
+
+            function loadNotifications() {
+                const notifications = window.GroceryStore.getRiderNotifications(rider.id);
+                const unreadCount = notifications.filter(n => !n.read).length;
+                const badge = document.getElementById("notificationBadge");
+                if (unreadCount > 0) {
+                    badge.textContent = unreadCount;
+                    badge.style.display = "flex";
+                } else {
+                    badge.style.display = "none";
+                }
+            }
+
+            window.toggleNotifications = function() {
+                const dropdown = document.getElementById("notificationsDropdown");
+                const isVisible = dropdown.style.display === "flex";
+                dropdown.style.display = isVisible ? "none" : "flex";
+
+                if (!isVisible) {
+                    renderNotifications();
+                }
+            };
+
+            window.closeNotifications = function() {
+                document.getElementById("notificationsDropdown").style.display = "none";
+            };
+
+            function renderNotifications() {
+                const notifications = window.GroceryStore.getRiderNotifications(rider.id);
+                const list = document.getElementById("notificationsList");
+
+                if (notifications.length === 0) {
+                    list.innerHTML = `<div style="padding:24px;text-align:center;color:#888;">No notifications</div>`;
+                    return;
+                }
+
+                list.innerHTML = notifications.slice(0, 20).map(n => `
+                    <div style="padding:12px 16px;border-radius:8px;margin-bottom:8px;background:${n.read ? "#fff" : "#f4faf6"};border:${n.read ? "1px solid #eef2ee" : "1px solid #cde8d5"};" onclick="markNotificationRead('${n.id}')">
+                        <div style="font-weight:600;font-size:13px;color:#1a2a1e;">${n.title}</div>
+                        <div style="font-size:12px;color:#666;margin-top:2px;">${n.message}</div>
+                        <div style="font-size:11px;color:#999;margin-top:4px;">${n.createdAt}</div>
+                    </div>
+                `).join("");
+            }
+
+            window.markNotificationRead = function(notificationId) {
+                window.GroceryStore.markRiderNotificationRead(rider.id, notificationId);
+                loadNotifications();
+                renderNotifications();
+            }
+
+            // Toast helper
+            function showToast(message, bgColor = "#17241b") {
+                let toast = document.getElementById("toast");
+                if (!toast) {
+                    toast = document.createElement("div");
+                    toast.id = "toast";
+                    toast.style.cssText = `position:fixed;bottom:24px;right:24px;padding:12px 22px;border-radius:8px;font-size:14px;font-weight:600;color:#fff;z-index:99999;box-shadow:0 8px 24px rgba(0,0,0,0.2);transition:opacity .3s,transform .3s;`;
+                    document.body.appendChild(toast);
+                }
+                toast.style.background = bgColor;
+                toast.textContent = message;
+                toast.style.display = "block";
+                toast.style.opacity = "1";
+                clearTimeout(window.__toastTimer);
+                window.__toastTimer = setTimeout(() => {
+                    toast.style.opacity = "0";
+                    setTimeout(() => toast.style.display = "none", 300);
+                }, 2500);
+            }
+
+            // Helpers
+            function getCategoryLabel(cat) {
+                const labels = {
+                    payment: "Payment & Earnings",
+                    app: "App Technical Issues",
+                    order: "Order Related",
+                    vehicle: "Vehicle & Equipment",
+                    support: "General Support",
+                    other: "Other"
+                };
+                return labels[cat] || cat;
+            }
+
+            function getStatusLabel(status) {
+                const labels = {
+                    open: "Open",
+                    "in-progress": "In Progress",
+                    resolved: "Resolved",
+                    closed: "Closed"
+                };
+                return labels[status] || status;
+            }
+
+            function formatDateTime(iso) {
+                const date = new Date(iso);
+                return date.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }) + " " + date.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" });
+            }
+
+            function formatTime(iso) {
+                return new Date(iso).toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" });
+            }
+
+            function isThisMonth(iso) {
+                const date = new Date(iso);
+                const now = new Date();
+                return date.getMonth() === now.getMonth() && date.getFullYear() === now.getFullYear();
+            }
+
+            function escapeHtml(text) {
+                const div = document.createElement("div");
+                div.textContent = text;
+                return div.innerHTML;
+            }
+        })();
+    </script>
+</body>
+
+</html>

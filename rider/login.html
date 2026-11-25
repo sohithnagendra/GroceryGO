@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GroceryGo - Rider Login</title>
+    <link rel="stylesheet" href="../admin.css">
+</head>
+
+<body>
+
+    <div class="rider-auth-page">
+        <div class="rider-auth-wrapper">
+            <!-- LEFT PANEL -->
+            <section class="rider-auth-left">
+                <div class="rider-auth-logo">
+                    🛵 <span>GroceryGo</span>
+                </div>
+                <div class="rider-auth-left-content">
+                    <h2>
+                        Deliver with<br>
+                        <span>GroceryGo Fleet</span>
+                    </h2>
+                    <p>
+                        Join our network of delivery partners and earn flexible income delivering fresh groceries to customers across the city.
+                    </p>
+                    <div class="rider-auth-features">
+                        <div class="rider-auth-feature">
+                            <div class="rider-auth-feature-icon">⚡</div>
+                            <div class="rider-auth-feature-text">
+                                <strong>Flexible Hours</strong>
+                                <small>Work when it suits you</small>
+                            </div>
+                        </div>
+                        <div class="rider-auth-feature">
+                            <div class="rider-auth-feature-icon">💰</div>
+                            <div class="rider-auth-feature-text">
+                                <strong>Weekly Payouts</strong>
+                                <small>Get paid every week</small>
+                            </div>
+                        </div>
+                        <div class="rider-auth-feature">
+                            <div class="rider-auth-feature-icon">🛵</div>
+                            <div class="rider-auth-feature-text">
+                                <strong>Your Vehicle</strong>
+                                <small>Bike, scooter or cycle</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- RIGHT PANEL -->
+            <section class="rider-auth-right">
+                <a href="../index.html" class="rider-back-home">← Back to GroceryGo</a>
+
+                <div class="rider-auth-title">
+                    <h1>Welcome Back 👋</h1>
+                    <p>Login to your rider dashboard</p>
+                </div>
+
+                <form id="riderLoginForm" class="rider-auth-form">
+                    <!-- EMAIL -->
+                    <div class="rider-input-group">
+                        <label for="email">Email Address</label>
+                        <div class="rider-input-wrapper">
+                            <span class="rider-input-icon">✉️</span>
+                            <input type="email" id="email" name="email" placeholder="e.g., ramesh@grocerygo.com" autocomplete="email" required>
+                        </div>
+                        <div class="error-message" id="emailError"></div>
+                    </div>
+
+                    <!-- PASSWORD -->
+                    <div class="rider-input-group">
+                        <label for="password">Password</label>
+                        <div class="rider-input-wrapper">
+                            <span class="rider-input-icon">🔒</span>
+                            <input type="password" id="password" name="password" placeholder="Enter your password" autocomplete="current-password" required>
+                            <button type="button" class="toggle-password" onclick="togglePassword('password')" aria-label="Toggle password visibility">👁️</button>
+                        </div>
+                        <div class="error-message" id="passwordError"></div>
+                    </div>
+
+                    <!-- REMEMBER -->
+                    <div class="rider-remember-row">
+                        <label class="rider-remember">
+                            <input type="checkbox" id="rememberMe" name="rememberMe">
+                            Remember Me
+                        </label>
+                        <a href="#" class="forgot-link" id="forgotPasswordLink">Forgot Password?</a>
+                    </div>
+
+                    <!-- LOGIN -->
+                    <button type="submit" class="rider-auth-btn" id="loginBtn">
+                        Login to Dashboard
+                    </button>
+
+                    <p id="loginMessage" class="rider-auth-message"></p>
+                </form>
+
+                <div class="rider-auth-divider">
+                    <span></span>
+                    <p>New to GroceryGo Fleet?</p>
+                    <span></span>
+                </div>
+
+                <div class="rider-auth-switch-buttons">
+                    <a href="register.html" class="rider-auth-btn rider-secondary-btn">
+                        Register as Rider
+                    </a>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <script src="../store.js"></script>
+    <script src="auth.js"></script>
+
+    <script>
+        (function() {
+            // Check if already logged in
+            const currentRider = window.GroceryRiderAuth.getCurrentRider();
+            if (currentRider) {
+                window.location.href = "dashboard.html";
+            }
+
+            // Password visibility toggle
+            window.togglePassword = function(fieldId) {
+                const input = document.getElementById(fieldId);
+                const btn = input.nextElementSibling;
+                if (input.type === "password") {
+                    input.type = "text";
+                    btn.textContent = "🙈";
+                } else {
+                    input.type = "password";
+                    btn.textContent = "👁️";
+                }
+            };
+
+            // Validation helpers
+            function showError(fieldId, message) {
+                const input = document.getElementById(fieldId);
+                const errorEl = document.getElementById(fieldId + "Error");
+                input.classList.add("error");
+                input.classList.remove("success");
+                errorEl.textContent = message;
+                errorEl.classList.add("visible");
+            }
+
+            function clearError(fieldId) {
+                const input = document.getElementById(fieldId);
+                const errorEl = document.getElementById(fieldId + "Error");
+                input.classList.remove("error");
+                errorEl.classList.remove("visible");
+                errorEl.textContent = "";
+            }
+
+            function showSuccess(fieldId) {
+                const input = document.getElementById(fieldId);
+                input.classList.remove("error");
+                input.classList.add("success");
+            }
+
+            function validateEmail(email) {
+                const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                return re.test(email);
+            }
+
+            // Real-time validation
+            document.getElementById("email").addEventListener("input", function() {
+                if (validateEmail(this.value.trim())) {
+                    clearError("email");
+                    showSuccess("email");
+                } else {
+                    clearError("email");
+                }
+            });
+
+            document.getElementById("password").addEventListener("input", function() {
+                if (this.value.length > 0) {
+                    clearError("password");
+                    showSuccess("password");
+                } else {
+                    clearError("password");
+                }
+            });
+
+            // Forgot password handler
+            document.getElementById("forgotPasswordLink").addEventListener("click", function(e) {
+                e.preventDefault();
+                const email = document.getElementById("email").value.trim();
+                if (!email) {
+                    showError("email", "Please enter your email first to reset password");
+                    return;
+                }
+                if (!validateEmail(email)) {
+                    showError("email", "Please enter a valid email address");
+                    return;
+                }
+
+                // Check if rider exists
+                const riders = window.GroceryRiderAuth.getRiders();
+                const rider = riders.find(r => r.email.toLowerCase() === email.toLowerCase());
+                if (!rider) {
+                    alert("No rider account found with this email address.");
+                    return;
+                }
+
+                // In a real app, this would send a reset email. For demo, we'll show a simple reset.
+                const newPassword = prompt("Enter your new password (min 6 characters):");
+                if (!newPassword || newPassword.length < 6) {
+                    if (newPassword !== null) {
+                        alert("Password must be at least 6 characters long.");
+                    }
+                    return;
+                }
+
+                // Update password
+                rider.password = newPassword;
+                window.GroceryRiderAuth.saveRiders(riders);
+
+                alert("Password reset successful! Please login with your new password.");
+            });
+
+            // Form submission
+            document.getElementById("riderLoginForm").addEventListener("submit", function(e) {
+                e.preventDefault();
+
+                const email = document.getElementById("email").value.trim().toLowerCase();
+                const password = document.getElementById("password").value;
+                const rememberMe = document.getElementById("rememberMe").checked;
+
+                let hasErrors = false;
+
+                // Validate email
+                if (!validateEmail(email)) {
+                    showError("email", "Please enter a valid email address");
+                    hasErrors = true;
+                }
+
+                // Validate password
+                if (!password || password.length === 0) {
+                    showError("password", "Please enter your password");
+                    hasErrors = true;
+                }
+
+                if (hasErrors) {
+                    const firstError = document.querySelector(".error-message.visible");
+                    if (firstError) {
+                        firstError.scrollIntoView({ behavior: "smooth", block: "center" });
+                    }
+                    return;
+                }
+
+                // Show loading state
+                const btn = document.getElementById("loginBtn");
+                btn.classList.add("loading");
+                btn.disabled = true;
+
+                // Authenticate
+                setTimeout(() => {
+                    const riders = window.GroceryRiderAuth.getRiders();
+                    const rider = riders.find(r => r.email.toLowerCase() === email && r.password === password);
+
+                    btn.classList.remove("loading");
+                    btn.disabled = false;
+
+                    if (rider) {
+                        // Create session rider object (without password) - include all fields
+                        const sessionRider = {
+                            id: rider.id,
+                            name: rider.name,
+                            email: rider.email,
+                            phone: rider.phone,
+                            vehicleType: rider.vehicleType,
+                            vehicleNumber: rider.vehicleNumber,
+                            drivingLicenseNumber: rider.drivingLicenseNumber,
+                            status: rider.status,
+                            joiningDate: rider.joiningDate,
+                            assignedOrders: rider.assignedOrders || [],
+                            totalDeliveries: rider.totalDeliveries || 0,
+                            totalEarnings: rider.totalEarnings || 0,
+                            availability: rider.availability || rider.status || "Available",
+                            // Extended profile fields
+                            dateOfBirth: rider.dateOfBirth,
+                            gender: rider.gender,
+                            address: rider.address,
+                            city: rider.city,
+                            pincode: rider.pincode,
+                            emergencyContactName: rider.emergencyContactName,
+                            emergencyContactNumber: rider.emergencyContactNumber,
+                            vehicles: rider.vehicles || [],
+                            documents: rider.documents || [],
+                            preferences: rider.preferences || { email: true, push: true, sms: false, autoAccept: false },
+                            twoFactorEnabled: rider.twoFactorEnabled || false,
+                            avatar: rider.avatar
+                        };
+
+                        window.GroceryRiderAuth.setCurrentRider(sessionRider, rememberMe);
+
+                        // Redirect to dashboard
+                        window.location.href = "dashboard.html";
+                    } else {
+                        showError("password", "Invalid email or password. Please try again.");
+                        document.getElementById("email").classList.add("error");
+                    }
+                }, 600);
+            });
+        })();
+    </script>
+
+</body>
+
+</html>

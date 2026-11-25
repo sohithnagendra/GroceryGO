@@ -1,0 +1,1619 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GroceryGo - Rider Profile</title>
+    <link rel="stylesheet" href="../admin.css">
+    <style>
+        /* Profile-specific extensions to shared admin.css classes */
+
+        /* Profile Header */
+        .profile-header {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+            padding: 24px;
+            background: linear-gradient(135deg, #f4faf6 0%, #e8f5ed 100%);
+            border-radius: 12px;
+            border: 1px solid #cde8d5;
+            margin-bottom: 24px;
+        }
+
+        .profile-avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #19a463, #158b50);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            flex-shrink: 0;
+        }
+
+        .profile-info {
+            flex: 1;
+        }
+
+        .profile-name {
+            font-size: 28px;
+            font-weight: 800;
+            color: #1a2a1e;
+            margin-bottom: 4px;
+        }
+
+        .profile-id {
+            font-size: 14px;
+            color: #666;
+            font-weight: 500;
+            margin-bottom: 8px;
+        }
+
+        .profile-meta {
+            display: flex;
+            gap: 24px;
+            flex-wrap: wrap;
+            font-size: 13px;
+            color: #555;
+        }
+
+        .profile-meta-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .profile-meta-label {
+            color: #888;
+            font-weight: 500;
+        }
+
+        .profile-meta-value {
+            font-weight: 600;
+        }
+
+        .profile-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        /* Section Icons */
+        .section-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+        }
+
+        .icon-green-bg { background: #dcfce7; color: #166534; }
+        .icon-blue-bg { background: #dbeafe; color: #1e40af; }
+        .icon-amber-bg { background: #fef3c7; color: #92400e; }
+        .icon-purple-bg { background: #f3e8ff; color: #7c3aed; }
+        .icon-red-bg { background: #fee2e2; color: #991b1b; }
+
+        /* Form Grid */
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .form-hint {
+            font-size: 12px;
+            color: #888;
+            margin-top: 4px;
+        }
+
+        /* Vehicle Info */
+        .vehicle-card {
+            background: #fafcfb;
+            border: 1px solid #eef2ee;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 16px;
+        }
+
+        .vehicle-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .vehicle-type {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .vehicle-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+
+        .vehicle-icon.bike { background: #dbeafe; color: #1e40af; }
+        .vehicle-icon.scooter { background: #dcfce7; color: #166534; }
+        .vehicle-icon.car { background: #fef3c7; color: #92400e; }
+
+        .vehicle-details h4 {
+            font-size: 16px;
+            font-weight: 700;
+            color: #1a2a1e;
+        }
+
+        .vehicle-details p {
+            font-size: 13px;
+            color: #666;
+        }
+
+        .vehicle-fields {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+        }
+
+        /* Documents */
+        .document-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px;
+            background: #fafcfb;
+            border: 1px solid #eef2ee;
+            border-radius: 10px;
+            margin-bottom: 12px;
+        }
+
+        .document-info {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .document-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+
+        .document-icon.pending { background: #fef3c7; color: #92400e; }
+        .document-icon.approved { background: #dcfce7; color: #166534; }
+        .document-icon.rejected { background: #fee2e2; color: #991b1b; }
+
+        .document-details h4 {
+            font-size: 14px;
+            font-weight: 700;
+            color: #1a2a1e;
+        }
+
+        .document-details p {
+            font-size: 12px;
+            color: #666;
+        }
+
+        .document-status {
+            font-size: 11px;
+            font-weight: 700;
+            padding: 6px 12px;
+            border-radius: 999px;
+            text-transform: uppercase;
+        }
+
+        .document-status.pending { background: #fef3c7; color: #92400e; }
+        .document-status.approved { background: #dcfce7; color: #166534; }
+        .document-status.rejected { background: #fee2e2; color: #991b1b; }
+
+        .document-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        /* Password Strength */
+        .password-strength {
+            margin-top: 8px;
+            height: 6px;
+            background: #eef2ee;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .password-strength-bar {
+            height: 100%;
+            border-radius: 3px;
+            transition: all 0.3s;
+        }
+
+        .strength-weak { width: 25%; background: #ef4444; }
+        .strength-fair { width: 50%; background: #f59e0b; }
+        .strength-good { width: 75%; background: #3b82f6; }
+        .strength-strong { width: 100%; background: #19a463; }
+
+        .strength-text {
+            font-size: 12px;
+            color: #666;
+            margin-top: 4px;
+        }
+
+        /* Verification Badge */
+        .verification-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            background: #dcfce7;
+            color: #166534;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .verification-badge.pending {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .verification-badge.unverified {
+            background: #f3f6f4;
+            color: #666;
+        }
+
+        /* Modal - using shared admin.css .gg-modal-overlay, .gg-modal-content */
+
+        /* File upload */
+        .file-upload {
+            border: 2px dashed #cde8d5;
+            border-radius: 12px;
+            padding: 32px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .file-upload:hover,
+        .file-upload.drag-over {
+            border-color: #19a463;
+            background: #f4faf6;
+        }
+
+        .file-upload input {
+            display: none;
+        }
+
+        .file-upload-icon {
+            font-size: 48px;
+            margin-bottom: 12px;
+        }
+
+        .file-upload-text {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .file-upload-hint {
+            font-size: 12px;
+            color: #999;
+            margin-top: 8px;
+        }
+
+        /* Setting row for preferences */
+        .setting-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 0;
+            border-bottom: 1px solid #eef2ee;
+        }
+
+        .setting-row:last-child {
+            border-bottom: none;
+        }
+
+        /* Toast for profile page */
+        #toast {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            padding: 12px 22px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #fff;
+            z-index: 99999;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+            transition: opacity .3s, transform .3s;
+            display: none;
+        }
+
+        /* Responsive - only custom overrides */
+        @media (max-width: 750px) {
+            .profile-header {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .profile-meta {
+                justify-content: center;
+            }
+
+            .profile-actions {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .profile-actions .btn {
+                flex: 1;
+                justify-content: center;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .vehicle-fields {
+                grid-template-columns: 1fr;
+            }
+
+            .document-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 12px;
+            }
+
+            .document-actions {
+                width: 100%;
+                justify-content: flex-end;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- RIDER NAVBAR -->
+    <header class="rider-navbar">
+        <div class="rider-navbar-inner">
+            <div class="rider-brand">
+                <div class="rider-logo">🛵</div>
+                <div>
+                    <div style="font-size:18px;font-weight:800;">GroceryGo</div>
+                    <span class="rider-badge">Rider Portal</span>
+                </div>
+            </div>
+
+            <nav class="rider-nav-links">
+                <a href="dashboard.html" class="rider-nav-item">📊 Dashboard</a>
+                <a href="orders.html" class="rider-nav-item">📦 My Orders</a>
+                <a href="earnings.html" class="rider-nav-item">💰 Earnings</a>
+                <a href="history.html" class="rider-nav-item">📜 History</a>
+                <a href="performance.html" class="rider-nav-item">📈 Performance</a>
+                <a href="availability.html" class="rider-nav-item">🕐 Availability</a>
+                <a href="issues.html" class="rider-nav-item">🎫 Issues</a>
+                <a href="profile.html" class="rider-nav-item active">👤 Profile</a>
+            </nav>
+
+            <div class="rider-nav-actions">
+                <div class="rider-availability-toggle">
+                    <span class="status-dot" id="availabilityDot"></span>
+                    <span id="availabilityText">Available</span>
+                    <select id="availabilitySelect" style="background:transparent;border:none;color:white;font-weight:600;font-size:13px;padding:4px;cursor:pointer;">
+                        <option value="Available">Available</option>
+                        <option value="Busy">Busy</option>
+                        <option value="Offline">Offline</option>
+                    </select>
+                </div>
+
+                <div class="notification-bell" onclick="toggleNotifications()">
+                    🔔
+                    <span class="notification-badge" id="notificationBadge" style="display:none;">0</span>
+                </div>
+
+                <div class="rider-profile-pill">
+                    <span>🛵</span>
+                    <span id="riderProfileName">Rider</span>
+                </div>
+                <button class="rider-logout-btn" onclick="riderLogout()">Logout</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- NOTIFICATIONS DROPDOWN -->
+    <div id="notificationsDropdown" class="gg-modal-overlay" style="display:none; max-width:400px; margin: 80px auto 0; width: 90%;">
+        <div class="gg-modal-content" style="max-height:500px; overflow:hidden;">
+            <div style="display:flex; align-items:center; justify-content:space-between; padding:16px 20px; border-bottom:1px solid #eef2ee;">
+                <h3 style="font-size:16px;font-weight:700;color:#1a2a1e;">🔔 Notifications</h3>
+                <button class="gg-modal-close" onclick="closeNotifications()">×</button>
+            </div>
+            <div id="notificationsList" style="max-height:400px; overflow-y:auto; padding:8px;">
+            </div>
+        </div>
+    </div>
+
+    <main class="rider-main">
+        <div class="rider-page-header">
+            <div>
+                <h1>Profile Settings</h1>
+                <p>Manage your personal info, vehicle, documents, and security</p>
+            </div>
+        </div>
+
+        <!-- PROFILE HEADER -->
+        <div class="profile-header">
+            <div class="profile-avatar" id="profileAvatar">🛵</div>
+            <div class="profile-info">
+                <div class="profile-name" id="profileName">Rider Name</div>
+                <div class="profile-id" id="profileId">RID12345</div>
+                <div class="profile-meta">
+                    <div class="profile-meta-item">
+                        <span class="profile-meta-label">Email:</span>
+                        <span class="profile-meta-value" id="profileEmail">rider@email.com</span>
+                    </div>
+                    <div class="profile-meta-item">
+                        <span class="profile-meta-label">Phone:</span>
+                        <span class="profile-meta-value" id="profilePhone">+91 98765 43210</span>
+                    </div>
+                    <div class="profile-meta-item">
+                        <span class="profile-meta-label">Joined:</span>
+                        <span class="profile-meta-value" id="profileJoined">Jan 2024</span>
+                    </div>
+                    <div class="profile-meta-item">
+                        <span class="profile-meta-label">Status:</span>
+                        <span class="verification-badge" id="verificationBadge">Verified</span>
+                    </div>
+                </div>
+            </div>
+            <div class="profile-actions">
+                <button class="btn btn-primary" onclick="openEditProfileModal()">✏️ Edit Profile</button>
+                <button class="btn btn-secondary" onclick="openChangeAvatarModal()">📷 Change Photo</button>
+            </div>
+        </div>
+
+        <!-- PERSONAL INFO -->
+        <div class="rider-card">
+            <div class="card-header">
+                <h2><span class="section-icon icon-green-bg">👤</span> Personal Information</h2>
+            </div>
+            <div class="card-body">
+                <form id="personalInfoForm" class="form-grid">
+                    <div class="form-group">
+                        <label class="form-label">Full Name</label>
+                        <input type="text" class="form-input" id="piName" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Email Address</label>
+                        <input type="email" class="form-input" id="piEmail" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Phone Number</label>
+                        <input type="tel" class="form-input" id="piPhone" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Date of Birth</label>
+                        <input type="date" class="form-input" id="piDob">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Gender</label>
+                        <select class="form-select" id="piGender">
+                            <option value="">Select</option>
+                            <option value="male">Male</option>
+                            <option value="female">Female</option>
+                            <option value="other">Other</option>
+                            <option value="prefer-not">Prefer not to say</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Emergency Contact Name</label>
+                        <input type="text" class="form-input" id="piEmergencyName" placeholder="Emergency contact name">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Emergency Contact Phone</label>
+                        <input type="tel" class="form-input" id="piEmergencyPhone" placeholder="Emergency contact phone">
+                    </div>
+                    <div class="form-group" style="grid-column: 1 / -1;">
+                        <label class="form-label">Address</label>
+                        <textarea class="form-input" id="piAddress" rows="3" placeholder="Your residential address"></textarea>
+                    </div>
+                    <div style="grid-column: 1 / -1; display:flex; gap:12px; justify-content:flex-end;">
+                        <button type="button" class="btn btn-secondary" onclick="loadPersonalInfo()">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Save Changes</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- VEHICLE DETAILS -->
+        <div class="rider-card">
+            <div class="card-header">
+                <h2><span class="section-icon icon-blue-bg">🛵</span> Vehicle Details</h2>
+            </div>
+            <div class="card-body">
+                <div id="vehicleCards">
+                </div>
+                <button class="btn btn-secondary" onclick="openAddVehicleModal()">+ Add Vehicle</button>
+            </div>
+        </div>
+
+        <!-- DOCUMENTS -->
+        <div class="rider-card">
+            <div class="card-header">
+                <h2><span class="section-icon icon-amber-bg">📄</span> Documents & Verification</h2>
+            </div>
+            <div class="card-body">
+                <div id="documentsList">
+                </div>
+            </div>
+        </div>
+
+        <!-- SECURITY -->
+        <div class="rider-card">
+            <div class="card-header">
+                <h2><span class="section-icon icon-purple-bg">🔒</span> Security & Password</h2>
+            </div>
+            <div class="card-body">
+                <div style="margin-bottom: 24px; padding: 16px; background: #fafcfb; border-radius: 10px; border: 1px solid #eef2ee;">
+                    <div style="font-weight:600;color:#1a2a1e;margin-bottom:8px;">Two-Factor Authentication</div>
+                    <div style="font-size:13px;color:#666;margin-bottom:12px;">Add an extra layer of security to your account</div>
+                    <label class="toggle-switch" style="margin:0;">
+                        <input type="checkbox" id="twoFactorEnabled" onchange="toggle2FA()">
+                        <span class="toggle-slider"></span>
+                    </label>
+                    <span style="margin-left:12px;font-size:13px;color:#555;">Enable 2FA</span>
+                </div>
+
+                <form id="passwordForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Current Password</label>
+                            <input type="password" class="form-input" id="currentPassword" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">New Password</label>
+                            <input type="password" class="form-input" id="newPassword" required oninput="checkPasswordStrength(this.value)">
+                            <div class="password-strength"><div class="password-strength-bar" id="passwordStrengthBar"></div></div>
+                            <div class="strength-text" id="passwordStrengthText">Password strength</div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Confirm New Password</label>
+                        <input type="password" class="form-input" id="confirmPassword" required>
+                        <div class="form-hint" id="passwordMatchHint"></div>
+                    </div>
+                    <div style="display:flex; gap:12px; justify-content:flex-end;">
+                        <button type="button" class="btn btn-secondary" onclick="document.getElementById('passwordForm').reset()">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Update Password</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- PREFERENCES -->
+        <div class="rider-card">
+            <div class="card-header">
+                <h2><span class="section-icon icon-red-bg">⚙️</span> Preferences</h2>
+            </div>
+            <div class="card-body">
+                <div class="setting-row">
+                    <div>
+                        <div style="font-weight:600;color:#1a2a1e;">Email Notifications</div>
+                        <div style="font-size:13px;color:#666;">Receive order updates and promotions via email</div>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="prefEmail" checked onchange="savePreferences()">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+                <div class="setting-row">
+                    <div>
+                        <div style="font-weight:600;color:#1a2a1e;">Push Notifications</div>
+                        <div style="font-size:13px;color:#666;">Receive real-time alerts on your device</div>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="prefPush" checked onchange="savePreferences()">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+                <div class="setting-row">
+                    <div>
+                        <div style="font-weight:600;color:#1a2a1e;">SMS Notifications</div>
+                        <div style="font-size:13px;color:#666;">Receive important updates via SMS</div>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="prefSms" onchange="savePreferences()">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+                <div class="setting-row">
+                    <div>
+                        <div style="font-weight:600;color:#1a2a1e;">Auto-Accept Orders</div>
+                        <div style="font-size:13px;color:#666;">Automatically accept orders when available</div>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="prefAutoAccept" onchange="savePreferences()">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <!-- DANGER ZONE -->
+        <div class="rider-card" style="border-color:#fee2e2;">
+            <div class="card-header" style="border-bottom-color:#fee2e2;">
+                <h2><span class="section-icon" style="background:#fee2e2;color:#991b1b;">⚠️</span> Danger Zone</h2>
+            </div>
+            <div class="card-body">
+                <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:16px;">
+                    <div>
+                        <div style="font-weight:600;color:#991b1b;">Delete Account</div>
+                        <div style="font-size:13px;color:#666;margin-top:4px;">Permanently delete your rider account and all data. This action cannot be undone.</div>
+                    </div>
+                    <button class="btn btn-danger" onclick="openDeleteAccountModal()">Delete Account</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- EDIT PROFILE MODAL -->
+    <div id="editProfileModal" class="gg-modal-overlay" style="display:none;">
+        <div class="gg-modal-content" style="max-width:600px; max-height:90vh; overflow-y:auto;">
+            <div class="modal-header">
+                <h3>Edit Profile</h3>
+                <button class="gg-modal-close" onclick="closeModal('editProfileModal')">×</button>
+            </div>
+            <div class="modal-body" style="padding:24px;">
+                <form id="editProfileForm" class="form-grid">
+                    <div class="form-group">
+                        <label class="form-label">Full Name</label>
+                        <input type="text" class="form-input" id="epName" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Email Address</label>
+                        <input type="email" class="form-input" id="epEmail" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Phone Number</label>
+                        <input type="tel" class="form-input" id="epPhone" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Date of Birth</label>
+                        <input type="date" class="form-input" id="epDob">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Gender</label>
+                        <select class="form-select" id="epGender">
+                            <option value="">Select</option>
+                            <option value="male">Male</option>
+                            <option value="female">Female</option>
+                            <option value="other">Other</option>
+                            <option value="prefer-not">Prefer not to say</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Emergency Contact Name</label>
+                        <input type="text" class="form-input" id="epEmergencyName">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Emergency Contact Phone</label>
+                        <input type="tel" class="form-input" id="epEmergencyPhone">
+                    </div>
+                    <div class="form-group" style="grid-column: 1 / -1;">
+                        <label class="form-label">Address</label>
+                        <textarea class="form-input" id="epAddress" rows="3"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer" style="display:flex; justify-content:flex-end; gap:12px; padding:16px 24px; border-top:1px solid #eef2ee;">
+                <button class="btn btn-secondary" onclick="closeModal('editProfileModal')">Cancel</button>
+                <button class="btn btn-primary" onclick="saveProfile()">Save Changes</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- CHANGE AVATAR MODAL -->
+    <div id="changeAvatarModal" class="gg-modal-overlay" style="display:none;">
+        <div class="gg-modal-content" style="max-width:500px;">
+            <div class="modal-header">
+                <h3>Change Profile Photo</h3>
+                <button class="gg-modal-close" onclick="closeModal('changeAvatarModal')">×</button>
+            </div>
+            <div class="modal-body" style="padding:24px;">
+                <div class="file-upload" id="avatarUpload" onclick="document.getElementById('avatarFile').click()">
+                    <input type="file" id="avatarFile" accept="image/*" onchange="handleAvatarUpload(event)">
+                    <div class="file-upload-icon">📷</div>
+                    <div class="file-upload-text">Click or drag to upload</div>
+                    <div class="file-upload-hint">JPG, PNG up to 5MB</div>
+                </div>
+                <div id="avatarPreview" style="display:none; margin-top:16px; text-align:center;">
+                    <img id="avatarPreviewImg" style="max-width:200px; border-radius:12px; border:1px solid #eef2ee;">
+                </div>
+            </div>
+            <div class="modal-footer" style="display:flex; justify-content:flex-end; gap:12px; padding:16px 24px; border-top:1px solid #eef2ee;">
+                <button class="btn btn-secondary" onclick="closeModal('changeAvatarModal')">Cancel</button>
+                <button class="btn btn-primary" id="saveAvatarBtn" style="display:none;" onclick="saveAvatar()">Save Photo</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ADD VEHICLE MODAL -->
+    <div id="addVehicleModal" class="gg-modal-overlay" style="display:none;">
+        <div class="gg-modal-content" style="max-width:600px; max-height:90vh; overflow-y:auto;">
+            <div class="modal-header">
+                <h3 id="vehicleModalTitle">Add Vehicle</h3>
+                <button class="gg-modal-close" onclick="closeModal('addVehicleModal')">×</button>
+            </div>
+            <div class="modal-body" style="padding:24px;">
+                <form id="vehicleForm" class="form-grid">
+                    <input type="hidden" id="vehicleEditId">
+                    <div class="form-group">
+                        <label class="form-label">Vehicle Type</label>
+                        <select class="form-select" id="vType" required>
+                            <option value="">Select type</option>
+                            <option value="bike">🚲 Bicycle</option>
+                            <option value="scooter">🛵 Scooter</option>
+                            <option value="car">🚗 Car</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Brand/Model</label>
+                        <input type="text" class="form-input" id="vBrand" placeholder="e.g., Honda Activa" required>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Registration Number</label>
+                            <input type="text" class="form-input" id="vRegistration" placeholder="e.g., MH12 AB 1234" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Color</label>
+                            <input type="text" class="form-input" id="vColor" placeholder="e.g., Red" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Year</label>
+                            <input type="number" class="form-input" id="vYear" placeholder="2023" min="2000" max="2030" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Insurance Expiry</label>
+                            <input type="date" class="form-input" id="vInsurance" required>
+                        </div>
+                    </div>
+                    <div class="form-group" style="grid-column: 1 / -1;">
+                        <label class="form-label">Notes</label>
+                        <textarea class="form-input" id="vNotes" rows="2" placeholder="Any additional notes"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer" style="display:flex; justify-content:flex-end; gap:12px; padding:16px 24px; border-top:1px solid #eef2ee;">
+                <button class="btn btn-secondary" onclick="closeModal('addVehicleModal')">Cancel</button>
+                <button class="btn btn-primary" onclick="saveVehicle()">Save Vehicle</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- UPLOAD DOCUMENT MODAL -->
+    <div id="uploadDocumentModal" class="gg-modal-overlay" style="display:none;">
+        <div class="gg-modal-content" style="max-width:600px; max-height:90vh; overflow-y:auto;">
+            <div class="modal-header">
+                <h3>Upload Document</h3>
+                <button class="gg-modal-close" onclick="closeModal('uploadDocumentModal')">×</button>
+            </div>
+            <div class="modal-body" style="padding:24px;">
+                <form id="documentForm" class="form-grid">
+                    <input type="hidden" id="documentEditId">
+                    <div class="form-group">
+                        <label class="form-label">Document Type</label>
+                        <select class="form-select" id="docType" required>
+                            <option value="">Select type</option>
+                            <option value="license">🪪 Driving License</option>
+                            <option value="rc">📋 Vehicle RC</option>
+                            <option value="insurance">🛡️ Insurance</option>
+                            <option value="aadhar">🆔 Aadhar Card</option>
+                            <option value="pan">💳 PAN Card</option>
+                            <option value="police">👮 Police Verification</option>
+                            <option value="medical">🏥 Medical Certificate</option>
+                            <option value="other">📄 Other</option>
+                        </select>
+                    </div>
+                    <div class="form-group" style="grid-column: 1 / -1;">
+                        <label class="form-label">Document File</label>
+                        <div class="file-upload" id="docUpload" onclick="document.getElementById('docFile').click()">
+                            <input type="file" id="docFile" accept=".pdf,.jpg,.jpeg,.png" onchange="handleDocUpload(event)">
+                            <div class="file-upload-icon">📄</div>
+                            <div class="file-upload-text">Click or drag to upload</div>
+                            <div class="file-upload-hint">PDF, JPG, PNG up to 10MB</div>
+                        </div>
+                        <div id="docFileName" style="display:none; margin-top:8px; font-size:13px; color:#19a463;"></div>
+                    </div>
+                    <div class="form-group" style="grid-column: 1 / -1;">
+                        <label class="form-label">Expiry Date (if applicable)</label>
+                        <input type="date" class="form-input" id="docExpiry">
+                    </div>
+                    <div class="form-group" style="grid-column: 1 / -1;">
+                        <label class="form-label">Notes</label>
+                        <textarea class="form-input" id="docNotes" rows="2" placeholder="Any additional notes"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer" style="display:flex; justify-content:flex-end; gap:12px; padding:16px 24px; border-top:1px solid #eef2ee;">
+                <button class="btn btn-secondary" onclick="closeModal('uploadDocumentModal')">Cancel</button>
+                <button class="btn btn-primary" onclick="saveDocument()">Upload Document</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- DELETE ACCOUNT MODAL -->
+    <div id="deleteAccountModal" class="gg-modal-overlay" style="display:none;">
+        <div class="gg-modal-content" style="max-width:450px;">
+            <div class="modal-header">
+                <h3>Delete Account</h3>
+                <button class="gg-modal-close" onclick="closeModal('deleteAccountModal')">×</button>
+            </div>
+            <div class="modal-body" style="padding:24px;">
+                <div style="color:#991b1b; font-weight:600; margin-bottom:12px;">⚠️ This action is irreversible</div>
+                <div style="font-size:14px;color:#666;line-height:1.6;margin-bottom:20px;">
+                    Deleting your account will permanently remove:
+                </div>
+                <ul style="font-size:14px;color:#666;line-height:2;padding-left:20px;margin-bottom:20px;">
+                    <li>Your profile and personal information</li>
+                    <li>All delivery history and earnings records</li>
+                    <li>Vehicle details and documents</li>
+                    <li>Issues and chat history</li>
+                    <li>All preferences and settings</li>
+                </ul>
+                <div class="form-group">
+                    <label class="form-label">Type "DELETE" to confirm</label>
+                    <input type="text" class="form-input" id="deleteConfirm" placeholder="DELETE">
+                </div>
+            </div>
+            <div class="modal-footer" style="display:flex; justify-content:flex-end; gap:12px; padding:16px 24px; border-top:1px solid #eef2ee;">
+                <button class="btn btn-secondary" onclick="closeModal('deleteAccountModal')">Cancel</button>
+                <button class="btn btn-danger" onclick="deleteAccount()">Delete Account Permanently</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- SCRIPTS -->
+    <script src="../store.js"></script>
+    <script src="auth.js"></script>
+
+    <script>
+        (function() {
+            // 1. Guard Page
+            const rider = window.GroceryRiderAuth.protectPage();
+            if (!rider) return;
+
+            // 2. Initialize UI
+            document.getElementById("riderProfileName").textContent = rider.name.split(" ")[0];
+            const availability = rider.availability || "Available";
+            document.getElementById("availabilitySelect").value = availability;
+            updateAvailabilityUI(availability);
+
+            loadNotifications();
+
+            // 3. Load all data
+            loadPersonalInfo();
+            loadVehicles();
+            loadDocuments();
+            loadPreferences();
+            loadSecurity();
+
+            // 4. Event Listeners
+            document.getElementById("availabilitySelect").addEventListener("change", function() {
+                updateAvailability(this.value);
+            });
+
+            document.getElementById("personalInfoForm").addEventListener("submit", function(e) {
+                e.preventDefault();
+                savePersonalInfo();
+            });
+
+            document.getElementById("passwordForm").addEventListener("submit", function(e) {
+                e.preventDefault();
+                changePassword();
+            });
+
+            document.getElementById("confirmPassword").addEventListener("input", checkPasswordMatch);
+
+            document.getElementById("avatarFile").addEventListener("change", function(e) {
+                if (e.target.files.length > 0) {
+                    document.getElementById("saveAvatarBtn").style.display = "inline-flex";
+                }
+            });
+
+            function updateAvailabilityUI(status) {
+                const dot = document.getElementById("availabilityDot");
+                const text = document.getElementById("availabilityText");
+
+                dot.className = "status-dot";
+                if (status === "Available") dot.classList.add("available");
+                else if (status === "Busy") dot.classList.add("busy");
+                else dot.classList.add("offline");
+
+                text.textContent = status;
+            }
+
+            function updateAvailability(newStatus) {
+                const riders = window.GroceryRiderAuth.getRiders();
+                const riderIndex = riders.findIndex(r => r.id === rider.id);
+                if (riderIndex !== -1) {
+                    riders[riderIndex].availability = newStatus;
+                    window.GroceryRiderAuth.saveRiders(riders);
+
+                    const sessionRider = window.GroceryRiderAuth.getCurrentRider();
+                    sessionRider.availability = newStatus;
+                    window.GroceryRiderAuth.setCurrentRider(sessionRider, true);
+
+                    updateAvailabilityUI(newStatus);
+                    showToast("Status updated to " + newStatus);
+                }
+            }
+
+            // PERSONAL INFO
+            function loadPersonalInfo() {
+                document.getElementById("profileName").textContent = rider.name;
+                document.getElementById("profileId").textContent = rider.id;
+                document.getElementById("profileEmail").textContent = rider.email;
+                document.getElementById("profilePhone").textContent = rider.phone;
+                document.getElementById("profileJoined").textContent = formatDate(rider.joiningDate || new Date().toISOString());
+
+                // Verification badge (using document status as proxy)
+                const badge = document.getElementById("verificationBadge");
+                const hasDocuments = (rider.documents || []).length > 0;
+                if (hasDocuments) {
+                    badge.textContent = "Verified";
+                    badge.className = "verification-badge";
+                } else {
+                    badge.textContent = "Unverified";
+                    badge.className = "verification-badge unverified";
+                }
+
+                // Form fields - use store.js field names
+                document.getElementById("piName").value = rider.name || "";
+                document.getElementById("piEmail").value = rider.email || "";
+                document.getElementById("piPhone").value = rider.phone || "";
+                document.getElementById("piDob").value = rider.dateOfBirth || "";
+                document.getElementById("piGender").value = rider.gender || "";
+                document.getElementById("piEmergencyName").value = rider.emergencyContactName || "";
+                document.getElementById("piEmergencyPhone").value = rider.emergencyContactNumber || "";
+                document.getElementById("piAddress").value = rider.address || "";
+            }
+
+            function savePersonalInfo() {
+                const data = {
+                    name: document.getElementById("piName").value.trim(),
+                    email: document.getElementById("piEmail").value.trim(),
+                    phone: document.getElementById("piPhone").value.trim(),
+                    dateOfBirth: document.getElementById("piDob").value,
+                    gender: document.getElementById("piGender").value,
+                    emergencyContactName: document.getElementById("piEmergencyName").value.trim(),
+                    emergencyContactNumber: document.getElementById("piEmergencyPhone").value.trim(),
+                    address: document.getElementById("piAddress").value.trim()
+                };
+
+                if (!data.name || !data.email || !data.phone) {
+                    showToast("Please fill all required fields", "#ef4444");
+                    return;
+                }
+
+                const riders = window.GroceryRiderAuth.getRiders();
+                const riderIndex = riders.findIndex(r => r.id === rider.id);
+                if (riderIndex !== -1) {
+                    riders[riderIndex] = { ...riders[riderIndex], ...data };
+                    window.GroceryRiderAuth.saveRiders(riders);
+
+                    const sessionRider = window.GroceryRiderAuth.getCurrentRider();
+                    Object.assign(sessionRider, data);
+                    window.GroceryRiderAuth.setCurrentRider(sessionRider, true);
+
+                    loadPersonalInfo();
+                    showToast("Profile updated successfully");
+                }
+            }
+
+            // VEHICLES
+            function loadVehicles() {
+                const vehicles = rider.vehicles || [];
+                const container = document.getElementById("vehicleCards");
+
+                if (vehicles.length === 0) {
+                    container.innerHTML = `
+                        <div style="text-align:center; padding:40px; color:#888;">
+                            <div style="font-size:48px;margin-bottom:16px;">🛵</div>
+                            <div style="font-size:16px;font-weight:600;color:#333;margin-bottom:8px;">No Vehicles Added</div>
+                            <div style="font-size:14px;margin-bottom:20px;">Add your vehicle details to start delivering</div>
+                            <button class="btn btn-primary" onclick="openAddVehicleModal()">Add First Vehicle</button>
+                        </div>
+                    `;
+                    return;
+                }
+
+                container.innerHTML = vehicles.map((v, index) => `
+                    <div class="vehicle-card">
+                        <div class="vehicle-header">
+                            <div class="vehicle-type">
+                                <div class="vehicle-icon ${v.type}">${getVehicleIcon(v.type)}</div>
+                                <div class="vehicle-details">
+                                    <h4>${escapeHtml(v.brand)}</h4>
+                                    <p>${escapeHtml(v.registration)} • ${escapeHtml(v.color)} • ${v.year}</p>
+                                </div>
+                            </div>
+                            <div style="display:flex; gap:8px;">
+                                <button class="btn btn-small btn-secondary" onclick="editVehicle(${index})">Edit</button>
+                                <button class="btn btn-small btn-danger" onclick="deleteVehicle(${index})">Delete</button>
+                            </div>
+                        </div>
+                        <div class="vehicle-fields">
+                            <div class="form-group" style="margin-bottom:0;">
+                                <label class="form-label">Insurance Expiry</label>
+                                <input type="date" class="form-input" value="${v.insuranceExpiry || ""}" disabled>
+                            </div>
+                            <div class="form-group" style="margin-bottom:0;">
+                                <label class="form-label">Status</label>
+                                <input type="text" class="form-input" value="${v.insuranceExpiry && new Date(v.insuranceExpiry) > new Date() ? "Valid" : "Expired"}" disabled>
+                            </div>
+                            ${v.notes ? `<div class="form-group" style="margin-bottom:0; grid-column:1/-1;">
+                                <label class="form-label">Notes</label>
+                                <input type="text" class="form-input" value="${escapeHtml(v.notes)}" disabled>
+                            </div>` : ""}
+                        </div>
+                    </div>
+                `).join("");
+            }
+
+            function getVehicleIcon(type) {
+                return type === "bike" ? "🚲" : type === "scooter" ? "🛵" : "🚗";
+            }
+
+            function openAddVehicleModal() {
+                document.getElementById("vehicleModalTitle").textContent = "Add Vehicle";
+                document.getElementById("vehicleForm").reset();
+                document.getElementById("vehicleEditId").value = "";
+                document.getElementById("vInsurance").min = new Date().toISOString().split("T")[0];
+                document.getElementById("addVehicleModal").style.display = "flex";
+            }
+
+            function editVehicle(index) {
+                const vehicles = rider.vehicles || [];
+                const v = vehicles[index];
+                document.getElementById("vehicleModalTitle").textContent = "Edit Vehicle";
+                document.getElementById("vehicleEditId").value = index;
+                document.getElementById("vType").value = v.type;
+                document.getElementById("vBrand").value = v.brand;
+                document.getElementById("vRegistration").value = v.registration;
+                document.getElementById("vColor").value = v.color;
+                document.getElementById("vYear").value = v.year;
+                document.getElementById("vInsurance").value = v.insuranceExpiry || "";
+                document.getElementById("vNotes").value = v.notes || "";
+                document.getElementById("addVehicleModal").style.display = "flex";
+            }
+
+            function saveVehicle() {
+                const index = document.getElementById("vehicleEditId").value;
+                const vehicle = {
+                    type: document.getElementById("vType").value,
+                    brand: document.getElementById("vBrand").value.trim(),
+                    registration: document.getElementById("vRegistration").value.trim().toUpperCase(),
+                    color: document.getElementById("vColor").value.trim(),
+                    year: parseInt(document.getElementById("vYear").value),
+                    insuranceExpiry: document.getElementById("vInsurance").value,
+                    notes: document.getElementById("vNotes").value.trim()
+                };
+
+                if (!vehicle.type || !vehicle.brand || !vehicle.registration || !vehicle.color || !vehicle.year || !vehicle.insuranceExpiry) {
+                    showToast("Please fill all required fields", "#ef4444");
+                    return;
+                }
+
+                const riders = window.GroceryRiderAuth.getRiders();
+                const riderIndex = riders.findIndex(r => r.id === rider.id);
+                if (riderIndex !== -1) {
+                    if (!riders[riderIndex].vehicles) riders[riderIndex].vehicles = [];
+
+                    if (index !== "") {
+                        riders[riderIndex].vehicles[index] = vehicle;
+                    } else {
+                        riders[riderIndex].vehicles.push(vehicle);
+                    }
+
+                    window.GroceryRiderAuth.saveRiders(riders);
+                    rider.vehicles = riders[riderIndex].vehicles;
+                    loadVehicles();
+                    closeModal("addVehicleModal");
+                    showToast(index !== "" ? "Vehicle updated" : "Vehicle added");
+                }
+            }
+
+            function deleteVehicle(index) {
+                if (!confirm("Delete this vehicle?")) return;
+
+                const riders = window.GroceryRiderAuth.getRiders();
+                const riderIndex = riders.findIndex(r => r.id === rider.id);
+                if (riderIndex !== -1 && riders[riderIndex].vehicles) {
+                    riders[riderIndex].vehicles.splice(index, 1);
+                    window.GroceryRiderAuth.saveRiders(riders);
+                    rider.vehicles = riders[riderIndex].vehicles;
+                    loadVehicles();
+                    showToast("Vehicle deleted");
+                }
+            }
+
+            // DOCUMENTS
+            function loadDocuments() {
+                const documents = rider.documents || [];
+                const container = document.getElementById("documentsList");
+
+                const requiredDocs = [
+                    { type: "license", label: "Driving License", icon: "🪪", required: true },
+                    { type: "rc", label: "Vehicle RC", icon: "📋", required: true },
+                    { type: "insurance", label: "Insurance", icon: "🛡️", required: true },
+                    { type: "aadhar", label: "Aadhar Card", icon: "🆔", required: true },
+                    { type: "pan", label: "PAN Card", icon: "💳", required: true },
+                    { type: "police", label: "Police Verification", icon: "👮", required: false },
+                    { type: "medical", label: "Medical Certificate", icon: "🏥", required: false }
+                ];
+
+                let html = "";
+
+                requiredDocs.forEach(req => {
+                    const doc = documents.find(d => d.type === req.type);
+                    if (doc) {
+                        const status = doc.status || "pending";
+                        const expiry = doc.expiry ? `Expires: ${formatDate(doc.expiry)}` : "";
+                        html += `
+                            <div class="document-item">
+                                <div class="document-info">
+                                    <div class="document-icon ${status}">${req.icon}</div>
+                                    <div class="document-details">
+                                        <h4>${req.label}</h4>
+                                        <p>${expiry}${doc.notes ? " • " + escapeHtml(doc.notes) : ""}</p>
+                                    </div>
+                                </div>
+                                <span class="document-status ${status}">${status}</span>
+                                <div class="document-actions">
+                                    <button class="btn btn-small btn-secondary" onclick="editDocument('${req.type}')">Update</button>
+                                    <button class="btn btn-small btn-danger" onclick="deleteDocument('${req.type}')">Delete</button>
+                                </div>
+                            </div>
+                        `;
+                    } else {
+                        html += `
+                            <div class="document-item">
+                                <div class="document-info">
+                                    <div class="document-icon pending">${req.icon}</div>
+                                    <div class="document-details">
+                                        <h4>${req.label}</h4>
+                                        <p>${req.required ? "Required" : "Optional"} • Not uploaded</p>
+                                    </div>
+                                </div>
+                                <span class="document-status pending">Missing</span>
+                                <div class="document-actions">
+                                    <button class="btn btn-small btn-primary" onclick="uploadDocument('${req.type}')">Upload</button>
+                                </div>
+                            </div>
+                        `;
+                    }
+                });
+
+                // Other documents
+                const otherDocs = documents.filter(d => !requiredDocs.some(r => r.type === d.type));
+                otherDocs.forEach(doc => {
+                    const status = doc.status || "pending";
+                    const expiry = doc.expiry ? `Expires: ${formatDate(doc.expiry)}` : "";
+                    html += `
+                        <div class="document-item">
+                            <div class="document-info">
+                                <div class="document-icon ${status}">📄</div>
+                                <div class="document-details">
+                                    <h4>${doc.customLabel || "Other Document"}</h4>
+                                    <p>${expiry}${doc.notes ? " • " + escapeHtml(doc.notes) : ""}</p>
+                                </div>
+                            </div>
+                            <span class="document-status ${status}">${status}</span>
+                            <div class="document-actions">
+                                <button class="btn btn-small btn-secondary" onclick="editDocument('${doc.type}', true)">Update</button>
+                                <button class="btn btn-small btn-danger" onclick="deleteDocument('${doc.type}', true)">Delete</button>
+                            </div>
+                        </div>
+                    `;
+                });
+
+                container.innerHTML = html || '<div style="text-align:center;padding:40px;color:#888;">No documents</div>';
+            }
+
+            function uploadDocument(type) {
+                document.getElementById("docType").value = type;
+                document.getElementById("documentForm").reset();
+                document.getElementById("docFileName").style.display = "none";
+                document.getElementById("documentEditId").value = "";
+                document.getElementById("uploadDocumentModal").style.display = "flex";
+            }
+
+            function editDocument(type, isCustom = false) {
+                const documents = rider.documents || [];
+                const doc = documents.find(d => d.type === type);
+                if (!doc) return;
+
+                document.getElementById("docType").value = type;
+                document.getElementById("docExpiry").value = doc.expiry || "";
+                document.getElementById("docNotes").value = doc.notes || "";
+                document.getElementById("documentEditId").value = type;
+                document.getElementById("docFileName").style.display = "none";
+                document.getElementById("uploadDocumentModal").style.display = "flex";
+            }
+
+            function handleDocUpload(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    document.getElementById("docFileName").textContent = file.name;
+                    document.getElementById("docFileName").style.display = "block";
+                }
+            }
+
+            function saveDocument() {
+                const type = document.getElementById("docType").value;
+                const file = document.getElementById("docFile").files[0];
+                const expiry = document.getElementById("docExpiry").value;
+                const notes = document.getElementById("docNotes").value.trim();
+
+                if (!type) {
+                    showToast("Select document type", "#ef4444");
+                    return;
+                }
+
+                const editId = document.getElementById("documentEditId").value;
+                const isEdit = !!editId;
+
+                if (!isEdit && !file) {
+                    showToast("Please select a file", "#ef4444");
+                    return;
+                }
+
+                const doc = {
+                    type: type,
+                    customLabel: type === "other" ? "Other Document" : undefined,
+                    status: "pending",
+                    expiry: expiry || null,
+                    notes: notes,
+                    uploadedAt: new Date().toISOString(),
+                    fileName: file ? file.name : (rider.documents?.find(d => d.type === type)?.fileName || "")
+                };
+
+                const riders = window.GroceryRiderAuth.getRiders();
+                const riderIndex = riders.findIndex(r => r.id === rider.id);
+                if (riderIndex !== -1) {
+                    if (!riders[riderIndex].documents) riders[riderIndex].documents = [];
+
+                    if (isEdit) {
+                        const idx = riders[riderIndex].documents.findIndex(d => d.type === type);
+                        if (idx !== -1) {
+                            riders[riderIndex].documents[idx] = { ...riders[riderIndex].documents[idx], ...doc };
+                        }
+                    } else {
+                        riders[riderIndex].documents.push(doc);
+                    }
+
+                    window.GroceryRiderAuth.saveRiders(riders);
+                    rider.documents = riders[riderIndex].documents;
+                    loadDocuments();
+                    closeModal("uploadDocumentModal");
+                    showToast(isEdit ? "Document updated" : "Document uploaded for verification");
+                }
+            }
+
+            function deleteDocument(type, isCustom = false) {
+                if (!confirm("Delete this document?")) return;
+
+                const riders = window.GroceryRiderAuth.getRiders();
+                const riderIndex = riders.findIndex(r => r.id === rider.id);
+                if (riderIndex !== -1 && riders[riderIndex].documents) {
+                    riders[riderIndex].documents = riders[riderIndex].documents.filter(d => d.type !== type);
+                    window.GroceryRiderAuth.saveRiders(riders);
+                    rider.documents = riders[riderIndex].documents;
+                    loadDocuments();
+                    showToast("Document deleted");
+                }
+            }
+
+            // SECURITY
+            function loadSecurity() {
+                document.getElementById("twoFactorEnabled").checked = rider.twoFactorEnabled || false;
+            }
+
+            function toggle2FA() {
+                const enabled = document.getElementById("twoFactorEnabled").checked;
+                const riders = window.GroceryRiderAuth.getRiders();
+                const riderIndex = riders.findIndex(r => r.id === rider.id);
+                if (riderIndex !== -1) {
+                    riders[riderIndex].twoFactorEnabled = enabled;
+                    window.GroceryRiderAuth.saveRiders(riders);
+                    showToast(enabled ? "2FA enabled" : "2FA disabled");
+                }
+            }
+
+            function checkPasswordStrength(password) {
+                const bar = document.getElementById("passwordStrengthBar");
+                const text = document.getElementById("passwordStrengthText");
+
+                let strength = 0;
+                if (password.length >= 8) strength++;
+                if (/[A-Z]/.test(password)) strength++;
+                if (/[a-z]/.test(password)) strength++;
+                if (/[0-9]/.test(password)) strength++;
+                if (/[^A-Za-z0-9]/.test(password)) strength++;
+
+                bar.className = "password-strength-bar";
+                if (strength <= 1) {
+                    bar.classList.add("strength-weak");
+                    text.textContent = "Weak - Add more characters, numbers, symbols";
+                } else if (strength === 2) {
+                    bar.classList.add("strength-fair");
+                    text.textContent = "Fair - Add uppercase and symbols";
+                } else if (strength === 3) {
+                    bar.classList.add("strength-good");
+                    text.textContent = "Good - Consider adding symbols";
+                } else {
+                    bar.classList.add("strength-strong");
+                    text.textContent = "Strong password";
+                }
+            }
+
+            function checkPasswordMatch() {
+                const newPass = document.getElementById("newPassword").value;
+                const confirmPass = document.getElementById("confirmPassword").value;
+                const hint = document.getElementById("passwordMatchHint");
+
+                if (confirmPass.length === 0) {
+                    hint.textContent = "";
+                    return;
+                }
+
+                if (newPass === confirmPass) {
+                    hint.textContent = "✓ Passwords match";
+                    hint.style.color = "#166534";
+                } else {
+                    hint.textContent = "✗ Passwords do not match";
+                    hint.style.color = "#991b1b";
+                }
+            }
+
+            function changePassword() {
+                const current = document.getElementById("currentPassword").value;
+                const newPass = document.getElementById("newPassword").value;
+                const confirm = document.getElementById("confirmPassword").value;
+
+                if (!current || !newPass || !confirm) {
+                    showToast("Please fill all fields", "#ef4444");
+                    return;
+                }
+
+                if (newPass !== confirm) {
+                    showToast("Passwords do not match", "#ef4444");
+                    return;
+                }
+
+                if (newPass.length < 8) {
+                    showToast("Password must be at least 8 characters", "#ef4444");
+                    return;
+                }
+
+                // In real app, verify current password against hash
+                // For localStorage demo, we'll just update
+                const riders = window.GroceryRiderAuth.getRiders();
+                const riderIndex = riders.findIndex(r => r.id === rider.id);
+                if (riderIndex !== -1) {
+                    riders[riderIndex].password = newPass; // In reality, this would be hashed
+                    window.GroceryRiderAuth.saveRiders(riders);
+                    showToast("Password changed successfully");
+                    document.getElementById("passwordForm").reset();
+                    document.getElementById("passwordStrengthBar").className = "password-strength-bar";
+                    document.getElementById("passwordStrengthText").textContent = "Password strength";
+                }
+            }
+
+            // PREFERENCES
+            function loadPreferences() {
+                const prefs = rider.preferences || {
+                    email: true,
+                    push: true,
+                    sms: false,
+                    autoAccept: false
+                };
+                document.getElementById("prefEmail").checked = prefs.email;
+                document.getElementById("prefPush").checked = prefs.push;
+                document.getElementById("prefSms").checked = prefs.sms;
+                document.getElementById("prefAutoAccept").checked = prefs.autoAccept;
+            }
+
+            function savePreferences() {
+                const prefs = {
+                    email: document.getElementById("prefEmail").checked,
+                    push: document.getElementById("prefPush").checked,
+                    sms: document.getElementById("prefSms").checked,
+                    autoAccept: document.getElementById("prefAutoAccept").checked
+                };
+
+                const riders = window.GroceryRiderAuth.getRiders();
+                const riderIndex = riders.findIndex(r => r.id === rider.id);
+                if (riderIndex !== -1) {
+                    riders[riderIndex].preferences = prefs;
+                    window.GroceryRiderAuth.saveRiders(riders);
+                }
+            }
+
+            // AVATAR
+            function openChangeAvatarModal() {
+                document.getElementById("changeAvatarModal").style.display = "flex";
+            }
+
+            function handleAvatarUpload(e) {
+                const file = e.target.files[0];
+                if (!file) return;
+
+                if (file.size > 5 * 1024 * 1024) {
+                    showToast("File too large (max 5MB)", "#ef4444");
+                    return;
+                }
+
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    document.getElementById("avatarPreviewImg").src = event.target.result;
+                    document.getElementById("avatarPreview").style.display = "block";
+                    document.getElementById("saveAvatarBtn").style.display = "inline-flex";
+                };
+                reader.readAsDataURL(file);
+            }
+
+            function saveAvatar() {
+                const img = document.getElementById("avatarPreviewImg").src;
+                if (!img) return;
+
+                const riders = window.GroceryRiderAuth.getRiders();
+                const riderIndex = riders.findIndex(r => r.id === rider.id);
+                if (riderIndex !== -1) {
+                    riders[riderIndex].avatar = img;
+                    window.GroceryRiderAuth.saveRiders(riders);
+                    document.getElementById("profileAvatar").textContent = "";
+                    document.getElementById("profileAvatar").style.backgroundImage = `url(${img})`;
+                    document.getElementById("profileAvatar").style.backgroundSize = "cover";
+                    document.getElementById("profileAvatar").style.backgroundPosition = "center";
+                    closeModal("changeAvatarModal");
+                    showToast("Profile photo updated");
+                }
+            }
+
+            // DELETE ACCOUNT
+            function openDeleteAccountModal() {
+                document.getElementById("deleteAccountModal").style.display = "flex";
+            }
+
+            function deleteAccount() {
+                const confirm = document.getElementById("deleteConfirm").value;
+                if (confirm !== "DELETE") {
+                    showToast('Type "DELETE" to confirm', "#ef4444");
+                    return;
+                }
+
+                const riders = window.GroceryRiderAuth.getRiders();
+                const filtered = riders.filter(r => r.id !== rider.id);
+                window.GroceryRiderAuth.saveRiders(filtered);
+
+                // Clear session
+                localStorage.removeItem("groceryGoActiveRider");
+                sessionStorage.removeItem("groceryGoActiveRider");
+
+                showToast("Account deleted");
+                setTimeout(() => {
+                    window.location.href = "rider-login.html";
+                }, 1500);
+            }
+
+            // NOTIFICATIONS
+            function loadNotifications() {
+                const notifications = window.GroceryStore.getRiderNotifications(rider.id);
+                const unreadCount = notifications.filter(n => !n.read).length;
+                const badge = document.getElementById("notificationBadge");
+                if (unreadCount > 0) {
+                    badge.textContent = unreadCount;
+                    badge.style.display = "flex";
+                } else {
+                    badge.style.display = "none";
+                }
+            }
+
+            window.toggleNotifications = function() {
+                const dropdown = document.getElementById("notificationsDropdown");
+                const isVisible = dropdown.style.display === "flex";
+                dropdown.style.display = isVisible ? "none" : "flex";
+
+                if (!isVisible) {
+                    renderNotifications();
+                }
+            };
+
+            window.closeNotifications = function() {
+                document.getElementById("notificationsDropdown").style.display = "none";
+            };
+
+            function renderNotifications() {
+                const notifications = window.GroceryStore.getRiderNotifications(rider.id);
+                const list = document.getElementById("notificationsList");
+
+                if (notifications.length === 0) {
+                    list.innerHTML = `<div style="padding:24px;text-align:center;color:#888;">No notifications</div>`;
+                    return;
+                }
+
+                list.innerHTML = notifications.slice(0, 20).map(n => `
+                    <div style="padding:12px 16px;border-radius:8px;margin-bottom:8px;background:${n.read ? "#fff" : "#f4faf6"};border:${n.read ? "1px solid #eef2ee" : "1px solid #cde8d5"};" onclick="markNotificationRead('${n.id}')">
+                        <div style="font-weight:600;font-size:13px;color:#1a2a1e;">${n.title}</div>
+                        <div style="font-size:12px;color:#666;margin-top:2px;">${n.message}</div>
+                        <div style="font-size:11px;color:#999;margin-top:4px;">${n.createdAt}</div>
+                    </div>
+                `).join("");
+            }
+
+            window.markNotificationRead = function(notificationId) {
+                window.GroceryStore.markRiderNotificationRead(rider.id, notificationId);
+                loadNotifications();
+                renderNotifications();
+            }
+
+            // MODAL HELPERS
+            window.closeModal = function(id) {
+                document.getElementById(id).style.display = "none";
+            };
+
+            // Toast helper
+            function showToast(message, bgColor = "#17241b") {
+                let toast = document.getElementById("toast");
+                if (!toast) {
+                    toast = document.createElement("div");
+                    toast.id = "toast";
+                    toast.style.cssText = `position:fixed;bottom:24px;right:24px;padding:12px 22px;border-radius:8px;font-size:14px;font-weight:600;color:#fff;z-index:99999;box-shadow:0 8px 24px rgba(0,0,0,0.2);transition:opacity .3s,transform .3s;`;
+                    document.body.appendChild(toast);
+                }
+                toast.style.background = bgColor;
+                toast.textContent = message;
+                toast.style.display = "block";
+                toast.style.opacity = "1";
+                clearTimeout(window.__toastTimer);
+                window.__toastTimer = setTimeout(() => {
+                    toast.style.opacity = "0";
+                    setTimeout(() => toast.style.display = "none", 300);
+                }, 2500);
+            }
+
+            // Helpers
+            function formatDate(iso) {
+                return new Date(iso).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+            }
+
+            function escapeHtml(text) {
+                const div = document.createElement("div");
+                div.textContent = text;
+                return div.innerHTML;
+            }
+        })();
+    </script>
+</body>
+
+</html>

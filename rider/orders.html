@@ -1,0 +1,744 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GroceryGo - My Orders</title>
+    <link rel="stylesheet" href="../admin.css">
+    <style>
+        /* Order-specific status badges (extend shared pill-rider-*) */
+        .status-order-placed { background: #f3f6f4; color: #444; }
+        .status-confirmed { background: #dbeafe; color: #1e40af; }
+        .status-preparing { background: #fef3c7; color: #92400e; }
+        .status-packed { background: #f3e8ff; color: #7c3aed; }
+        .status-rider-assigned { background: #e0e7ff; color: #3730a3; }
+        .status-assigned { background: #dbeafe; color: #1e40af; }
+        .status-picked-up { background: #f3e8ff; color: #7c3aed; }
+        .status-out-for-delivery { background: #f3e8ff; color: #7c3aed; }
+        .status-delivered { background: #dcfce7; color: #166534; }
+        .status-cancelled { background: #fee2e2; color: #991b1b; }
+
+        /* Order-specific action buttons (extend shared rider-tbl-btn-*) */
+        .action-btn.accept { background: #dcfce7; color: #166534; }
+        .action-btn.accept:hover { background: #bbf7d0; }
+        .action-btn.reject { background: #fee2e2; color: #991b1b; }
+        .action-btn.reject:hover { background: #fecaca; }
+        .action-btn.start { background: #dbeafe; color: #1e40af; }
+        .action-btn.start:hover { background: #bfdbfe; }
+        .action-btn.deliver { background: #f3e8ff; color: #7c3aed; }
+        .action-btn.deliver:hover { background: #e9d5ff; }
+        .action-btn.view { background: #f3f6f4; color: #444; }
+        .action-btn.view:hover { background: #e8efe9; }
+
+        /* Order detail modal */
+        .order-detail-modal {
+            max-width: 700px !important;
+        }
+
+        .modal-section {
+            background: #f9fbf9;
+            border: 1px solid #eef2ee;
+            border-radius: 10px;
+            padding: 16px;
+            margin-bottom: 16px;
+        }
+
+        .modal-section h4 {
+            font-size: 14px;
+            font-weight: 700;
+            color: #1a2a1e;
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #eef2ee;
+        }
+
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 6px 0;
+            font-size: 13px;
+        }
+
+        .detail-label {
+            color: #666;
+        }
+
+        .detail-value {
+            font-weight: 600;
+            color: #1a2a1e;
+        }
+
+        .item-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 0;
+            border-bottom: 1px solid #eef2ee;
+        }
+
+        .item-row:last-child {
+            border-bottom: none;
+        }
+
+        .item-icon {
+            font-size: 24px;
+        }
+
+        .item-info {
+            flex: 1;
+        }
+
+        .item-name {
+            font-weight: 600;
+            font-size: 13px;
+        }
+
+        .item-qty {
+            font-size: 12px;
+            color: #666;
+        }
+
+        .item-price {
+            font-weight: 700;
+            color: #19a463;
+        }
+
+        /* Availability toggle select transparent style fix */
+        .rider-availability-toggle select {
+            background: transparent !important;
+            border: none !important;
+            color: white !important;
+            font-weight: 600 !important;
+            font-size: 13px !important;
+            padding: 4px !important;
+            cursor: pointer !important;
+        }
+
+        .rider-availability-toggle select option {
+            background: #17241b;
+            color: white;
+        }
+
+        /* Toast for orders page */
+        #toast {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            padding: 12px 22px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #fff;
+            z-index: 99999;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+            transition: opacity .3s, transform .3s;
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- RIDER NAVBAR -->
+    <header class="rider-navbar">
+        <div class="rider-navbar-inner">
+            <div class="rider-brand">
+                <div class="rider-logo">🛵</div>
+                <div>
+                    <div style="font-size:18px;font-weight:800;">GroceryGo</div>
+                    <span class="rider-badge">Rider Portal</span>
+                </div>
+            </div>
+
+            <nav class="rider-nav-links">
+                <a href="dashboard.html" class="rider-nav-item">📊 Dashboard</a>
+                <a href="orders.html" class="rider-nav-item active">📦 My Orders</a>
+                <a href="earnings.html" class="rider-nav-item">💰 Earnings</a>
+                <a href="history.html" class="rider-nav-item">📜 History</a>
+                <a href="performance.html" class="rider-nav-item">📈 Performance</a>
+                <a href="availability.html" class="rider-nav-item">🕐 Availability</a>
+                <a href="issues.html" class="rider-nav-item">🎫 Issues</a>
+                <a href="profile.html" class="rider-nav-item">👤 Profile</a>
+            </nav>
+
+            <div class="rider-nav-actions">
+                <div class="rider-availability-toggle">
+                    <span class="status-dot" id="availabilityDot"></span>
+                    <span id="availabilityText">Available</span>
+                    <select id="availabilitySelect">
+                        <option value="Available">Available</option>
+                        <option value="Busy">Busy</option>
+                        <option value="Offline">Offline</option>
+                    </select>
+                </div>
+
+                <div class="notification-bell" onclick="toggleNotifications()">
+                    🔔
+                    <span class="notification-badge" id="notificationBadge" style="display:none;">0</span>
+                </div>
+
+                <div class="rider-profile-pill">
+                    <span>🛵</span>
+                    <span id="riderProfileName">Rider</span>
+                </div>
+                <button class="rider-logout-btn" onclick="riderLogout()">Logout</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- NOTIFICATIONS DROPDOWN -->
+    <div id="notificationsDropdown" class="gg-modal-overlay" style="display:none; max-width:400px; margin: 80px auto 0; width: 90%;">
+        <div class="gg-modal-content" style="max-height:500px; overflow:hidden;">
+            <div style="display:flex; align-items:center; justify-content:space-between; padding:16px 20px; border-bottom:1px solid #eef2ee;">
+                <h3 style="font-size:16px;font-weight:700;color:#1a2a1e;">🔔 Notifications</h3>
+                <button class="gg-modal-close" onclick="closeNotifications()">×</button>
+            </div>
+            <div id="notificationsList" style="max-height:400px; overflow-y:auto; padding:8px;">
+            </div>
+        </div>
+    </div>
+
+    <main class="rider-main">
+        <div class="rider-page-header">
+            <div>
+                <h1>My Orders</h1>
+                <p>View and manage your assigned deliveries</p>
+            </div>
+        </div>
+
+        <!-- STATS -->
+        <div class="rider-stats-grid">
+            <div class="stat-card">
+                <div class="stat-top">
+                    <div class="stat-icon icon-blue">📦</div>
+                    <span class="pill pill-blue">Assigned</span>
+                </div>
+                <div class="stat-val" id="statAssigned">0</div>
+                <div class="stat-label">Currently Assigned</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-top">
+                    <div class="stat-icon icon-amber">🚚</div>
+                    <span class="pill pill-amber">In Progress</span>
+                </div>
+                <div class="stat-val" id="statInProgress">0</div>
+                <div class="stat-label">Out for Delivery</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-top">
+                    <div class="stat-icon icon-green">✅</div>
+                    <span class="pill pill-green">Today</span>
+                </div>
+                <div class="stat-val" id="statDeliveredToday">0</div>
+                <div class="stat-label">Delivered Today</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-top">
+                    <div class="stat-icon icon-purple">📋</div>
+                    <span class="pill pill-purple">Total</span>
+                </div>
+                <div class="stat-val" id="statTotalAssigned">0</div>
+                <div class="stat-label">All Time Assigned</div>
+            </div>
+        </div>
+
+        <!-- ORDERS TABLE -->
+        <div class="rider-card">
+            <div class="card-header">
+                <h2>📦 Assigned Orders</h2>
+                <div class="filter-bar">
+                    <input type="text" id="orderSearchInput" class="admin-search-input" placeholder="Search Order ID, Customer...">
+                    <select id="orderStatusFilter" class="admin-select">
+                        <option value="All">All Statuses</option>
+                        <option value="Assigned">Assigned</option>
+                        <option value="Picked Up">Picked Up</option>
+                        <option value="Out for Delivery">Out for Delivery</option>
+                        <option value="Delivered">Delivered</option>
+                    </select>
+                    <select id="orderDateFilter" class="admin-select">
+                        <option value="All">All Time</option>
+                        <option value="Today">Today</option>
+                        <option value="This Week">This Week</option>
+                        <option value="This Month">This Month</option>
+                    </select>
+                </div>
+            </div>
+            <div class="table-responsive">
+                <table class="rider-table">
+                    <thead>
+                        <tr>
+                            <th>Order ID</th>
+                            <th>Customer</th>
+                            <th>Items</th>
+                            <th>Amount</th>
+                            <th>Earnings</th>
+                            <th>Pickup</th>
+                            <th>Delivery</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="ordersTbody">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <!-- ORDER DETAIL MODAL -->
+    <div id="orderDetailModal" class="gg-modal-overlay" style="display:none;">
+        <div class="gg-modal-content order-detail-modal">
+            <button class="gg-modal-close" onclick="closeOrderDetailModal()">×</button>
+            <h2 style="font-size:20px;color:#1a2a1e;margin-bottom:6px;" id="modalOrderId">Order Details</h2>
+            <p style="color:#666;font-size:13px;margin-bottom:20px;" id="modalOrderStatus"></p>
+
+            <div class="modal-section">
+                <h4>👤 Customer Details</h4>
+                <div class="detail-row"><span class="detail-label">Name</span><span class="detail-value" id="detailCustomerName">-</span></div>
+                <div class="detail-row"><span class="detail-label">Phone</span><span class="detail-value" id="detailCustomerPhone">-</span></div>
+                <div class="detail-row"><span class="detail-label">Address</span><span class="detail-value" id="detailCustomerAddress">-</span></div>
+            </div>
+
+            <div class="modal-section">
+                <h4>📦 Order Items</h4>
+                <div id="detailItemsList"></div>
+            </div>
+
+            <div class="modal-section">
+                <h4>💰 Order Summary</h4>
+                <div class="detail-row"><span class="detail-label">Subtotal</span><span class="detail-value" id="detailSubtotal">-</span></div>
+                <div class="detail-row"><span class="detail-label">Delivery Fee</span><span class="detail-value" id="detailDeliveryFee">-</span></div>
+                <div class="detail-row"><span class="detail-label">Discount</span><span class="detail-value" id="detailDiscount">-</span></div>
+                <div class="detail-row" style="border-top:1px solid #eef2ee;padding-top:10px;margin-top:4px;"><span class="detail-label">Total</span><span class="detail-value" id="detailTotal">-</span></div>
+                <div class="detail-row"><span class="detail-label">Your Earnings</span><span class="detail-value" style="color:#19a463;" id="detailEarnings">-</span></div>
+            </div>
+
+            <div class="modal-section">
+                <h4>🚚 Delivery Details</h4>
+                <div class="detail-row"><span class="detail-label">Pickup Location</span><span class="detail-value" id="detailPickup">-</span></div>
+                <div class="detail-row"><span class="detail-label">Delivery Address</span><span class="detail-value" id="detailDelivery">-</span></div>
+                <div class="detail-row"><span class="detail-label">Order Date</span><span class="detail-value" id="detailOrderDate">-</span></div>
+                <div class="detail-row"><span class="detail-label">Payment Method</span><span class="detail-value" id="detailPayment">-</span></div>
+            </div>
+
+            <div id="modalActionButtons" style="display:flex;gap:12px;margin-top:20px;padding-top:16px;border-top:1px solid #eef2ee;">
+                <!-- Dynamic action buttons -->
+            </div>
+        </div>
+    </div>
+
+    <!-- ORDER ACTION MODAL -->
+    <div id="orderActionModal" class="gg-modal-overlay" style="display:none;">
+        <div class="gg-modal-content" style="max-width:500px;">
+            <button class="gg-modal-close" onclick="closeOrderActionModal()">×</button>
+            <h2 style="font-size:20px;color:#1a2a1e;margin-bottom:6px;" id="modalActionTitle">Order Action</h2>
+            <p style="color:#666;font-size:13px;margin-bottom:20px;" id="modalActionMeta">Order details</p>
+
+            <div id="modalActionContent">
+            </div>
+        </div>
+    </div>
+
+    <!-- SCRIPTS -->
+    <script src="../store.js"></script>
+    <script src="auth.js"></script>
+
+    <script>
+        (function() {
+            // 1. Guard Page
+            const rider = window.GroceryRiderAuth.protectPage();
+            if (!rider) return;
+
+            // 2. Initialize UI
+            document.getElementById("riderProfileName").textContent = rider.name.split(" ")[0];
+            updateAvailabilityUI(rider.availability || "Available");
+            document.getElementById("availabilitySelect").value = rider.availability || "Available";
+
+            loadNotifications();
+
+            // 3. Render Orders
+            renderOrders();
+
+            // 4. Event Listeners
+            document.getElementById("availabilitySelect").addEventListener("change", function() {
+                updateAvailability(this.value);
+            });
+
+            document.getElementById("orderSearchInput").addEventListener("input", renderOrders);
+            document.getElementById("orderStatusFilter").addEventListener("change", renderOrders);
+            document.getElementById("orderDateFilter").addEventListener("change", renderOrders);
+
+            function updateAvailabilityUI(status) {
+                const dot = document.getElementById("availabilityDot");
+                const text = document.getElementById("availabilityText");
+
+                dot.className = "status-dot";
+                if (status === "Available") {
+                    dot.classList.add("available");
+                    text.textContent = "Available";
+                } else if (status === "Busy") {
+                    dot.classList.add("busy");
+                    text.textContent = "Busy";
+                } else {
+                    dot.classList.add("offline");
+                    text.textContent = "Offline";
+                }
+            }
+
+            function updateAvailability(newStatus) {
+                const riders = window.GroceryRiderAuth.getRiders();
+                const riderIndex = riders.findIndex(r => r.id === rider.id);
+                if (riderIndex !== -1) {
+                    riders[riderIndex].availability = newStatus;
+                    window.GroceryRiderAuth.saveRiders(riders);
+
+                    const sessionRider = window.GroceryRiderAuth.getCurrentRider();
+                    sessionRider.availability = newStatus;
+                    window.GroceryRiderAuth.setCurrentRider(sessionRider, true);
+
+                    updateAvailabilityUI(newStatus);
+                    showToast("Availability updated to " + newStatus);
+                }
+            }
+
+            function renderOrders() {
+                const allOrders = window.GroceryStore.getOrders();
+                const myOrders = allOrders.filter(o => o.riderId === rider.id);
+
+                // Stats
+                const today = new Date().toISOString().split("T")[0];
+                const assigned = myOrders.filter(o => o.status === "Assigned").length;
+                const inProgress = myOrders.filter(o => ["Picked Up", "Out for Delivery"].includes(o.status)).length;
+                const deliveredToday = myOrders.filter(o => o.status === "Delivered" && (o.deliveredAt?.startsWith(today) || o.updatedAt?.startsWith(today))).length;
+                const totalAssigned = myOrders.length;
+
+                document.getElementById("statAssigned").textContent = assigned;
+                document.getElementById("statInProgress").textContent = inProgress;
+                document.getElementById("statDeliveredToday").textContent = deliveredToday;
+                document.getElementById("statTotalAssigned").textContent = totalAssigned;
+
+                // Filters
+                const searchQuery = document.getElementById("orderSearchInput").value.toLowerCase().trim();
+                const statusFilter = document.getElementById("orderStatusFilter").value;
+                const dateFilter = document.getElementById("orderDateFilter").value;
+
+                const filtered = myOrders.filter(order => {
+                    const matchesSearch = order.id.toLowerCase().includes(searchQuery) ||
+                                        (order.userName || "").toLowerCase().includes(searchQuery);
+
+                    const matchesStatus = statusFilter === "All" || order.status === statusFilter;
+
+                    let matchesDate = true;
+                    if (dateFilter !== "All") {
+                        const orderDate = order.createdAt || order.orderDate || "";
+                        if (dateFilter === "Today") {
+                            matchesDate = orderDate.startsWith(today);
+                        } else if (dateFilter === "This Week") {
+                            const weekAgo = new Date();
+                            weekAgo.setDate(weekAgo.getDate() - 7);
+                            const weekAgoStr = weekAgo.toISOString().split("T")[0];
+                            matchesDate = orderDate >= weekAgoStr;
+                        } else if (dateFilter === "This Month") {
+                            const monthAgo = new Date();
+                            monthAgo.setMonth(monthAgo.getMonth() - 1);
+                            const monthAgoStr = monthAgo.toISOString().split("T")[0];
+                            matchesDate = orderDate >= monthAgoStr;
+                        }
+                    }
+
+                    return matchesSearch && matchesStatus && matchesDate;
+                });
+
+                // Sort: active orders first, then by date descending
+                filtered.sort((a, b) => {
+                    const activeStatuses = ["Assigned", "Picked Up", "Out for Delivery"];
+                    const aActive = activeStatuses.includes(a.status);
+                    const bActive = activeStatuses.includes(b.status);
+                    if (aActive !== bActive) return bActive - aActive;
+                    return new Date(b.createdAt || b.orderDate) - new Date(a.createdAt || a.orderDate);
+                });
+
+                const tbody = document.getElementById("ordersTbody");
+                if (filtered.length === 0) {
+                    tbody.innerHTML = `
+                        <tr>
+                            <td colspan="9" class="empty-state">
+                                <div class="empty-state-icon">📦</div>
+                                <p>No orders found</p>
+                                <small>Orders assigned to you will appear here</small>
+                            </td>
+                        </tr>
+                    `;
+                    return;
+                }
+
+                tbody.innerHTML = filtered.map(order => {
+                    const statusClass = "pill-rider-" + order.status.toLowerCase().replace(" ", "-");
+                    let actionsHtml = "";
+                    const deliveryFee = order.deliveryFee || 50;
+
+                    if (order.status === "Assigned") {
+                        actionsHtml = `
+                            <button class="rider-tbl-btn rider-tbl-btn-primary" onclick="openOrderActionModal('${order.id}', 'accept')">Accept</button>
+                            <button class="rider-tbl-btn rider-tbl-btn-danger" onclick="openOrderActionModal('${order.id}', 'reject')">Reject</button>
+                            <button class="rider-tbl-btn rider-tbl-btn-secondary" onclick="viewOrderDetails('${order.id}')">View</button>
+                        `;
+                    } else if (order.status === "Picked Up" || order.status === "Out for Delivery") {
+                        actionsHtml = `
+                            <button class="rider-tbl-btn rider-tbl-btn-primary" onclick="openOrderActionModal('${order.id}', 'deliver')">Mark Delivered</button>
+                            <button class="rider-tbl-btn rider-tbl-btn-secondary" onclick="viewOrderDetails('${order.id}')">View</button>
+                        `;
+                    } else if (order.status === "Delivered") {
+                        actionsHtml = `
+                            <button class="rider-tbl-btn rider-tbl-btn-secondary" onclick="viewOrderDetails('${order.id}')">View</button>
+                        `;
+                    } else {
+                        actionsHtml = `<button class="rider-tbl-btn rider-tbl-btn-secondary" onclick="viewOrderDetails('${order.id}')">View</button>`;
+                    }
+
+                    return `
+                        <tr>
+                            <td><span class="order-id">#${order.id}</span></td>
+                            <td>
+                                <strong>${order.userName || order.customerName || "Customer"}</strong><br>
+                                <small style="color:#666;">${order.phone || ""}</small>
+                            </td>
+                            <td>${order.items ? order.items.length : 0} items</td>
+                            <td>₹${(order.total || 0).toLocaleString()}</td>
+                            <td style="color:#19a463;font-weight:700;">₹${deliveryFee}</td>
+                            <td><small>${order.pickupAddress || "GroceryGo Store"}</small></td>
+                            <td><small>${order.deliveryAddress || order.address || "Customer Address"}</small></td>
+                            <td><span class="pill ${statusClass}">${order.status}</span></td>
+                            <td>${actionsHtml}</td>
+                        </tr>
+                    `;
+                }).join("");
+            }
+
+            // Modal Functions
+            window.viewOrderDetails = function(orderId) {
+                const order = window.GroceryStore.getOrders().find(o => o.id === orderId);
+                if (!order) return;
+
+                document.getElementById("modalOrderId").textContent = `Order #${order.id}`;
+                const statusClass = "status-" + order.status.toLowerCase().replace(" ", "-");
+                document.getElementById("modalOrderStatus").innerHTML = `Status: <span class="status-badge ${statusClass}">${order.status}</span>`;
+
+                document.getElementById("detailCustomerName").textContent = order.userName || order.customerName || "-";
+                document.getElementById("detailCustomerPhone").textContent = order.phone || "-";
+                document.getElementById("detailCustomerAddress").textContent = order.deliveryAddress || order.address || "-";
+
+                // Items
+                const itemsHtml = (order.items || []).map(item => `
+                    <div class="item-row">
+                        <span class="item-icon">${item.icon || "🛒"}</span>
+                        <div class="item-info">
+                            <div class="item-name">${item.name}</div>
+                            <div class="item-qty">Qty: ${item.quantity} × ${item.unit || ""}</div>
+                        </div>
+                        <span class="item-price">₹${(item.price * item.quantity).toLocaleString()}</span>
+                    </div>
+                `).join("");
+                document.getElementById("detailItemsList").innerHTML = itemsHtml || "<p style='color:#888;'>No items</p>";
+
+                // Summary
+                document.getElementById("detailSubtotal").textContent = "₹" + (order.subtotal || 0).toLocaleString();
+                document.getElementById("detailDeliveryFee").textContent = "₹" + (order.deliveryFee || 0).toLocaleString();
+                document.getElementById("detailDiscount").textContent = "₹" + (order.discount || 0).toLocaleString();
+                document.getElementById("detailTotal").textContent = "₹" + (order.total || 0).toLocaleString();
+                document.getElementById("detailEarnings").textContent = "₹" + (order.deliveryFee || 50).toLocaleString();
+
+                // Delivery
+                document.getElementById("detailPickup").textContent = order.pickupAddress || "GroceryGo Store";
+                document.getElementById("detailDelivery").textContent = order.deliveryAddress || order.address || "-";
+                document.getElementById("detailOrderDate").textContent = order.createdAt || order.orderDate || "-";
+                document.getElementById("detailPayment").textContent = order.paymentMethod || "-";
+
+                // Action buttons
+                const deliveryFee = order.deliveryFee || 50;
+                let actionButtons = "";
+                if (order.status === "Assigned") {
+                    actionButtons = `
+                        <button class="btn btn-primary" onclick="openOrderActionModal('${order.id}', 'accept'); closeOrderDetailModal();" style="flex:1;">✅ Accept Order</button>
+                        <button class="btn btn-danger" onclick="openOrderActionModal('${order.id}', 'reject'); closeOrderDetailModal();" style="flex:1;">❌ Reject Order</button>
+                    `;
+                } else if (order.status === "Picked Up" || order.status === "Out for Delivery") {
+                    actionButtons = `
+                        <button class="btn btn-primary" onclick="openOrderActionModal('${order.id}', 'deliver'); closeOrderDetailModal();" style="flex:1;">✅ Mark Delivered (Earn ₹${deliveryFee})</button>
+                    `;
+                } else {
+                    actionButtons = `<span style="color:#888;align-self:center;">No actions available for ${order.status} orders</span>`;
+                }
+                document.getElementById("modalActionButtons").innerHTML = actionButtons;
+
+                document.getElementById("orderDetailModal").style.display = "flex";
+            };
+
+            window.closeOrderDetailModal = function() {
+                document.getElementById("orderDetailModal").style.display = "none";
+            };
+
+            window.openOrderActionModal = function(orderId, action) {
+                const order = window.GroceryStore.getOrders().find(o => o.id === orderId);
+                if (!order) return;
+
+                document.getElementById("modalActionTitle").textContent = `Order #${orderId}`;
+                document.getElementById("modalActionMeta").textContent = `Customer: ${order.userName || order.customerName} | Items: ${order.items?.length || 0} | Total: ₹${(order.total || 0).toLocaleString()}`;
+
+                let content = "";
+                if (action === "accept") {
+                    content = `
+                        <div style="background:#f4faf6;border:1px solid #cde8d5;border-radius:8px;padding:16px;margin-bottom:16px;">
+                            <p style="margin:0;font-size:14px;color:#1e7046;"><strong>Accept this delivery?</strong></p>
+                            <p style="margin:8px 0 0;font-size:13px;color:#555;">Pickup: ${order.pickupAddress || "GroceryGo Store"}</p>
+                            <p style="margin:4px 0 0;font-size:13px;color:#555;">Delivery: ${order.deliveryAddress || order.address}</p>
+                            <p style="margin:4px 0 0;font-size:13px;color:#19a463;font-weight:700;">Earnings: ₹${order.deliveryFee || 50}</p>
+                        </div>
+                        <button class="btn btn-primary" style="width:100%;" onclick="confirmOrderAction('${orderId}', 'accept')">✅ Confirm Accept</button>
+                    `;
+                } else if (action === "reject") {
+                    content = `
+                        <div style="background:#fef2f2;border:1px solid #fecaca;border-radius:8px;padding:16px;margin-bottom:16px;">
+                            <p style="margin:0;font-size:14px;color:#991b1b;"><strong>Reject this delivery?</strong></p>
+                            <p style="margin:8px 0 0;font-size:13px;color:#555;">This order will be reassigned to another rider.</p>
+                        </div>
+                        <div class="admin-form-group" style="margin-bottom:16px;">
+                            <label for="rejectReason" style="display:block;margin-bottom:6px;font-size:13px;font-weight:600;">Reason (Optional)</label>
+                            <textarea id="rejectReason" class="admin-input" placeholder="Enter reason for rejection..." style="width:100%;height:80px;"></textarea>
+                        </div>
+                        <button class="btn btn-danger" style="width:100%;" onclick="confirmOrderAction('${orderId}', 'reject')">❌ Confirm Reject</button>
+                    `;
+                } else if (action === "deliver") {
+                    content = `
+                        <div style="background:#f4faf6;border:1px solid #cde8d5;border-radius:8px;padding:16px;margin-bottom:16px;">
+                            <p style="margin:0;font-size:14px;color:#1e7046;"><strong>Mark as Delivered?</strong></p>
+                            <p style="margin:8px 0 0;font-size:13px;color:#555;">Confirm you have handed over the order to the customer.</p>
+                            <p style="margin:4px 0 0;font-size:13px;color:#19a463;font-weight:700;">You will earn: ₹${order.deliveryFee || 50}</p>
+                        </div>
+                        <div class="admin-form-group" style="margin-bottom:16px;">
+                            <label for="deliveryOtp" style="display:block;margin-bottom:6px;font-size:13px;font-weight:600;">Delivery OTP (if provided by customer)</label>
+                            <input type="text" id="deliveryOtp" class="admin-input" placeholder="Enter OTP or leave blank">
+                        </div>
+                        <button class="btn btn-primary" style="width:100%;" onclick="confirmOrderAction('${orderId}', 'deliver')">✅ Mark as Delivered</button>
+                    `;
+                }
+
+                document.getElementById("modalActionContent").innerHTML = content;
+                document.getElementById("orderActionModal").style.display = "flex";
+            };
+
+            window.closeOrderActionModal = function() {
+                document.getElementById("orderActionModal").style.display = "none";
+            };
+
+            window.confirmOrderAction = function(orderId, action) {
+                const order = window.GroceryStore.getOrders().find(o => o.id === orderId);
+                if (!order) return;
+
+                let success = false;
+                let message = "";
+
+                if (action === "accept") {
+                    success = window.GroceryStore.updateOrderStatus(orderId, "Picked Up", rider.id);
+                    message = "Order accepted! Pick up the items from the store.";
+                } else if (action === "reject") {
+                    const reason = document.getElementById("rejectReason")?.value || "No reason provided";
+                    success = window.GroceryStore.updateOrderStatus(orderId, "Assigned", null);
+                    if (success) {
+                        window.GroceryStore.assignRiderToOrder(orderId, null);
+                    }
+                    message = "Order rejected and reassigned.";
+                } else if (action === "deliver") {
+                    const otp = document.getElementById("deliveryOtp")?.value || "";
+                    success = window.GroceryStore.updateOrderStatus(orderId, "Delivered", rider.id);
+                    if (success) {
+                        window.GroceryStore.addRiderEarnings(rider.id, order.deliveryFee || 50, orderId);
+                    }
+                    message = "Order marked as delivered! Earnings added.";
+                }
+
+                if (success) {
+                    showToast("✅ " + message);
+                    closeOrderActionModal();
+                    renderOrders();
+                    loadNotifications();
+                } else {
+                    showToast("❌ Failed to update order. Please try again.", "#d9534f");
+                }
+            };
+
+            function loadNotifications() {
+                const notifications = window.GroceryStore.getRiderNotifications(rider.id);
+                const unreadCount = notifications.filter(n => !n.read).length;
+                const badge = document.getElementById("notificationBadge");
+                if (unreadCount > 0) {
+                    badge.textContent = unreadCount;
+                    badge.style.display = "flex";
+                } else {
+                    badge.style.display = "none";
+                }
+            }
+
+            window.toggleNotifications = function() {
+                const dropdown = document.getElementById("notificationsDropdown");
+                const isVisible = dropdown.style.display === "flex";
+                dropdown.style.display = isVisible ? "none" : "flex";
+
+                if (!isVisible) {
+                    renderNotifications();
+                }
+            };
+
+            window.closeNotifications = function() {
+                document.getElementById("notificationsDropdown").style.display = "none";
+            };
+
+            function renderNotifications() {
+                const notifications = window.GroceryStore.getRiderNotifications(rider.id);
+                const list = document.getElementById("notificationsList");
+
+                if (notifications.length === 0) {
+                    list.innerHTML = `<div style="padding:24px;text-align:center;color:#888;">No notifications</div>`;
+                    return;
+                }
+
+                list.innerHTML = notifications.slice(0, 20).map(n => `
+                    <div style="padding:12px 16px;border-radius:8px;margin-bottom:8px;background:${n.read ? "#fff" : "#f4faf6"};border:${n.read ? "1px solid #eef2ee" : "1px solid #cde8d5"};" onclick="markNotificationRead('${n.id}')">
+                        <div style="font-weight:600;font-size:13px;color:#1a2a1e;">${n.title}</div>
+                        <div style="font-size:12px;color:#666;margin-top:2px;">${n.message}</div>
+                        <div style="font-size:11px;color:#999;margin-top:4px;">${n.createdAt}</div>
+                    </div>
+                `).join("");
+            }
+
+            window.markNotificationRead = function(notificationId) {
+                window.GroceryStore.markRiderNotificationRead(rider.id, notificationId);
+                loadNotifications();
+                renderNotifications();
+            }
+
+            // Toast helper
+            function showToast(message, bgColor = "#17241b") {
+                let toast = document.getElementById("toast");
+                if (!toast) {
+                    toast = document.createElement("div");
+                    toast.id = "toast";
+                    toast.style.cssText = `position:fixed;bottom:24px;right:24px;padding:12px 22px;border-radius:8px;font-size:14px;font-weight:600;color:#fff;z-index:99999;box-shadow:0 8px 24px rgba(0,0,0,0.2);transition:opacity .3s,transform .3s;`;
+                    document.body.appendChild(toast);
+                }
+                toast.style.background = bgColor;
+                toast.textContent = message;
+                toast.style.display = "block";
+                toast.style.opacity = "1";
+                clearTimeout(window.__toastTimer);
+                window.__toastTimer = setTimeout(() => {
+                    toast.style.opacity = "0";
+                    setTimeout(() => toast.style.display = "none", 300);
+                }, 2500);
+            }
+        })();
+    </script>
+</body>
+
+</html>

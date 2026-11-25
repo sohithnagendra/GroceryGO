@@ -1,0 +1,1095 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GroceryGo - Performance Analytics</title>
+    <link rel="stylesheet" href="../admin.css">
+    <style>
+        /* Performance-specific extensions to shared admin.css classes */
+        .performance-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            padding: 24px;
+        }
+
+        .performance-card {
+            background: #fafcfb;
+            border: 1px solid #eef2ee;
+            border-radius: 12px;
+            padding: 20px;
+        }
+
+        .performance-card h3 {
+            font-size: 15px;
+            font-weight: 700;
+            color: #1a2a1e;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .metric-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #eef2ee;
+        }
+
+        .metric-row:last-child {
+            border-bottom: none;
+        }
+
+        .metric-label {
+            font-size: 13px;
+            color: #555;
+        }
+
+        .metric-value {
+            font-size: 14px;
+            font-weight: 700;
+            color: #1a2a1e;
+        }
+
+        .metric-value.good { color: #166534; }
+        .metric-value.warning { color: #92400e; }
+        .metric-value.bad { color: #991b1b; }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #eef2ee;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 8px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+
+        .progress-fill.green { background: #19a463; }
+        .progress-fill.amber { background: #f59e0b; }
+        .progress-fill.red { background: #ef4444; }
+        .progress-fill.blue { background: #3b82f6; }
+
+        .rating-breakdown {
+            padding: 0 24px 24px;
+        }
+
+        .rating-overview {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+            padding: 20px;
+            background: #f9fbf9;
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+
+        .rating-score {
+            font-size: 64px;
+            font-weight: 800;
+            color: #19a463;
+            line-height: 1;
+        }
+
+        .rating-stars-large {
+            font-size: 28px;
+            color: #fbbf24;
+        }
+
+        .rating-stats {
+            flex: 1;
+        }
+
+        .rating-bar {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 8px;
+        }
+
+        .rating-bar-label {
+            width: 40px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #555;
+        }
+
+        .rating-bar-track {
+            flex: 1;
+            height: 10px;
+            background: #eef2ee;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        .rating-bar-fill {
+            height: 100%;
+            border-radius: 5px;
+            background: linear-gradient(90deg, #19a463, #4ade80);
+        }
+
+        .rating-bar-count {
+            width: 40px;
+            font-size: 12px;
+            color: #666;
+            text-align: right;
+        }
+
+        .category-ratings {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+        }
+
+        .category-rating {
+            background: #fff;
+            border: 1px solid #eef2ee;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .category-rating-icon {
+            font-size: 32px;
+            margin-bottom: 8px;
+        }
+
+        .category-rating-value {
+            font-size: 28px;
+            font-weight: 800;
+            color: #1a2a1e;
+            margin-bottom: 4px;
+        }
+
+        .category-rating-label {
+            font-size: 13px;
+            color: #666;
+            font-weight: 500;
+        }
+
+        .comparison-card {
+            background: #f4faf6;
+            border: 1px solid #cde8d5;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 0 24px 24px;
+        }
+
+        .comparison-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 20px;
+            text-align: center;
+        }
+
+        .comparison-item {
+            padding: 16px;
+            background: #fff;
+            border-radius: 10px;
+            border: 1px solid #eef2ee;
+        }
+
+        .comparison-label {
+            font-size: 12px;
+            color: #666;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+
+        .comparison-value {
+            font-size: 24px;
+            font-weight: 800;
+            color: #19a463;
+        }
+
+        .comparison-sub {
+            font-size: 12px;
+            color: #888;
+            margin-top: 4px;
+        }
+
+        .achievements-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 16px;
+            padding: 0 24px 24px;
+        }
+
+        .achievement-card {
+            background: #fff;
+            border: 1px solid #eef2ee;
+            border-radius: 12px;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            transition: all 0.2s;
+        }
+
+        .achievement-card:hover {
+            border-color: #19a463;
+            box-shadow: 0 4px 12px rgba(25, 164, 99, 0.1);
+        }
+
+        .achievement-card.earned {
+            border-color: #19a463;
+            background: #f4faf6;
+        }
+
+        .achievement-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .achievement-icon.earned {
+            background: linear-gradient(135deg, #19a463, #158b50);
+            color: white;
+        }
+
+        .achievement-icon.locked {
+            background: #f3f6f4;
+            color: #ccc;
+        }
+
+        .achievement-info {
+            flex: 1;
+        }
+
+        .achievement-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: #1a2a1e;
+            margin-bottom: 4px;
+        }
+
+        .achievement-desc {
+            font-size: 12px;
+            color: #666;
+        }
+
+        .achievement-progress {
+            font-size: 12px;
+            font-weight: 600;
+            color: #19a463;
+        }
+
+        .chart-container {
+            height: 200px;
+            display: flex;
+            align-items: flex-end;
+            gap: 12px;
+            padding: 20px 0;
+            justify-content: center;
+        }
+
+        .chart-bar {
+            flex: 1;
+            max-width: 50px;
+            background: linear-gradient(180deg, #19a463 0%, #158b50 100%);
+            border-radius: 6px 6px 0 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-end;
+            min-height: 10px;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .chart-bar:hover {
+            opacity: 0.8;
+        }
+
+        .chart-bar-label {
+            position: absolute;
+            bottom: -24px;
+            font-size: 10px;
+            font-weight: 600;
+            color: #666;
+            white-space: nowrap;
+        }
+
+        .chart-bar-value {
+            position: absolute;
+            top: -20px;
+            font-size: 10px;
+            font-weight: 700;
+            color: #1a2a1e;
+            white-space: nowrap;
+        }
+
+        /* Performance-specific pill classes */
+        .pill-rider-overall { background: #dcfce7; color: #166534; }
+        .pill-rider-speed { background: #dbeafe; color: #1e40af; }
+        .pill-rider-reliability { background: #fef3c7; color: #92400e; }
+        .pill-rider-conduct { background: #f3e8ff; color: #7c3aed; }
+
+        /* Availability toggle select transparent style fix */
+        .rider-availability-toggle select {
+            background: transparent !important;
+            border: none !important;
+            color: white !important;
+            font-weight: 600 !important;
+            font-size: 13px !important;
+            padding: 4px !important;
+            cursor: pointer !important;
+        }
+
+        .rider-availability-toggle select option {
+            background: #17241b;
+            color: white;
+        }
+
+        /* Toast for performance page */
+        #toast {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            padding: 12px 22px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #fff;
+            z-index: 99999;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+            transition: opacity .3s, transform .3s;
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- RIDER NAVBAR -->
+    <header class="rider-navbar">
+        <div class="rider-navbar-inner">
+            <div class="rider-brand">
+                <div class="rider-logo">🛵</div>
+                <div>
+                    <div style="font-size:18px;font-weight:800;">GroceryGo</div>
+                    <span class="rider-badge">Rider Portal</span>
+                </div>
+            </div>
+
+            <nav class="rider-nav-links">
+                <a href="dashboard.html" class="rider-nav-item">📊 Dashboard</a>
+                <a href="orders.html" class="rider-nav-item">📦 My Orders</a>
+                <a href="earnings.html" class="rider-nav-item">💰 Earnings</a>
+                <a href="history.html" class="rider-nav-item">📜 History</a>
+                <a href="performance.html" class="rider-nav-item active">📈 Performance</a>
+                <a href="availability.html" class="rider-nav-item">🕐 Availability</a>
+                <a href="issues.html" class="rider-nav-item">🎫 Issues</a>
+                <a href="profile.html" class="rider-nav-item">👤 Profile</a>
+            </nav>
+
+            <div class="rider-nav-actions">
+                <div class="rider-availability-toggle">
+                    <span class="status-dot" id="availabilityDot"></span>
+                    <span id="availabilityText">Available</span>
+                    <select id="availabilitySelect" style="background:transparent;border:none;color:white;font-weight:600;font-size:13px;padding:4px;cursor:pointer;">
+                        <option value="Available">Available</option>
+                        <option value="Busy">Busy</option>
+                        <option value="Offline">Offline</option>
+                    </select>
+                </div>
+
+                <div class="notification-bell" onclick="toggleNotifications()">
+                    🔔
+                    <span class="notification-badge" id="notificationBadge" style="display:none;">0</span>
+                </div>
+
+                <div class="rider-profile-pill">
+                    <span>🛵</span>
+                    <span id="riderProfileName">Rider</span>
+                </div>
+                <button class="rider-logout-btn" onclick="riderLogout()">Logout</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- NOTIFICATIONS DROPDOWN -->
+    <div id="notificationsDropdown" class="gg-modal-overlay" style="display:none; max-width:400px; margin: 80px auto 0; width: 90%;">
+        <div class="gg-modal-content" style="max-height:500px; overflow:hidden;">
+            <div style="display:flex; align-items:center; justify-content:space-between; padding:16px 20px; border-bottom:1px solid #eef2ee;">
+                <h3 style="font-size:16px;font-weight:700;color:#1a2a1e;">🔔 Notifications</h3>
+                <button class="gg-modal-close" onclick="closeNotifications()">×</button>
+            </div>
+            <div id="notificationsList" style="max-height:400px; overflow-y:auto; padding:8px;">
+            </div>
+        </div>
+    </div>
+
+    <main class="rider-main">
+        <div class="rider-page-header">
+            <div>
+                <h1>Performance Analytics</h1>
+                <p>Track your delivery performance, ratings, and improvement areas</p>
+            </div>
+        </div>
+
+        <!-- KEY METRICS -->
+        <div class="rider-stats-grid">
+            <div class="stat-card">
+                <div class="stat-top">
+                    <div class="stat-icon icon-green">⭐</div>
+                    <span class="pill pill-rider-overall">Overall</span>
+                </div>
+                <div class="stat-val" id="statOverallRating">5.0</div>
+                <div class="stat-label">Overall Rating</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-top">
+                    <div class="stat-icon icon-blue">⚡</div>
+                    <span class="pill pill-rider-speed">Speed</span>
+                </div>
+                <div class="stat-val" id="statSpeedRating">4.8</div>
+                <div class="stat-label">Speed Rating</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-top">
+                    <div class="stat-icon icon-amber">📦</div>
+                    <span class="pill pill-rider-reliability">Reliability</span>
+                </div>
+                <div class="stat-val" id="statReliability">100%</div>
+                <div class="stat-label">Order Completion Rate</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-top">
+                    <div class="stat-icon icon-purple">🛵</div>
+                    <span class="pill pill-rider-conduct">Conduct</span>
+                </div>
+                <div class="stat-val" id="statConductRating">4.9</div>
+                <div class="stat-label">Partner Conduct</div>
+            </div>
+        </div>
+
+        <!-- RATING BREAKDOWN -->
+        <div class="rider-card">
+            <div class="card-header">
+                <h2>⭐ Rating Breakdown</h2>
+            </div>
+            <div class="rating-breakdown">
+                <div class="rating-overview">
+                    <div class="rating-score" id="mainRatingScore">5.0</div>
+                    <div class="rating-stars-large" id="mainRatingStars">★★★★★</div>
+                    <div class="rating-stats">
+                        <div style="font-size:14px;color:#666;margin-bottom:12px;">Based on <strong id="ratingCount">0</strong> customer reviews</div>
+                        <div class="rating-bar">
+                            <span class="rating-bar-label">5★</span>
+                            <div class="rating-bar-track"><div class="rating-bar-fill" id="bar5" style="width:0%"></div></div>
+                            <span class="rating-bar-count" id="count5">0</span>
+                        </div>
+                        <div class="rating-bar">
+                            <span class="rating-bar-label">4★</span>
+                            <div class="rating-bar-track"><div class="rating-bar-fill" id="bar4" style="width:0%"></div></div>
+                            <span class="rating-bar-count" id="count4">0</span>
+                        </div>
+                        <div class="rating-bar">
+                            <span class="rating-bar-label">3★</span>
+                            <div class="rating-bar-track"><div class="rating-bar-fill" id="bar3" style="width:0%"></div></div>
+                            <span class="rating-bar-count" id="count3">0</span>
+                        </div>
+                        <div class="rating-bar">
+                            <span class="rating-bar-label">2★</span>
+                            <div class="rating-bar-track"><div class="rating-bar-fill" id="bar2" style="width:0%"></div></div>
+                            <span class="rating-bar-count" id="count2">0</span>
+                        </div>
+                        <div class="rating-bar">
+                            <span class="rating-bar-label">1★</span>
+                            <div class="rating-bar-track"><div class="rating-bar-fill" id="bar1" style="width:0%"></div></div>
+                            <span class="rating-bar-count" id="count1">0</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="category-ratings">
+                    <div class="category-rating">
+                        <div class="category-rating-icon">⚡</div>
+                        <div class="category-rating-value" id="catSpeed">4.8</div>
+                        <div class="category-rating-label">Delivery Speed</div>
+                    </div>
+                    <div class="category-rating">
+                        <div class="category-rating-icon">🤝</div>
+                        <div class="category-rating-value" id="catConduct">4.9</div>
+                        <div class="category-rating-label">Partner Conduct</div>
+                    </div>
+                    <div class="category-rating">
+                        <div class="category-rating-icon">📦</div>
+                        <div class="category-rating-value" id="catPackage">5.0</div>
+                        <div class="category-rating-label">Package Condition</div>
+                    </div>
+                    <div class="category-rating">
+                        <div class="category-rating-icon">💬</div>
+                        <div class="category-rating-value" id="catCommunication">4.7</div>
+                        <div class="category-rating-label">Communication</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PERFORMANCE METRICS -->
+        <div class="rider-card">
+            <div class="card-header">
+                <h2>📊 Performance Metrics</h2>
+            </div>
+            <div class="performance-grid">
+                <div class="performance-card">
+                    <h3>📦 Delivery Volume</h3>
+                    <div class="metric-row">
+                        <span class="metric-label">Total Deliveries</span>
+                        <span class="metric-value" id="perfTotalDeliveries">0</span>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-label">This Week</span>
+                        <span class="metric-value" id="perfWeekDeliveries">0</span>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-label">This Month</span>
+                        <span class="metric-value" id="perfMonthDeliveries">0</span>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-label">Avg per Week</span>
+                        <span class="metric-value" id="perfAvgWeekly">0</span>
+                    </div>
+                </div>
+
+                <div class="performance-card">
+                    <h3>⏱️ Speed & Efficiency</h3>
+                    <div class="metric-row">
+                        <span class="metric-label">Avg Delivery Time</span>
+                        <span class="metric-value good" id="perfAvgTime">~15 min</span>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-label">On-Time Rate</span>
+                        <span class="metric-value good" id="perfOnTimeRate">100%</span>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-label">Acceptance Rate</span>
+                        <span class="metric-value good" id="perfAcceptanceRate">100%</span>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-label">Rejection Rate</span>
+                        <span class="metric-value good" id="perfRejectionRate">0%</span>
+                    </div>
+                </div>
+
+                <div class="performance-card">
+                    <h3>💰 Earnings Performance</h3>
+                    <div class="metric-row">
+                        <span class="metric-label">Total Earnings</span>
+                        <span class="metric-value" id="perfTotalEarnings">₹0</span>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-label">Avg per Delivery</span>
+                        <span class="metric-value" id="perfAvgEarnings">₹0</span>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-label">Best Day Earnings</span>
+                        <span class="metric-value" id="perfBestDay">₹0</span>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-label">Current Streak</span>
+                        <span class="metric-value" id="perfStreak">0 days</span>
+                    </div>
+                </div>
+
+                <div class="performance-card">
+                    <h3>🎯 Quality Metrics</h3>
+                    <div class="metric-row">
+                        <span class="metric-label">Completion Rate</span>
+                        <span class="metric-value good" id="perfCompletionRate">100%</span>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-label">Customer Issues</span>
+                        <span class="metric-value good" id="perfCustomerIssues">0</span>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-label">5-Star Ratings</span>
+                        <span class="metric-value good" id="perfFiveStarPct">0%</span>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-label">Repeat Customers</span>
+                        <span class="metric-value" id="perfRepeatCustomers">0%</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- COMPARISON -->
+        <div class="comparison-card">
+            <h3 style="font-size:16px;font-weight:700;color:#1a2a1e;margin-bottom:16px;display:flex;align-items:center;gap:8px;">📈 Peer Comparison</h3>
+            <div class="comparison-row">
+                <div class="comparison-item">
+                    <div class="comparison-label">Your Avg Rating</div>
+                    <div class="comparison-value" id="compYourRating">5.0</div>
+                    <div class="comparison-sub">Based on your reviews</div>
+                </div>
+                <div class="comparison-item">
+                    <div class="comparison-label">Fleet Average</div>
+                    <div class="comparison-value" id="compFleetAvg">4.8</div>
+                    <div class="comparison-sub">All riders combined</div>
+                </div>
+                <div class="comparison-item">
+                    <div class="comparison-label">Top Performer</div>
+                    <div class="comparison-value" id="compTopPerformer">5.0</div>
+                    <div class="comparison-sub">Best in fleet</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- WEEKLY PERFORMANCE CHART -->
+        <div class="rider-card">
+            <div class="card-header">
+                <h2>📈 Weekly Performance Trend</h2>
+            </div>
+            <div style="padding:0 24px 24px;">
+                <div class="chart-container" id="weeklyPerfChart"></div>
+            </div>
+        </div>
+
+        <!-- ACHIEVEMENTS -->
+        <div class="rider-card">
+            <div class="card-header">
+                <h2>🏆 Achievements</h2>
+            </div>
+            <div class="achievements-grid" id="achievementsGrid">
+            </div>
+        </div>
+    </main>
+
+    <!-- SCRIPTS -->
+    <script src="../store.js"></script>
+    <script src="auth.js"></script>
+
+    <script>
+        (function() {
+            // 1. Guard Page
+            const rider = window.GroceryRiderAuth.protectPage();
+            if (!rider) return;
+
+            // 2. Initialize UI
+            document.getElementById("riderProfileName").textContent = rider.name.split(" ")[0];
+            updateAvailabilityUI(rider.availability || "Available");
+            document.getElementById("availabilitySelect").value = rider.availability || "Available";
+
+            loadNotifications();
+
+            // 3. Render Performance
+            renderPerformance();
+
+            // 4. Event Listeners
+            document.getElementById("availabilitySelect").addEventListener("change", function() {
+                updateAvailability(this.value);
+            });
+
+            function updateAvailabilityUI(status) {
+                const dot = document.getElementById("availabilityDot");
+                const text = document.getElementById("availabilityText");
+
+                dot.className = "status-dot";
+                if (status === "Available") {
+                    dot.classList.add("available");
+                    text.textContent = "Available";
+                } else if (status === "Busy") {
+                    dot.classList.add("busy");
+                    text.textContent = "Busy";
+                } else {
+                    dot.classList.add("offline");
+                    text.textContent = "Offline";
+                }
+            }
+
+            function updateAvailability(newStatus) {
+                const riders = window.GroceryRiderAuth.getRiders();
+                const riderIndex = riders.findIndex(r => r.id === rider.id);
+                if (riderIndex !== -1) {
+                    riders[riderIndex].availability = newStatus;
+                    window.GroceryRiderAuth.saveRiders(riders);
+
+                    const sessionRider = window.GroceryRiderAuth.getCurrentRider();
+                    sessionRider.availability = newStatus;
+                    window.GroceryRiderAuth.setCurrentRider(sessionRider, true);
+
+                    updateAvailabilityUI(newStatus);
+                    showToast("Availability updated to " + newStatus);
+                }
+            }
+
+            function renderPerformance() {
+                const allOrders = window.GroceryStore.getOrders();
+                const myOrders = allOrders.filter(o => o.riderId === rider.id);
+                const deliveredOrders = myOrders.filter(o => o.status === "Delivered");
+                const assignedOrders = myOrders.filter(o => ["Assigned", "Picked Up", "Out for Delivery", "Delivered"].includes(o.status));
+
+                // Reviews
+                const deliveryReviews = window.GroceryStore.getReviews().filter(r => r.type === "delivery" && r.riderName === rider.name);
+                const allDeliveryReviews = window.GroceryStore.getReviews().filter(r => r.type === "delivery");
+
+                // Ratings
+                const riderRatings = deliveryReviews.map(r => Number(r.riderRating || r.rating || 5));
+                const speedRatings = deliveryReviews.map(r => Number(r.speedRating || r.rating || 5));
+                const packageRatings = deliveryReviews.map(r => {
+                    if (r.packageCondition === "Good") return 5;
+                    if (r.packageCondition === "Slightly Damaged") return 3;
+                    return 1;
+                });
+                const communicationRatings = deliveryReviews.map(r => {
+                    // Estimate from remarks sentiment or default
+                    return r.remarks && r.remarks.length > 20 ? 5 : 4;
+                });
+
+                const avgRider = riderRatings.length > 0 ? (riderRatings.reduce((a, b) => a + b, 0) / riderRatings.length).toFixed(1) : "5.0";
+                const avgSpeed = speedRatings.length > 0 ? (speedRatings.reduce((a, b) => a + b, 0) / speedRatings.length).toFixed(1) : "4.8";
+                const avgPackage = packageRatings.length > 0 ? (packageRatings.reduce((a, b) => a + b, 0) / packageRatings.length).toFixed(1) : "5.0";
+                const avgCommunication = communicationRatings.length > 0 ? (communicationRatings.reduce((a, b) => a + b, 0) / communicationRatings.length).toFixed(1) : "4.7";
+
+                // Overall rating (average of all categories)
+                const overall = ((Number(avgRider) + Number(avgSpeed) + Number(avgPackage) + Number(avgCommunication)) / 4).toFixed(1);
+
+                // Stars
+                const fullStars = Math.floor(Number(overall));
+                const hasHalf = Number(overall) % 1 >= 0.5;
+                const stars = "★".repeat(fullStars) + (hasHalf ? "½" : "") + "☆".repeat(5 - fullStars - (hasHalf ? 1 : 0));
+
+                // Rating distribution
+                const ratingDist = { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 };
+                riderRatings.forEach(r => {
+                    const rounded = Math.round(r);
+                    if (ratingDist.hasOwnProperty(rounded)) ratingDist[rounded]++;
+                });
+                const totalRatings = riderRatings.length;
+
+                // Update UI
+                document.getElementById("statOverallRating").textContent = overall;
+                document.getElementById("statSpeedRating").textContent = avgSpeed;
+                document.getElementById("statConductRating").textContent = avgRider;
+                document.getElementById("mainRatingScore").textContent = overall;
+                document.getElementById("mainRatingStars").textContent = stars;
+                document.getElementById("ratingCount").textContent = totalRatings;
+                document.getElementById("catSpeed").textContent = avgSpeed;
+                document.getElementById("catConduct").textContent = avgRider;
+                document.getElementById("catPackage").textContent = avgPackage;
+                document.getElementById("catCommunication").textContent = avgCommunication;
+
+                // Rating bars
+                for (let i = 1; i <= 5; i++) {
+                    const count = ratingDist[i] || 0;
+                    const pct = totalRatings > 0 ? (count / totalRatings * 100) : 0;
+                    document.getElementById("bar" + i).style.width = pct + "%";
+                    document.getElementById("count" + i).textContent = count;
+                }
+
+                // Fleet comparison
+                const allRiderRatings = allDeliveryReviews.map(r => Number(r.riderRating || r.rating || 5));
+                const fleetAvg = allRiderRatings.length > 0 ? (allRiderRatings.reduce((a, b) => a + b, 0) / allRiderRatings.length).toFixed(1) : "4.8";
+                const topPerformer = allRiderRatings.length > 0 ? Math.max(...allRiderRatings).toFixed(1) : "5.0";
+
+                document.getElementById("compYourRating").textContent = overall;
+                document.getElementById("compFleetAvg").textContent = fleetAvg;
+                document.getElementById("compTopPerformer").textContent = topPerformer;
+
+                // Performance metrics
+                const earnings = window.GroceryStore.getRiderEarningsSummary(rider.id);
+                const history = earnings.history || [];
+                const deliveryHistory = history.filter(h => h.type === "delivery");
+                const totalEarnings = earnings.totalEarnings || 0;
+                const totalDeliveries = deliveredOrders.length;
+                const avgEarnings = totalDeliveries > 0 ? Math.round(totalEarnings / totalDeliveries) : 0;
+
+                // Weekly/Monthly
+                const today = new Date();
+                const weekAgo = new Date(today);
+                weekAgo.setDate(today.getDate() - 7);
+                const weekAgoStr = weekAgo.toISOString().split("T")[0];
+
+                const monthStart = new Date(today.getFullYear(), today.getMonth(), 1);
+                const monthStartStr = monthStart.toISOString().split("T")[0];
+
+                const weekDeliveries = deliveryHistory.filter(h => h.date >= weekAgoStr).length;
+                const monthDeliveries = deliveryHistory.filter(h => h.date >= monthStartStr).length;
+                const avgWeekly = Math.round(monthDeliveries / 4) || 0;
+
+                // Best day
+                const dailyEarnings = {};
+                deliveryHistory.forEach(d => {
+                    dailyEarnings[d.date] = (dailyEarnings[d.date] || 0) + d.amount;
+                });
+                let bestDay = 0;
+                for (const day in dailyEarnings) {
+                    if (dailyEarnings[day] > bestDay) bestDay = dailyEarnings[day];
+                }
+
+                // Streak
+                const deliveryDates = new Set(deliveryHistory.map(h => h.date));
+                let streak = 0;
+                let checkDate = new Date(today);
+                for (let i = 0; i < 30; i++) {
+                    const dateStr = checkDate.toISOString().split("T")[0];
+                    if (deliveryDates.has(dateStr)) {
+                        streak++;
+                    } else if (dateStr !== today.toISOString().split("T")[0]) {
+                        break;
+                    }
+                    checkDate.setDate(checkDate.getDate() - 1);
+                }
+
+                // Acceptance rate
+                const totalAssigned = myOrders.filter(o => o.status !== "Cancelled" || o.riderId === rider.id).length;
+                const accepted = myOrders.filter(o => ["Picked Up", "Out for Delivery", "Delivered"].includes(o.status)).length;
+                const acceptanceRate = totalAssigned > 0 ? Math.round((accepted / totalAssigned) * 100) : 100;
+                const rejectionRate = 100 - acceptanceRate;
+
+                // Completion rate
+                const completed = deliveredOrders.length;
+                const cancelled = myOrders.filter(o => o.status === "Cancelled" && o.riderId === rider.id).length;
+                const completionRate = (completed + cancelled) > 0 ? Math.round((completed / (completed + cancelled)) * 100) : 100;
+
+                // 5-star percentage
+                const fiveStarCount = ratingDist[5] || 0;
+                const fiveStarPct = totalRatings > 0 ? Math.round((fiveStarCount / totalRatings) * 100) : 100;
+
+                // Update performance metrics
+                document.getElementById("perfTotalDeliveries").textContent = totalDeliveries;
+                document.getElementById("perfWeekDeliveries").textContent = weekDeliveries;
+                document.getElementById("perfMonthDeliveries").textContent = monthDeliveries;
+                document.getElementById("perfAvgWeekly").textContent = avgWeekly;
+                document.getElementById("perfAvgTime").textContent = "~15 min";
+                document.getElementById("perfOnTimeRate").textContent = "98%";
+                document.getElementById("perfAcceptanceRate").textContent = acceptanceRate + "%";
+                document.getElementById("perfRejectionRate").textContent = rejectionRate + "%";
+                document.getElementById("perfTotalEarnings").textContent = "₹" + totalEarnings.toLocaleString();
+                document.getElementById("perfAvgEarnings").textContent = "₹" + avgEarnings.toLocaleString();
+                document.getElementById("perfBestDay").textContent = "₹" + bestDay.toLocaleString();
+                document.getElementById("perfStreak").textContent = streak + " days";
+                document.getElementById("perfCompletionRate").textContent = completionRate + "%";
+                document.getElementById("perfCustomerIssues").textContent = "0";
+                document.getElementById("perfFiveStarPct").textContent = fiveStarPct + "%";
+                document.getElementById("perfRepeatCustomers").textContent = "25%";
+
+                // Weekly chart
+                renderWeeklyPerfChart(deliveryHistory);
+
+                // Achievements
+                renderAchievements(totalDeliveries, totalEarnings, streak, overall, fiveStarPct);
+            }
+
+            function renderWeeklyPerfChart(deliveryHistory) {
+                const weekDays = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+                const today = new Date();
+                const weekStart = new Date(today);
+                weekStart.setDate(today.getDate() - today.getDay() + 1); // Monday
+
+                const dailyDeliveries = {};
+                weekDays.forEach((_, i) => {
+                    const date = new Date(weekStart);
+                    date.setDate(weekStart.getDate() + i);
+                    dailyDeliveries[date.toISOString().split("T")[0]] = 0;
+                });
+
+                deliveryHistory.forEach(d => {
+                    if (dailyDeliveries.hasOwnProperty(d.date)) {
+                        dailyDeliveries[d.date]++;
+                    }
+                });
+
+                const maxDeliveries = Math.max(...Object.values(dailyDeliveries), 1);
+                const chart = document.getElementById("weeklyPerfChart");
+                chart.innerHTML = Object.entries(dailyDeliveries).map(([date, count], index) => {
+                    const height = Math.max(10, (count / maxDeliveries) * 180);
+                    return `
+                        <div class="chart-bar" style="height:${height}px;">
+                            <span class="chart-bar-value">${count}</span>
+                            <span class="chart-bar-label">${weekDays[index]}</span>
+                        </div>
+                    `;
+                }).join("");
+            }
+
+            function renderAchievements(totalDeliveries, totalEarnings, streak, overallRating, fiveStarPct) {
+                const achievements = [
+                    {
+                        id: "first_delivery",
+                        icon: "🎯",
+                        title: "First Delivery",
+                        desc: "Complete your first delivery",
+                        earned: totalDeliveries >= 1,
+                        progress: totalDeliveries + "/1"
+                    },
+                    {
+                        id: "ten_deliveries",
+                        icon: "📦",
+                        title: "Getting Started",
+                        desc: "Complete 10 deliveries",
+                        earned: totalDeliveries >= 10,
+                        progress: totalDeliveries + "/10"
+                    },
+                    {
+                        id: "fifty_deliveries",
+                        icon: "🚀",
+                        title: "Reliable Partner",
+                        desc: "Complete 50 deliveries",
+                        earned: totalDeliveries >= 50,
+                        progress: totalDeliveries + "/50"
+                    },
+                    {
+                        id: "hundred_deliveries",
+                        icon: "🏆",
+                        title: "Century Club",
+                        desc: "Complete 100 deliveries",
+                        earned: totalDeliveries >= 100,
+                        progress: totalDeliveries + "/100"
+                    },
+                    {
+                        id: "first_earnings",
+                        icon: "💰",
+                        title: "First Earnings",
+                        desc: "Earn your first ₹100",
+                        earned: totalEarnings >= 100,
+                        progress: "₹" + totalEarnings + "/₹100"
+                    },
+                    {
+                        id: "thousand_earnings",
+                        icon: "💎",
+                        title: "High Earner",
+                        desc: "Earn ₹1,000 total",
+                        earned: totalEarnings >= 1000,
+                        progress: "₹" + totalEarnings + "/₹1,000"
+                    },
+                    {
+                        id: "week_streak",
+                        icon: "🔥",
+                        title: "Week Warrior",
+                        desc: "Deliver 7 days in a row",
+                        earned: streak >= 7,
+                        progress: streak + "/7 days"
+                    },
+                    {
+                        id: "month_streak",
+                        icon: "⚡",
+                        title: "Month Master",
+                        desc: "Deliver 30 days in a row",
+                        earned: streak >= 30,
+                        progress: streak + "/30 days"
+                    },
+                    {
+                        id: "five_star_rider",
+                        icon: "⭐",
+                        title: "Five-Star Rider",
+                        desc: "Maintain 90%+ 5-star ratings",
+                        earned: fiveStarPct >= 90 && totalDeliveries >= 10,
+                        progress: fiveStarPct + "% 5-star"
+                    },
+                    {
+                        id: "perfect_rating",
+                        icon: "💯",
+                        title: "Perfect Score",
+                        desc: "Achieve 5.0 overall rating",
+                        earned: Number(overallRating) >= 5.0 && totalDeliveries >= 5,
+                        progress: overallRating + "/5.0"
+                    }
+                ];
+
+                const grid = document.getElementById("achievementsGrid");
+                grid.innerHTML = achievements.map(a => `
+                    <div class="achievement-card ${a.earned ? "earned" : ""}">
+                        <div class="achievement-icon ${a.earned ? "earned" : "locked"}">${a.icon}</div>
+                        <div class="achievement-info">
+                            <div class="achievement-title">${a.title} ${a.earned ? "✓" : ""}</div>
+                            <div class="achievement-desc">${a.desc}</div>
+                            <div class="achievement-progress">${a.progress}</div>
+                        </div>
+                    </div>
+                `).join("");
+            }
+
+            function loadNotifications() {
+                const notifications = window.GroceryStore.getRiderNotifications(rider.id);
+                const unreadCount = notifications.filter(n => !n.read).length;
+                const badge = document.getElementById("notificationBadge");
+                if (unreadCount > 0) {
+                    badge.textContent = unreadCount;
+                    badge.style.display = "flex";
+                } else {
+                    badge.style.display = "none";
+                }
+            }
+
+            window.toggleNotifications = function() {
+                const dropdown = document.getElementById("notificationsDropdown");
+                const isVisible = dropdown.style.display === "flex";
+                dropdown.style.display = isVisible ? "none" : "flex";
+
+                if (!isVisible) {
+                    renderNotifications();
+                }
+            };
+
+            window.closeNotifications = function() {
+                document.getElementById("notificationsDropdown").style.display = "none";
+            };
+
+            function renderNotifications() {
+                const notifications = window.GroceryStore.getRiderNotifications(rider.id);
+                const list = document.getElementById("notificationsList");
+
+                if (notifications.length === 0) {
+                    list.innerHTML = `<div style="padding:24px;text-align:center;color:#888;">No notifications</div>`;
+                    return;
+                }
+
+                list.innerHTML = notifications.slice(0, 20).map(n => `
+                    <div style="padding:12px 16px;border-radius:8px;margin-bottom:8px;background:${n.read ? "#fff" : "#f4faf6"};border:${n.read ? "1px solid #eef2ee" : "1px solid #cde8d5"};" onclick="markNotificationRead('${n.id}')">
+                        <div style="font-weight:600;font-size:13px;color:#1a2a1e;">${n.title}</div>
+                        <div style="font-size:12px;color:#666;margin-top:2px;">${n.message}</div>
+                        <div style="font-size:11px;color:#999;margin-top:4px;">${n.createdAt}</div>
+                    </div>
+                `).join("");
+            }
+
+            window.markNotificationRead = function(notificationId) {
+                window.GroceryStore.markRiderNotificationRead(rider.id, notificationId);
+                loadNotifications();
+                renderNotifications();
+            }
+
+            // Toast helper
+            function showToast(message, bgColor = "#17241b") {
+                let toast = document.getElementById("toast");
+                if (!toast) {
+                    toast = document.createElement("div");
+                    toast.id = "toast";
+                    toast.style.cssText = `position:fixed;bottom:24px;right:24px;padding:12px 22px;border-radius:8px;font-size:14px;font-weight:600;color:#fff;z-index:99999;box-shadow:0 8px 24px rgba(0,0,0,0.2);transition:opacity .3s,transform .3s;`;
+                    document.body.appendChild(toast);
+                }
+                toast.style.background = bgColor;
+                toast.textContent = message;
+                toast.style.display = "block";
+                toast.style.opacity = "1";
+                clearTimeout(window.__toastTimer);
+                window.__toastTimer = setTimeout(() => {
+                    toast.style.opacity = "0";
+                    setTimeout(() => toast.style.display = "none", 300);
+                }, 2500);
+            }
+        })();
+    </script>
+</body>
+
+</html>

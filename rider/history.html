@@ -1,0 +1,802 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GroceryGo - Delivery History</title>
+    <link rel="stylesheet" href="../admin.css">
+    <style>
+        /* History-specific extensions to shared admin.css classes */
+        .history-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .history-table th {
+            background: #f9fbf9;
+            padding: 14px 16px;
+            text-align: left;
+            font-size: 12px;
+            font-weight: 700;
+            color: #555;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 1px solid #eef2ee;
+        }
+
+        .history-table td {
+            padding: 14px 16px;
+            border-bottom: 1px solid #f3f6f4;
+            font-size: 13px;
+            color: #333;
+        }
+
+        .history-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .history-table tr:hover td {
+            background: #fafcfb;
+        }
+
+        .rating-stars {
+            color: #fbbf24;
+            font-size: 14px;
+        }
+
+        .rating-value {
+            font-weight: 700;
+            color: #1a2a1e;
+            margin-left: 4px;
+        }
+
+        .summary-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .summary-card {
+            background: #fff;
+            border: 1px solid #eef2ee;
+            border-radius: 14px;
+            padding: 20px;
+        }
+
+        .summary-card-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+
+        .summary-card-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+
+        .summary-card-title {
+            font-size: 13px;
+            color: #666;
+            font-weight: 600;
+        }
+
+        .summary-card-value {
+            font-size: 24px;
+            font-weight: 800;
+            color: #1a2a1e;
+        }
+
+        .pagination {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #eef2ee;
+        }
+
+        .page-btn {
+            padding: 8px 16px;
+            border: 1px solid #dce4de;
+            background: #fff;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .page-btn:hover:not(:disabled) {
+            background: #19a463;
+            border-color: #19a463;
+            color: white;
+        }
+
+        .page-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .page-btn.active {
+            background: #19a463;
+            border-color: #19a463;
+            color: white;
+        }
+
+        .page-info {
+            color: #666;
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        /* Status badge for history - uses pill-rider-* prefix */
+        .pill-rider-delivered { background: #dcfce7; color: #166534; }
+        .pill-rider-cancelled { background: #fee2e2; color: #991b1b; }
+
+        /* Availability toggle select transparent style fix */
+        .rider-availability-toggle select {
+            background: transparent !important;
+            border: none !important;
+            color: white !important;
+            font-weight: 600 !important;
+            font-size: 13px !important;
+            padding: 4px !important;
+            cursor: pointer !important;
+        }
+
+        .rider-availability-toggle select option {
+            background: #17241b;
+            color: white;
+        }
+
+        /* Toast for history page */
+        #toast {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            padding: 12px 22px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #fff;
+            z-index: 99999;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+            transition: opacity .3s, transform .3s;
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- RIDER NAVBAR -->
+    <header class="rider-navbar">
+        <div class="rider-navbar-inner">
+            <div class="rider-brand">
+                <div class="rider-logo">🛵</div>
+                <div>
+                    <div style="font-size:18px;font-weight:800;">GroceryGo</div>
+                    <span class="rider-badge">Rider Portal</span>
+                </div>
+            </div>
+
+            <nav class="rider-nav-links">
+                <a href="dashboard.html" class="rider-nav-item">📊 Dashboard</a>
+                <a href="orders.html" class="rider-nav-item">📦 My Orders</a>
+                <a href="earnings.html" class="rider-nav-item">💰 Earnings</a>
+                <a href="history.html" class="rider-nav-item active">📜 History</a>
+                <a href="performance.html" class="rider-nav-item">📈 Performance</a>
+                <a href="availability.html" class="rider-nav-item">🕐 Availability</a>
+                <a href="issues.html" class="rider-nav-item">🎫 Issues</a>
+                <a href="profile.html" class="rider-nav-item">👤 Profile</a>
+            </nav>
+
+            <div class="rider-nav-actions">
+                <div class="rider-availability-toggle">
+                    <span class="status-dot" id="availabilityDot"></span>
+                    <span id="availabilityText">Available</span>
+                    <select id="availabilitySelect" style="background:transparent;border:none;color:white;font-weight:600;font-size:13px;padding:4px;cursor:pointer;">
+                        <option value="Available">Available</option>
+                        <option value="Busy">Busy</option>
+                        <option value="Offline">Offline</option>
+                    </select>
+                </div>
+
+                <div class="notification-bell" onclick="toggleNotifications()">
+                    🔔
+                    <span class="notification-badge" id="notificationBadge" style="display:none;">0</span>
+                </div>
+
+                <div class="rider-profile-pill">
+                    <span>🛵</span>
+                    <span id="riderProfileName">Rider</span>
+                </div>
+                <button class="rider-logout-btn" onclick="riderLogout()">Logout</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- NOTIFICATIONS DROPDOWN -->
+    <div id="notificationsDropdown" class="gg-modal-overlay" style="display:none; max-width:400px; margin: 80px auto 0; width: 90%;">
+        <div class="gg-modal-content" style="max-height:500px; overflow:hidden;">
+            <div style="display:flex; align-items:center; justify-content:space-between; padding:16px 20px; border-bottom:1px solid #eef2ee;">
+                <h3 style="font-size:16px;font-weight:700;color:#1a2a1e;">🔔 Notifications</h3>
+                <button class="gg-modal-close" onclick="closeNotifications()">×</button>
+            </div>
+            <div id="notificationsList" style="max-height:400px; overflow-y:auto; padding:8px;">
+            </div>
+        </div>
+    </div>
+
+    <main class="rider-main">
+        <div class="rider-page-header">
+            <div>
+                <h1>Delivery History</h1>
+                <p>View your complete delivery history and past orders</p>
+            </div>
+        </div>
+
+        <!-- STATS -->
+        <div class="rider-stats-grid">
+            <div class="stat-card">
+                <div class="stat-top">
+                    <div class="stat-icon icon-green">✅</div>
+                    <span class="pill pill-rider-total">Total</span>
+                </div>
+                <div class="stat-val" id="statTotalDeliveries">0</div>
+                <div class="stat-label">Completed Deliveries</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-top">
+                    <div class="stat-icon icon-blue">💰</div>
+                    <span class="pill pill-rider-earnings">Earnings</span>
+                </div>
+                <div class="stat-val" id="statHistoryEarnings">₹0</div>
+                <div class="stat-label">Total Earned</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-top">
+                    <div class="stat-icon icon-amber">⭐</div>
+                    <span class="pill pill-rider-rating">Rating</span>
+                </div>
+                <div class="stat-val" id="statAvgRating">5.0</div>
+                <div class="stat-label">Average Rating</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-top">
+                    <div class="stat-icon icon-purple">📅</div>
+                    <span class="pill pill-rider-monthly">This Month</span>
+                </div>
+                <div class="stat-val" id="statMonthlyDeliveries">0</div>
+                <div class="stat-label">Deliveries This Month</div>
+            </div>
+        </div>
+
+        <!-- SUMMARY CARDS -->
+        <div class="summary-cards">
+            <div class="summary-card">
+                <div class="summary-card-header">
+                    <div class="summary-card-icon icon-green">📦</div>
+                    <div class="summary-card-title">Total Items Delivered</div>
+                </div>
+                <div class="summary-card-value" id="summaryTotalItems">0</div>
+            </div>
+            <div class="summary-card">
+                <div class="summary-card-header">
+                    <div class="summary-card-icon icon-blue">⏱️</div>
+                    <div class="summary-card-title">Avg Delivery Time</div>
+                </div>
+                <div class="summary-card-value" id="summaryAvgTime">-</div>
+            </div>
+            <div class="summary-card">
+                <div class="summary-card-header">
+                    <div class="summary-card-icon icon-amber">🏆</div>
+                    <div class="summary-card-title">Best Month</div>
+                </div>
+                <div class="summary-card-value" id="summaryBestMonth">-</div>
+            </div>
+            <div class="summary-card">
+                <div class="summary-card-header">
+                    <div class="summary-card-icon icon-purple">🎯</div>
+                    <div class="summary-card-title">Completion Rate</div>
+                </div>
+                <div class="summary-card-value" id="summaryCompletionRate">100%</div>
+            </div>
+        </div>
+
+        <!-- HISTORY TABLE -->
+        <div class="rider-card">
+            <div class="card-header">
+                <h2>📜 Delivery History</h2>
+                <div class="filter-bar">
+                    <input type="text" id="historySearchInput" class="admin-search-input" placeholder="Search Order ID, Customer, Date...">
+                    <select id="historyDateFilter" class="admin-select">
+                        <option value="All">All Time</option>
+                        <option value="Today">Today</option>
+                        <option value="This Week">This Week</option>
+                        <option value="This Month">This Month</option>
+                        <option value="Last Month">Last Month</option>
+                        <option value="This Year">This Year</option>
+                    </select>
+                    <select id="historySortFilter" class="admin-select">
+                        <option value="date-desc">Newest First</option>
+                        <option value="date-asc">Oldest First</option>
+                        <option value="earnings-desc">Highest Earnings</option>
+                        <option value="rating-desc">Highest Rating</option>
+                    </select>
+                </div>
+            </div>
+            <div class="table-responsive">
+                <table class="history-table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Order ID</th>
+                            <th>Customer</th>
+                            <th>Items</th>
+                            <th>Order Value</th>
+                            <th>Earnings</th>
+                            <th>Rating</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="historyTbody">
+                    </tbody>
+                </table>
+            </div>
+            <div class="pagination" id="historyPagination"></div>
+        </div>
+    </main>
+
+    <!-- ORDER DETAIL MODAL -->
+    <div id="orderDetailModal" class="gg-modal-overlay" style="display:none;">
+        <div class="gg-modal-content" style="max-width:700px;">
+            <button class="gg-modal-close" onclick="closeOrderDetailModal()">×</button>
+            <h2 style="font-size:20px;color:#1a2a1e;margin-bottom:6px;" id="modalHistoryOrderId">Order Details</h2>
+            <p style="color:#666;font-size:13px;margin-bottom:20px;" id="modalHistoryOrderStatus"></p>
+
+            <div style="background:#f9fbf9;border:1px solid #eef2ee;border-radius:10px;padding:16px;margin-bottom:16px;">
+                <h4 style="font-size:14px;font-weight:700;color:#1a2a1e;margin-bottom:12px;">👤 Customer Details</h4>
+                <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;">
+                    <div><div style="font-size:12px;color:#666;">Name</div><div style="font-weight:600;" id="histDetailCustomerName">-</div></div>
+                    <div><div style="font-size:12px;color:#666;">Phone</div><div style="font-weight:600;" id="histDetailCustomerPhone">-</div></div>
+                    <div><div style="font-size:12px;color:#666;">Address</div><div style="font-weight:600;" id="histDetailCustomerAddress">-</div></div>
+                    <div><div style="font-size:12px;color:#666;">Order Date</div><div style="font-weight:600;" id="histDetailOrderDate">-</div></div>
+                </div>
+            </div>
+
+            <div style="background:#f9fbf9;border:1px solid #eef2ee;border-radius:10px;padding:16px;margin-bottom:16px;">
+                <h4 style="font-size:14px;font-weight:700;color:#1a2a1e;margin-bottom:12px;">📦 Items Delivered</h4>
+                <div id="histDetailItemsList"></div>
+            </div>
+
+            <div style="background:#f9fbf9;border:1px solid #eef2ee;border-radius:10px;padding:16px;margin-bottom:16px;">
+                <h4 style="font-size:14px;font-weight:700;color:#1a2a1e;margin-bottom:12px;">💰 Earnings Breakdown</h4>
+                <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;">
+                    <div style="text-align:center;padding:12px;background:#fff;border-radius:8px;border:1px solid #eef2ee;">
+                        <div style="font-size:12px;color:#666;">Order Total</div>
+                        <div style="font-size:20px;font-weight:800;color:#1a2a1e;" id="histDetailOrderTotal">-</div>
+                    </div>
+                    <div style="text-align:center;padding:12px;background:#fff;border-radius:8px;border:1px solid #eef2ee;">
+                        <div style="font-size:12px;color:#666;">Delivery Fee</div>
+                        <div style="font-size:20px;font-weight:800;color:#19a463;" id="histDetailDeliveryFee">-</div>
+                    </div>
+                    <div style="text-align:center;padding:12px;background:#fff;border-radius:8px;border:1px solid #eef2ee;">
+                        <div style="font-size:12px;color:#666;">Your Earnings</div>
+                        <div style="font-size:20px;font-weight:800;color:#19a463;" id="histDetailEarnings">-</div>
+                    </div>
+                </div>
+            </div>
+
+            <div style="background:#f9fbf9;border:1px solid #eef2ee;border-radius:10px;padding:16px;">
+                <h4 style="font-size:14px;font-weight:700;color:#1a2a1e;margin-bottom:12px;">🚚 Delivery Details</h4>
+                <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;">
+                    <div><div style="font-size:12px;color:#666;">Pickup Location</div><div style="font-weight:600;" id="histDetailPickup">-</div></div>
+                    <div><div style="font-size:12px;color:#666;">Delivery Address</div><div style="font-weight:600;" id="histDetailDelivery">-</div></div>
+                    <div><div style="font-size:12px;color:#666;">Delivered At</div><div style="font-weight:600;" id="histDetailDeliveredAt">-</div></div>
+                    <div><div style="font-size:12px;color:#666;">Payment Method</div><div style="font-weight:600;" id="histDetailPayment">-</div></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SCRIPTS -->
+    <script src="../store.js"></script>
+    <script src="auth.js"></script>
+
+    <script>
+        (function() {
+            // 1. Guard Page
+            const rider = window.GroceryRiderAuth.protectPage();
+            if (!rider) return;
+
+            // 2. Initialize UI
+            document.getElementById("riderProfileName").textContent = rider.name.split(" ")[0];
+            updateAvailabilityUI(rider.availability || "Available");
+            document.getElementById("availabilitySelect").value = rider.availability || "Available";
+
+            loadNotifications();
+
+            // 3. State
+            let allHistory = [];
+            let currentPage = 1;
+            const itemsPerPage = 20;
+
+            // 4. Render History
+            renderHistory();
+
+            // 5. Event Listeners
+            document.getElementById("availabilitySelect").addEventListener("change", function() {
+                updateAvailability(this.value);
+            });
+
+            document.getElementById("historySearchInput").addEventListener("input", function() {
+                currentPage = 1;
+                renderHistory();
+            });
+
+            document.getElementById("historyDateFilter").addEventListener("change", function() {
+                currentPage = 1;
+                renderHistory();
+            });
+
+            document.getElementById("historySortFilter").addEventListener("change", function() {
+                currentPage = 1;
+                renderHistory();
+            });
+
+            function updateAvailabilityUI(status) {
+                const dot = document.getElementById("availabilityDot");
+                const text = document.getElementById("availabilityText");
+
+                dot.className = "status-dot";
+                if (status === "Available") {
+                    dot.classList.add("available");
+                    text.textContent = "Available";
+                } else if (status === "Busy") {
+                    dot.classList.add("busy");
+                    text.textContent = "Busy";
+                } else {
+                    dot.classList.add("offline");
+                    text.textContent = "Offline";
+                }
+            }
+
+            function updateAvailability(newStatus) {
+                const riders = window.GroceryRiderAuth.getRiders();
+                const riderIndex = riders.findIndex(r => r.id === rider.id);
+                if (riderIndex !== -1) {
+                    riders[riderIndex].availability = newStatus;
+                    window.GroceryRiderAuth.saveRiders(riders);
+
+                    const sessionRider = window.GroceryRiderAuth.getCurrentRider();
+                    sessionRider.availability = newStatus;
+                    window.GroceryRiderAuth.setCurrentRider(sessionRider, true);
+
+                    updateAvailabilityUI(newStatus);
+                    showToast("Availability updated to " + newStatus);
+                }
+            }
+
+            function renderHistory() {
+                const allOrders = window.GroceryStore.getOrders();
+                const myOrders = allOrders.filter(o => o.riderId === rider.id && o.status === "Delivered");
+
+                // Get earnings history for additional details
+                const earnings = window.GroceryStore.getRiderEarningsSummary(rider.id);
+                const earningsHistory = earnings.history || [];
+
+                // Build history with enriched data
+                allHistory = myOrders.map(order => {
+                    const earningRecord = earningsHistory.find(e => e.orderId === order.id && e.type === "delivery");
+                    const review = window.GroceryStore.getReviews().find(r => r.type === "delivery" && r.orderId === order.id);
+                    return {
+                        ...order,
+                        riderEarnings: earningRecord?.amount || (order.deliveryFee || 50),
+                        rating: review?.riderRating || review?.rating || 0,
+                        deliveredAt: order.deliveredAt || order.updatedAt || order.createdAt
+                    };
+                });
+
+                // Stats
+                const totalDeliveries = allHistory.length;
+                const totalEarnings = allHistory.reduce((sum, o) => sum + (o.riderEarnings || 0), 0);
+                const ratings = allHistory.filter(o => o.rating > 0).map(o => o.rating);
+                const avgRating = ratings.length > 0 ? (ratings.reduce((a, b) => a + b, 0) / ratings.length).toFixed(1) : "5.0";
+
+                const today = new Date().toISOString().split("T")[0];
+                const monthStart = new Date();
+                monthStart.setDate(1);
+                const monthStartStr = monthStart.toISOString().split("T")[0];
+                const monthlyDeliveries = allHistory.filter(o => (o.deliveredAt || "").startsWith(monthStartStr)).length;
+
+                const totalItems = allHistory.reduce((sum, o) => sum + (o.items?.length || 0), 0);
+
+                // Best month
+                const monthlyCounts = {};
+                allHistory.forEach(o => {
+                    const month = (o.deliveredAt || "").slice(0, 7); // YYYY-MM
+                    if (month) monthlyCounts[month] = (monthlyCounts[month] || 0) + 1;
+                });
+                let bestMonth = "-";
+                let maxCount = 0;
+                for (const [month, count] of Object.entries(monthlyCounts)) {
+                    if (count > maxCount) {
+                        maxCount = count;
+                        bestMonth = month;
+                    }
+                }
+
+                document.getElementById("statTotalDeliveries").textContent = totalDeliveries;
+                document.getElementById("statHistoryEarnings").textContent = "₹" + totalEarnings.toLocaleString();
+                document.getElementById("statAvgRating").textContent = avgRating;
+                document.getElementById("statMonthlyDeliveries").textContent = monthlyDeliveries;
+                document.getElementById("summaryTotalItems").textContent = totalItems;
+                document.getElementById("summaryAvgTime").textContent = "~15 min";
+                document.getElementById("summaryBestMonth").textContent = bestMonth === "-" ? "-" : new Date(bestMonth + "-01").toLocaleDateString("en-IN", { month: "long", year: "numeric" });
+                document.getElementById("summaryCompletionRate").textContent = "100%";
+
+                // Filters
+                const searchQuery = document.getElementById("historySearchInput").value.toLowerCase().trim();
+                const dateFilter = document.getElementById("historyDateFilter").value;
+                const sortFilter = document.getElementById("historySortFilter").value;
+
+                let filtered = allHistory.filter(order => {
+                    const matchesSearch = order.id.toLowerCase().includes(searchQuery) ||
+                                        (order.userName || "").toLowerCase().includes(searchQuery) ||
+                                        (order.deliveredAt || "").includes(searchQuery);
+
+                    let matchesDate = true;
+                    const orderDate = order.deliveredAt || order.createdAt || "";
+                    if (dateFilter !== "All" && orderDate) {
+                        if (dateFilter === "Today") {
+                            matchesDate = orderDate.startsWith(today);
+                        } else if (dateFilter === "This Week") {
+                            const weekAgo = new Date();
+                            weekAgo.setDate(weekAgo.getDate() - 7);
+                            const weekAgoStr = weekAgo.toISOString().split("T")[0];
+                            matchesDate = orderDate >= weekAgoStr;
+                        } else if (dateFilter === "This Month") {
+                            matchesDate = orderDate >= monthStartStr;
+                        } else if (dateFilter === "Last Month") {
+                            const lastMonth = new Date();
+                            lastMonth.setMonth(lastMonth.getMonth() - 1);
+                            lastMonth.setDate(1);
+                            const lastMonthStr = lastMonth.toISOString().split("T")[0];
+                            const thisMonthStart = monthStartStr;
+                            matchesDate = orderDate >= lastMonthStr && orderDate < thisMonthStart;
+                        } else if (dateFilter === "This Year") {
+                            const yearStart = new Date();
+                            yearStart.setMonth(0);
+                            yearStart.setDate(1);
+                            const yearStartStr = yearStart.toISOString().split("T")[0];
+                            matchesDate = orderDate >= yearStartStr;
+                        }
+                    }
+
+                    return matchesSearch && matchesDate;
+                });
+
+                // Sort
+                filtered.sort((a, b) => {
+                    if (sortFilter === "date-desc") {
+                        return new Date(b.deliveredAt || b.createdAt) - new Date(a.deliveredAt || a.createdAt);
+                    } else if (sortFilter === "date-asc") {
+                        return new Date(a.deliveredAt || a.createdAt) - new Date(b.deliveredAt || b.createdAt);
+                    } else if (sortFilter === "earnings-desc") {
+                        return (b.riderEarnings || 0) - (a.riderEarnings || 0);
+                    } else if (sortFilter === "rating-desc") {
+                        return (b.rating || 0) - (a.rating || 0);
+                    }
+                    return 0;
+                });
+
+                // Pagination
+                const totalPages = Math.ceil(filtered.length / itemsPerPage);
+                if (currentPage > totalPages) currentPage = totalPages || 1;
+
+                const start = (currentPage - 1) * itemsPerPage;
+                const end = start + itemsPerPage;
+                const pageItems = filtered.slice(start, end);
+
+                // Render table
+                const tbody = document.getElementById("historyTbody");
+                if (pageItems.length === 0) {
+                    tbody.innerHTML = `
+                        <tr>
+                            <td colspan="9">
+                                <div class="rider-empty-state">
+                                    <div class="rider-empty-icon">📜</div>
+                                    <p>No delivery history found</p>
+                                    <small>Complete deliveries to build your history</small>
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                } else {
+                    tbody.innerHTML = pageItems.map(order => {
+                        const stars = "★".repeat(order.rating) + "☆".repeat(5 - order.rating);
+                        return `
+                            <tr>
+                                <td><small>${formatDate(order.deliveredAt || order.createdAt)}</small></td>
+                                <td><span class="order-id">#${order.id}</span></td>
+                                <td>${order.userName || order.customerName || "Customer"}</td>
+                                <td>${order.items?.length || 0}</td>
+                                <td>₹${(order.total || 0).toLocaleString()}</td>
+                                <td style="color:#19a463;font-weight:700;">₹${(order.riderEarnings || 0).toLocaleString()}</td>
+                                <td>
+                                    ${order.rating > 0 ? `
+                                        <span class="rating-stars">${stars}</span>
+                                        <span class="rating-value">${order.rating.toFixed(1)}</span>
+                                    ` : '<span style="color:#888;">Not rated</span>'}
+                                </td>
+                                <td><span class="pill pill-rider-delivered">Delivered</span></td>
+                                <td>
+                                    <button class="rider-tbl-btn-view" onclick="viewHistoryOrderDetails('${order.id}')">View</button>
+                                </td>
+                            </tr>
+                        `;
+                    }).join("");
+                }
+
+                // Render pagination
+                renderPagination(totalPages);
+            }
+
+            function formatDate(dateStr) {
+                if (!dateStr) return "-";
+                const date = new Date(dateStr);
+                return date.toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" });
+            }
+
+            function renderPagination(totalPages) {
+                const pagination = document.getElementById("historyPagination");
+                if (totalPages <= 1) {
+                    pagination.innerHTML = "";
+                    return;
+                }
+
+                let html = `
+                    <button class="page-btn" ${currentPage === 1 ? "disabled" : ""} onclick="goToPage(${currentPage - 1})">← Previous</button>
+                    <span class="page-info">Page ${currentPage} of ${totalPages}</span>
+                    <button class="page-btn" ${currentPage === totalPages ? "disabled" : ""} onclick="goToPage(${currentPage + 1})">Next →</button>
+                `;
+                pagination.innerHTML = html;
+            }
+
+            window.goToPage = function(page) {
+                currentPage = page;
+                renderHistory();
+            };
+
+            window.viewHistoryOrderDetails = function(orderId) {
+                const order = window.GroceryStore.getOrders().find(o => o.id === orderId);
+                if (!order) return;
+
+                const earnings = window.GroceryStore.getRiderEarningsSummary(rider.id);
+                const earningRecord = (earnings.history || []).find(e => e.orderId === orderId && e.type === "delivery");
+                const review = window.GroceryStore.getReviews().find(r => r.type === "delivery" && r.orderId === orderId);
+
+                document.getElementById("modalHistoryOrderId").textContent = `Order #${orderId}`;
+                document.getElementById("modalHistoryOrderStatus").innerHTML = `<span class="status-badge status-delivered">Delivered</span> on ${formatDate(order.deliveredAt || order.updatedAt)}`;
+
+                document.getElementById("histDetailCustomerName").textContent = order.userName || order.customerName || "-";
+                document.getElementById("histDetailCustomerPhone").textContent = order.phone || "-";
+                document.getElementById("histDetailCustomerAddress").textContent = order.deliveryAddress || order.address || "-";
+                document.getElementById("histDetailOrderDate").textContent = formatDate(order.createdAt);
+
+                // Items
+                const itemsHtml = (order.items || []).map(item => `
+                    <div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid #eef2ee;">
+                        <span style="font-size:24px;">${item.icon || "🛒"}</span>
+                        <div style="flex:1;">
+                            <div style="font-weight:600;font-size:13px;">${item.name}</div>
+                            <div style="font-size:12px;color:#666;">Qty: ${item.quantity} × ${item.unit || ""} @ ₹${item.price}</div>
+                        </div>
+                        <span style="font-weight:700;color:#19a463;">₹${(item.price * item.quantity).toLocaleString()}</span>
+                    </div>
+                `).join("");
+                document.getElementById("histDetailItemsList").innerHTML = itemsHtml || "<p style='color:#888;'>No items</p>";
+
+                // Earnings
+                document.getElementById("histDetailOrderTotal").textContent = "₹" + (order.total || 0).toLocaleString();
+                document.getElementById("histDetailDeliveryFee").textContent = "₹" + (order.deliveryFee || 50).toLocaleString();
+                document.getElementById("histDetailEarnings").textContent = "₹" + (earningRecord?.amount || order.deliveryFee || 50).toLocaleString();
+
+                // Delivery
+                document.getElementById("histDetailPickup").textContent = order.pickupAddress || "GroceryGo Store";
+                document.getElementById("histDetailDelivery").textContent = order.deliveryAddress || order.address || "-";
+                document.getElementById("histDetailDeliveredAt").textContent = formatDate(order.deliveredAt || order.updatedAt);
+                document.getElementById("histDetailPayment").textContent = order.paymentMethod || "-";
+
+                document.getElementById("orderDetailModal").style.display = "flex";
+            };
+
+            window.closeOrderDetailModal = function() {
+                document.getElementById("orderDetailModal").style.display = "none";
+            };
+
+            function loadNotifications() {
+                const notifications = window.GroceryStore.getRiderNotifications(rider.id);
+                const unreadCount = notifications.filter(n => !n.read).length;
+                const badge = document.getElementById("notificationBadge");
+                if (unreadCount > 0) {
+                    badge.textContent = unreadCount;
+                    badge.style.display = "flex";
+                } else {
+                    badge.style.display = "none";
+                }
+            }
+
+            window.toggleNotifications = function() {
+                const dropdown = document.getElementById("notificationsDropdown");
+                const isVisible = dropdown.style.display === "flex";
+                dropdown.style.display = isVisible ? "none" : "flex";
+
+                if (!isVisible) {
+                    renderNotifications();
+                }
+            };
+
+            window.closeNotifications = function() {
+                document.getElementById("notificationsDropdown").style.display = "none";
+            };
+
+            function renderNotifications() {
+                const notifications = window.GroceryStore.getRiderNotifications(rider.id);
+                const list = document.getElementById("notificationsList");
+
+                if (notifications.length === 0) {
+                    list.innerHTML = `<div style="padding:24px;text-align:center;color:#888;">No notifications</div>`;
+                    return;
+                }
+
+                list.innerHTML = notifications.slice(0, 20).map(n => `
+                    <div style="padding:12px 16px;border-radius:8px;margin-bottom:8px;background:${n.read ? "#fff" : "#f4faf6"};border:${n.read ? "1px solid #eef2ee" : "1px solid #cde8d5"};" onclick="markNotificationRead('${n.id}')">
+                        <div style="font-weight:600;font-size:13px;color:#1a2a1e;">${n.title}</div>
+                        <div style="font-size:12px;color:#666;margin-top:2px;">${n.message}</div>
+                        <div style="font-size:11px;color:#999;margin-top:4px;">${n.createdAt}</div>
+                    </div>
+                `).join("");
+            }
+
+            window.markNotificationRead = function(notificationId) {
+                window.GroceryStore.markRiderNotificationRead(rider.id, notificationId);
+                loadNotifications();
+                renderNotifications();
+            }
+
+            // Toast helper
+            function showToast(message, bgColor = "#17241b") {
+                let toast = document.getElementById("toast");
+                if (!toast) {
+                    toast = document.createElement("div");
+                    toast.id = "toast";
+                    toast.style.cssText = `position:fixed;bottom:24px;right:24px;padding:12px 22px;border-radius:8px;font-size:14px;font-weight:600;color:#fff;z-index:99999;box-shadow:0 8px 24px rgba(0,0,0,0.2);transition:opacity .3s,transform .3s;`;
+                    document.body.appendChild(toast);
+                }
+                toast.style.background = bgColor;
+                toast.textContent = message;
+                toast.style.display = "block";
+                toast.style.opacity = "1";
+                clearTimeout(window.__toastTimer);
+                window.__toastTimer = setTimeout(() => {
+                    toast.style.opacity = "0";
+                    setTimeout(() => toast.style.display = "none", 300);
+                }, 2500);
+            }
+        })();
+    </script>
+</body>
+
+</html>

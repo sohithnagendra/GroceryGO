@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GroceryGo - Rider Registration</title>
+    <link rel="stylesheet" href="../admin.css">
+</head>
+
+<body>
+
+    <div class="rider-auth-page">
+        <div class="rider-auth-wrapper">
+            <!-- LEFT PANEL -->
+            <section class="rider-auth-left">
+                <div class="rider-auth-logo">
+                    🛵 <span>GroceryGo</span>
+                </div>
+                <div class="rider-auth-left-content">
+                    <h2>
+                        Join the<br>
+                        <span>GroceryGo Fleet</span>
+                    </h2>
+                    <p>
+                        Become a delivery partner and earn flexible income delivering fresh groceries. Work on your schedule, get weekly payouts, and be part of India's fastest growing grocery delivery network.
+                    </p>
+                    <div class="rider-auth-features">
+                        <div class="rider-auth-feature">
+                            <div class="rider-auth-feature-icon">⚡</div>
+                            <div class="rider-auth-feature-text">
+                                <strong>Flexible Hours</strong>
+                                <small>Work when it suits you</small>
+                            </div>
+                        </div>
+                        <div class="rider-auth-feature">
+                            <div class="rider-auth-feature-icon">💰</div>
+                            <div class="rider-auth-feature-text">
+                                <strong>Weekly Payouts</strong>
+                                <small>Get paid every week</small>
+                            </div>
+                        </div>
+                        <div class="rider-auth-feature">
+                            <div class="rider-auth-feature-icon">🛵</div>
+                            <div class="rider-auth-feature-text">
+                                <strong>Your Vehicle</strong>
+                                <small>Bike, scooter or cycle</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- RIGHT PANEL -->
+            <section class="rider-auth-right">
+                <a href="../index.html" class="rider-back-home">← Back to GroceryGo</a>
+
+                <div class="rider-auth-title">
+                    <h1>Create Rider Account</h1>
+                    <p>Join our delivery fleet and start earning</p>
+                </div>
+
+                <div class="rider-info-box">
+                    <strong>📋 Registration Requirements</strong>
+                    All fields are mandatory. A valid Rider Access Code (5843) is required to register as a delivery partner. Your unique Rider ID will be generated automatically upon successful registration.
+                </div>
+
+                <form id="riderRegisterForm" class="rider-auth-form">
+                    <!-- RIDER ID (AUTO-GENERATED) -->
+                    <div class="rider-input-group">
+                        <label>Your Rider ID <span class="required">*</span></label>
+                        <div class="rider-id-label">Auto-generated unique identifier</div>
+                        <div class="rider-id-display" id="generatedRiderId">RID-****</div>
+                        <input type="hidden" id="riderId" name="riderId">
+                    </div>
+
+                    <!-- PERSONAL INFO ROW 1 -->
+                    <div class="rider-form-row">
+                        <div class="rider-input-group">
+                            <label for="fullName">Full Name <span class="required">*</span></label>
+                            <div class="rider-input-wrapper">
+                                <span class="rider-input-icon">👤</span>
+                                <input type="text" id="fullName" name="fullName" placeholder="e.g., Ramesh Reddy" autocomplete="name" required>
+                            </div>
+                            <div class="error-message" id="fullNameError"></div>
+                        </div>
+
+                        <div class="rider-input-group">
+                            <label for="email">Email Address <span class="required">*</span></label>
+                            <div class="rider-input-wrapper">
+                                <span class="rider-input-icon">✉️</span>
+                                <input type="email" id="email" name="email" placeholder="e.g., ramesh@grocerygo.com" autocomplete="email" required>
+                            </div>
+                            <div class="error-message" id="emailError"></div>
+                        </div>
+                    </div>
+
+                    <!-- PERSONAL INFO ROW 2 -->
+                    <div class="rider-form-row">
+                        <div class="rider-input-group">
+                            <label for="mobile">Mobile Number <span class="required">*</span></label>
+                            <div class="rider-input-wrapper">
+                                <span class="rider-input-icon">📱</span>
+                                <input type="tel" id="mobile" name="mobile" placeholder="10-digit number" pattern="[0-9]{10}" maxlength="10" autocomplete="tel" required>
+                            </div>
+                            <div class="error-message" id="mobileError"></div>
+                        </div>
+
+                        <div class="rider-input-group">
+                            <label for="vehicleType">Vehicle Type <span class="required">*</span></label>
+                            <div class="rider-input-wrapper">
+                                <span class="rider-input-icon">🛵</span>
+                                <select id="vehicleType" name="vehicleType" required>
+                                    <option value="">Select Vehicle</option>
+                                    <option value="Bike">Motorcycle / Bike</option>
+                                    <option value="Scooter">Scooter / Moped</option>
+                                    <option value="Bicycle">Bicycle</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                            </div>
+                            <div class="error-message" id="vehicleTypeError"></div>
+                        </div>
+                    </div>
+
+                    <!-- VEHICLE DETAILS ROW 1 -->
+                    <div class="rider-form-row">
+                        <div class="rider-input-group">
+                            <label for="vehicleNumber">Vehicle Reg. Number <span class="required">*</span></label>
+                            <div class="rider-input-wrapper">
+                                <span class="rider-input-icon">🔢</span>
+                                <input type="text" id="vehicleNumber" name="vehicleNumber" placeholder="e.g., AP16AB1234" autocomplete="off" required>
+                            </div>
+                            <div class="error-message" id="vehicleNumberError"></div>
+                        </div>
+
+                        <div class="rider-input-group">
+                            <label for="drivingLicense">Driving License No. <span class="required">*</span></label>
+                            <div class="rider-input-wrapper">
+                                <span class="rider-input-icon">🪪</span>
+                                <input type="text" id="drivingLicense" name="drivingLicense" placeholder="e.g., DL123456789" autocomplete="off" required>
+                            </div>
+                            <div class="error-message" id="drivingLicenseError"></div>
+                        </div>
+                    </div>
+
+                    <!-- PASSWORD ROW -->
+                    <div class="rider-form-row">
+                        <div class="rider-input-group">
+                            <label for="password">Password <span class="required">*</span></label>
+                            <div class="rider-input-wrapper">
+                                <span class="rider-input-icon">🔒</span>
+                                <input type="password" id="password" name="password" placeholder="Min. 6 characters" minlength="6" autocomplete="new-password" required>
+                                <button type="button" class="toggle-password" onclick="togglePassword('password')" aria-label="Toggle password visibility">👁️</button>
+                            </div>
+                            <div class="error-message" id="passwordError"></div>
+                            <p class="rider-password-note">Minimum 6 characters</p>
+                        </div>
+
+                        <div class="rider-input-group">
+                            <label for="confirmPassword">Confirm Password <span class="required">*</span></label>
+                            <div class="rider-input-wrapper">
+                                <span class="rider-input-icon">🔐</span>
+                                <input type="password" id="confirmPassword" name="confirmPassword" placeholder="Re-enter password" autocomplete="new-password" required>
+                                <button type="button" class="toggle-password" onclick="togglePassword('confirmPassword')" aria-label="Toggle password visibility">👁️</button>
+                            </div>
+                            <div class="error-message" id="confirmPasswordError"></div>
+                        </div>
+                    </div>
+
+                    <!-- ACCESS CODE -->
+                    <div class="rider-access-code-group">
+                        <label for="accessCode">Rider Access Code <span class="required">*</span></label>
+                        <input type="text" id="accessCode" name="accessCode" class="rider-access-code-input" placeholder="Enter 5843" maxlength="4" autocomplete="off" required>
+                        <div class="error-message" id="accessCodeError"></div>
+                    </div>
+
+                    <!-- REGISTER BUTTON -->
+                    <button type="submit" class="rider-auth-btn" id="registerBtn">
+                        Create Rider Account
+                    </button>
+                </form>
+
+                <div class="rider-auth-divider">
+                    <span></span>
+                    <p>Already a member?</p>
+                    <span></span>
+                </div>
+
+                <div class="rider-auth-switch-buttons">
+                    <a href="login.html" class="rider-auth-btn rider-secondary-btn">
+                        Already a Rider? Login
+                    </a>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <script src="../store.js"></script>
+    <script src="auth.js"></script>
+
+    <script>
+        (function() {
+            // Generate Rider ID on page load
+            function generateRiderId() {
+                const riders = window.GroceryRiderAuth.getRiders();
+                const nextNum = riders.length + 1;
+                return "RID" + String(nextNum).padStart(4, "0");
+            }
+
+            // Initialize Rider ID display
+            document.getElementById("generatedRiderId").textContent = generateRiderId();
+            document.getElementById("riderId").value = generateRiderId();
+
+            // Password visibility toggle
+            window.togglePassword = function(fieldId) {
+                const input = document.getElementById(fieldId);
+                const btn = input.nextElementSibling;
+                if (input.type === "password") {
+                    input.type = "text";
+                    btn.textContent = "🙈";
+                } else {
+                    input.type = "password";
+                    btn.textContent = "👁️";
+                }
+            };
+
+            // Validation helpers
+            function showError(fieldId, message) {
+                const input = document.getElementById(fieldId);
+                const errorEl = document.getElementById(fieldId + "Error");
+                input.classList.add("error");
+                input.classList.remove("success");
+                errorEl.textContent = message;
+                errorEl.classList.add("visible");
+            }
+
+            function clearError(fieldId) {
+                const input = document.getElementById(fieldId);
+                const errorEl = document.getElementById(fieldId + "Error");
+                input.classList.remove("error");
+                errorEl.classList.remove("visible");
+                errorEl.textContent = "";
+            }
+
+            function showSuccess(fieldId) {
+                const input = document.getElementById(fieldId);
+                input.classList.remove("error");
+                input.classList.add("success");
+            }
+
+            function validateEmail(email) {
+                const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                return re.test(email);
+            }
+
+            function validateMobile(mobile) {
+                return /^[0-9]{10}$/.test(mobile);
+            }
+
+            // Real-time validation
+            document.getElementById("fullName").addEventListener("input", function() {
+                if (this.value.trim().length >= 2) {
+                    clearError("fullName");
+                    showSuccess("fullName");
+                } else {
+                    clearError("fullName");
+                }
+            });
+
+            document.getElementById("email").addEventListener("input", function() {
+                if (validateEmail(this.value.trim())) {
+                    clearError("email");
+                    showSuccess("email");
+                } else {
+                    clearError("email");
+                }
+            });
+
+            document.getElementById("mobile").addEventListener("input", function() {
+                if (validateMobile(this.value.trim())) {
+                    clearError("mobile");
+                    showSuccess("mobile");
+                } else {
+                    clearError("mobile");
+                }
+            });
+
+            document.getElementById("vehicleType").addEventListener("change", function() {
+                if (this.value) {
+                    clearError("vehicleType");
+                    showSuccess("vehicleType");
+                } else {
+                    clearError("vehicleType");
+                }
+            });
+
+            document.getElementById("password").addEventListener("input", function() {
+                if (this.value.length >= 6) {
+                    clearError("password");
+                    showSuccess("password");
+                } else {
+                    clearError("password");
+                }
+            });
+
+            document.getElementById("confirmPassword").addEventListener("input", function() {
+                const password = document.getElementById("password").value;
+                if (this.value === password && password.length >= 6) {
+                    clearError("confirmPassword");
+                    showSuccess("confirmPassword");
+                } else {
+                    clearError("confirmPassword");
+                }
+            });
+
+            document.getElementById("accessCode").addEventListener("input", function() {
+                if (this.value === "5843") {
+                    clearError("accessCode");
+                    showSuccess("accessCode");
+                } else {
+                    clearError("accessCode");
+                }
+            });
+
+            // Real-time validation for new fields
+            document.getElementById("vehicleNumber").addEventListener("input", function() {
+                if (this.value.trim().length >= 5) {
+                    clearError("vehicleNumber");
+                    showSuccess("vehicleNumber");
+                } else {
+                    clearError("vehicleNumber");
+                }
+            });
+
+            document.getElementById("drivingLicense").addEventListener("input", function() {
+                if (this.value.trim().length >= 5) {
+                    clearError("drivingLicense");
+                    showSuccess("drivingLicense");
+                } else {
+                    clearError("drivingLicense");
+                }
+            });
+
+            // Form submission
+            document.getElementById("riderRegisterForm").addEventListener("submit", function(e) {
+                e.preventDefault();
+
+                const fullName = document.getElementById("fullName").value.trim();
+                const email = document.getElementById("email").value.trim().toLowerCase();
+                const mobile = document.getElementById("mobile").value.trim();
+                const vehicleType = document.getElementById("vehicleType").value;
+                const vehicleNumber = document.getElementById("vehicleNumber").value.trim().toUpperCase();
+                const drivingLicense = document.getElementById("drivingLicense").value.trim().toUpperCase();
+                const password = document.getElementById("password").value;
+                const confirmPassword = document.getElementById("confirmPassword").value;
+                const accessCode = document.getElementById("accessCode").value.trim();
+                const riderId = document.getElementById("riderId").value;
+
+                let hasErrors = false;
+
+                // Validate all fields
+                if (!fullName || fullName.length < 2) {
+                    showError("fullName", "Please enter your full name (minimum 2 characters)");
+                    hasErrors = true;
+                }
+
+                if (!validateEmail(email)) {
+                    showError("email", "Please enter a valid email address");
+                    hasErrors = true;
+                }
+
+                if (!validateMobile(mobile)) {
+                    showError("mobile", "Please enter a valid 10-digit mobile number");
+                    hasErrors = true;
+                }
+
+                if (!vehicleType) {
+                    showError("vehicleType", "Please select a vehicle type");
+                    hasErrors = true;
+                }
+
+                if (!vehicleNumber || vehicleNumber.length < 5) {
+                    showError("vehicleNumber", "Please enter a valid vehicle registration number");
+                    hasErrors = true;
+                }
+
+                if (!drivingLicense || drivingLicense.length < 5) {
+                    showError("drivingLicense", "Please enter a valid driving license number");
+                    hasErrors = true;
+                }
+
+                if (password.length < 6) {
+                    showError("password", "Password must be at least 6 characters");
+                    hasErrors = true;
+                }
+
+                if (password !== confirmPassword) {
+                    showError("confirmPassword", "Passwords do not match");
+                    hasErrors = true;
+                }
+
+                if (accessCode !== "5843") {
+                    showError("accessCode", "Invalid Rider Access Code. Please enter the correct code.");
+                    hasErrors = true;
+                }
+
+                if (hasErrors) {
+                    // Scroll to first error
+                    const firstError = document.querySelector(".error-message.visible");
+                    if (firstError) {
+                        firstError.scrollIntoView({ behavior: "smooth", block: "center" });
+                    }
+                    return;
+                }
+
+                // Check for duplicate email
+                const riders = window.GroceryRiderAuth.getRiders();
+                if (riders.some(r => r.email.toLowerCase() === email)) {
+                    showError("email", "This email is already registered with another rider account.");
+                    return;
+                }
+
+                if (riders.some(r => r.phone === mobile)) {
+                    showError("mobile", "This mobile number is already registered with another rider account.");
+                    return;
+                }
+
+                if (riders.some(r => r.vehicleNumber === vehicleNumber)) {
+                    showError("vehicleNumber", "This vehicle number is already registered with another rider account.");
+                    return;
+                }
+
+                // Check for duplicate Rider ID (shouldn't happen with auto-generation, but safety check)
+                if (riders.some(r => r.id === riderId)) {
+                    // Generate a new one
+                    let newId = "RID" + String(riders.length + 1).padStart(4, "0");
+                    while (riders.some(r => r.id === newId)) {
+                        newId = "RID" + String(Math.floor(1000 + Math.random() * 9000));
+                    }
+                    document.getElementById("generatedRiderId").textContent = newId;
+                    document.getElementById("riderId").value = newId;
+                }
+
+                // Show loading state
+                const btn = document.getElementById("registerBtn");
+                btn.classList.add("loading");
+                btn.disabled = true;
+
+                // Simulate brief processing
+                setTimeout(() => {
+                    // Create rider account - matching store.js DEFAULT_RIDERS structure
+                    const newRider = {
+                        id: riderId,
+                        name: fullName,
+                        email: email,
+                        phone: mobile,
+                        password: password, // In production, this should be hashed
+                        dateOfBirth: "",
+                        gender: "Male",
+                        address: "",
+                        city: "Vijayawada",
+                        pincode: "520001",
+                        emergencyContactName: "",
+                        emergencyContactNumber: "",
+                        vehicleType: vehicleType,
+                        vehicleNumber: vehicleNumber,
+                        drivingLicenseNumber: drivingLicense,
+                        joiningDate: new Date().toISOString().split("T")[0],
+                        status: "Available",
+                        assignedOrders: [],
+                        totalDeliveries: 0,
+                        totalEarnings: 0,
+                        availability: "Available",
+                        // Extended profile fields
+                        vehicles: [],
+                        documents: [],
+                        preferences: { email: true, push: true, sms: false, autoAccept: false },
+                        twoFactorEnabled: false
+                    };
+
+                    riders.push(newRider);
+                    window.GroceryRiderAuth.saveRiders(riders);
+
+                    btn.classList.remove("loading");
+                    btn.disabled = false;
+
+                    // Show success message
+                    alert("Rider account created successfully!");
+
+                    // Redirect to login
+                    window.location.href = "login.html";
+                }, 800);
+            });
+        })();
+    </script>
+
+</body>
+
+</html>

@@ -1,0 +1,926 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GroceryGo - Rider Earnings</title>
+    <link rel="stylesheet" href="../admin.css">
+    <style>
+        /* Earnings-specific extensions to shared admin.css classes */
+
+        .stat-card.primary {
+            background: linear-gradient(135deg, #19a463 0%, #158b50 100%);
+            color: white;
+            border: none;
+        }
+
+        .stat-card.primary .stat-icon {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+        }
+
+        .stat-card.primary .pill {
+            background: rgba(255, 255, 255, 0.3);
+            color: white;
+        }
+
+        .stat-card.primary .stat-val {
+            color: white;
+        }
+
+        .stat-card.primary .stat-label {
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .earnings-tabs {
+            display: flex;
+            gap: 8px;
+            border-bottom: 2px solid #eef2ee;
+            margin: 0 24px;
+            padding-bottom: 0;
+        }
+
+        .earnings-tab {
+            background: none;
+            border: none;
+            padding: 14px 20px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #666;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            margin-bottom: -2px;
+            transition: all 0.2s;
+        }
+
+        .earnings-tab:hover {
+            color: #19a463;
+        }
+
+        .earnings-tab.active {
+            color: #19a463;
+            border-bottom-color: #19a463;
+        }
+
+        .tab-content {
+            display: none;
+            padding: 24px;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .earnings-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .earnings-table th {
+            background: #f9fbf9;
+            padding: 14px 16px;
+            text-align: left;
+            font-size: 12px;
+            font-weight: 700;
+            color: #555;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 1px solid #eef2ee;
+        }
+
+        .earnings-table td {
+            padding: 14px 16px;
+            border-bottom: 1px solid #f3f6f4;
+            font-size: 13px;
+            color: #333;
+        }
+
+        .earnings-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .earnings-table tr:hover td {
+            background: #fafcfb;
+        }
+
+        .earnings-positive {
+            color: #166534;
+            font-weight: 700;
+        }
+
+        .chart-container {
+            height: 300px;
+            display: flex;
+            align-items: flex-end;
+            gap: 16px;
+            padding: 20px 0;
+            justify-content: center;
+        }
+
+        .chart-bar {
+            flex: 1;
+            max-width: 60px;
+            background: linear-gradient(180deg, #19a463 0%, #158b50 100%);
+            border-radius: 8px 8px 0 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-end;
+            min-height: 20px;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .chart-bar:hover {
+            opacity: 0.8;
+        }
+
+        .chart-bar-label {
+            position: absolute;
+            bottom: -28px;
+            font-size: 11px;
+            font-weight: 600;
+            color: #666;
+            white-space: nowrap;
+        }
+
+        .chart-bar-value {
+            position: absolute;
+            top: -24px;
+            font-size: 11px;
+            font-weight: 700;
+            color: #1a2a1e;
+            white-space: nowrap;
+        }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .summary-card {
+            background: #f9fbf9;
+            border: 1px solid #eef2ee;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .summary-value {
+            font-size: 28px;
+            font-weight: 800;
+            color: #19a463;
+            margin-bottom: 4px;
+        }
+
+        .summary-label {
+            font-size: 13px;
+            color: #666;
+            font-weight: 500;
+        }
+
+        .payout-section {
+            background: linear-gradient(135deg, #f4faf6 0%, #e8f4ee 100%);
+            border: 1px solid #cde8d5;
+            border-radius: 14px;
+            padding: 24px;
+            margin-bottom: 24px;
+        }
+
+        .payout-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+        }
+
+        .payout-header h3 {
+            font-size: 18px;
+            font-weight: 700;
+            color: #1a2a1e;
+        }
+
+        .payout-amount {
+            font-size: 32px;
+            font-weight: 800;
+            color: #19a463;
+        }
+
+        .payout-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+        }
+
+        .payout-item {
+            background: #fff;
+            border: 1px solid #eef2ee;
+            border-radius: 10px;
+            padding: 16px;
+        }
+
+        .payout-item-label {
+            font-size: 12px;
+            color: #666;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+        }
+
+        .payout-item-value {
+            font-size: 18px;
+            font-weight: 700;
+            color: #1a2a1e;
+        }
+
+        /* Status badge for earnings history */
+        .status-delivered { background: #dcfce7; color: #166534; }
+        .status-assigned { background: #dbeafe; color: #1e40af; }
+        .status-pending { background: #fef3c7; color: #92400e; }
+        .status-completed { background: #dcfce7; color: #166534; }
+
+        /* Availability toggle select transparent style fix */
+        .rider-availability-toggle select {
+            background: transparent !important;
+            border: none !important;
+            color: white !important;
+            font-weight: 600 !important;
+            font-size: 13px !important;
+            padding: 4px !important;
+            cursor: pointer !important;
+        }
+
+        .rider-availability-toggle select option {
+            background: #17241b;
+            color: white;
+        }
+
+        /* Toast for earnings page */
+        #toast {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            padding: 12px 22px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #fff;
+            z-index: 99999;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+            transition: opacity .3s, transform .3s;
+            display: none;
+        }
+
+        /* Empty state */
+        .rider-empty-state {
+            text-align: center;
+            padding: 48px 24px;
+            color: #888;
+        }
+
+        .rider-empty-state .empty-state-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+        }
+
+        /* Responsive - only custom overrides */
+        @media (max-width: 750px) {
+            .earnings-tabs {
+                margin: 0;
+                overflow-x: auto;
+            }
+
+            .earnings-tab {
+                white-space: nowrap;
+                padding: 12px 16px;
+            }
+
+            .payout-details {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- RIDER NAVBAR -->
+    <header class="rider-navbar">
+        <div class="rider-navbar-inner">
+            <div class="rider-brand">
+                <div class="rider-logo">🛵</div>
+                <div>
+                    <div style="font-size:18px;font-weight:800;">GroceryGo</div>
+                    <span class="rider-badge">Rider Portal</span>
+                </div>
+            </div>
+
+            <nav class="rider-nav-links">
+                <a href="dashboard.html" class="rider-nav-item">📊 Dashboard</a>
+                <a href="orders.html" class="rider-nav-item">📦 My Orders</a>
+                <a href="earnings.html" class="rider-nav-item active">💰 Earnings</a>
+                <a href="history.html" class="rider-nav-item">📜 History</a>
+                <a href="performance.html" class="rider-nav-item">📈 Performance</a>
+                <a href="availability.html" class="rider-nav-item">🕐 Availability</a>
+                <a href="issues.html" class="rider-nav-item">🎫 Issues</a>
+                <a href="profile.html" class="rider-nav-item">👤 Profile</a>
+            </nav>
+
+            <div class="rider-nav-actions">
+                <div class="rider-availability-toggle">
+                    <span class="status-dot" id="availabilityDot"></span>
+                    <span id="availabilityText">Available</span>
+                    <select id="availabilitySelect" style="background:transparent;border:none;color:white;font-weight:600;font-size:13px;padding:4px;cursor:pointer;">
+                        <option value="Available">Available</option>
+                        <option value="Busy">Busy</option>
+                        <option value="Offline">Offline</option>
+                    </select>
+                </div>
+
+                <div class="notification-bell" onclick="toggleNotifications()">
+                    🔔
+                    <span class="notification-badge" id="notificationBadge" style="display:none;">0</span>
+                </div>
+
+                <div class="rider-profile-pill">
+                    <span>🛵</span>
+                    <span id="riderProfileName">Rider</span>
+                </div>
+                <button class="rider-logout-btn" onclick="riderLogout()">Logout</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- NOTIFICATIONS DROPDOWN -->
+    <div id="notificationsDropdown" class="gg-modal-overlay" style="display:none; max-width:400px; margin: 80px auto 0; width: 90%;">
+        <div class="gg-modal-content" style="max-height:500px; overflow:hidden;">
+            <div style="display:flex; align-items:center; justify-content:space-between; padding:16px 20px; border-bottom:1px solid #eef2ee;">
+                <h3 style="font-size:16px;font-weight:700;color:#1a2a1e;">🔔 Notifications</h3>
+                <button class="gg-modal-close" onclick="closeNotifications()">×</button>
+            </div>
+            <div id="notificationsList" style="max-height:400px; overflow-y:auto; padding:8px;">
+            </div>
+        </div>
+    </div>
+
+    <main class="rider-main">
+        <div class="rider-page-header">
+            <div>
+                <h1>Earnings</h1>
+                <p>Track your delivery earnings and payouts</p>
+            </div>
+        </div>
+
+        <!-- MAIN EARNINGS STATS -->
+        <div class="rider-stats-grid">
+            <div class="stat-card primary">
+                <div class="stat-top">
+                    <div class="stat-icon">💰</div>
+                    <span class="pill">Total</span>
+                </div>
+                <div class="stat-val" id="statTotalEarnings">₹0</div>
+                <div class="stat-label">All Time Earnings</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-top">
+                    <div class="stat-icon icon-green">📅</div>
+                    <span class="pill pill-green">Today</span>
+                </div>
+                <div class="stat-val" id="statTodayEarnings">₹0</div>
+                <div class="stat-label">Today's Earnings</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-top">
+                    <div class="stat-icon icon-blue">📊</div>
+                    <span class="pill pill-blue">This Week</span>
+                </div>
+                <div class="stat-val" id="statWeeklyEarnings">₹0</div>
+                <div class="stat-label">Weekly Earnings</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-top">
+                    <div class="stat-icon icon-purple">📈</div>
+                    <span class="pill pill-purple">This Month</span>
+                </div>
+                <div class="stat-val" id="statMonthlyEarnings">₹0</div>
+                <div class="stat-label">Monthly Earnings</div>
+            </div>
+        </div>
+
+        <!-- PAYOUT SECTION -->
+        <div class="payout-section">
+            <div class="payout-header">
+                <h3>💳 Available for Payout</h3>
+                <div class="payout-amount" id="payoutAmount">₹0</div>
+            </div>
+            <div class="payout-details">
+                <div class="payout-item">
+                    <div class="payout-item-label">Total Earned</div>
+                    <div class="payout-item-value" id="payoutTotalEarned">₹0</div>
+                </div>
+                <div class="payout-item">
+                    <div class="payout-item-label">Already Paid Out</div>
+                    <div class="payout-item-value" id="payoutPaidOut">₹0</div>
+                </div>
+                <div class="payout-item">
+                    <div class="payout-item-label">Pending</div>
+                    <div class="payout-item-value" id="payoutPending">₹0</div>
+                </div>
+                <div class="payout-item">
+                    <div class="payout-item-label">Next Payout Date</div>
+                    <div class="payout-item-value" id="nextPayoutDate">-</div>
+                </div>
+            </div>
+            <div style="margin-top:20px;text-align:center;">
+                <button class="btn btn-primary" onclick="requestPayout()" id="requestPayoutBtn">Request Payout</button>
+            </div>
+        </div>
+
+        <!-- TABS -->
+        <div class="rider-card">
+            <div class="earnings-tabs">
+                <button class="earnings-tab active" onclick="switchEarningsTab('overview')">📊 Overview</button>
+                <button class="earnings-tab" onclick="switchEarningsTab('history')">📜 Earnings History</button>
+                <button class="earnings-tab" onclick="switchEarningsTab('payouts')">💳 Payout History</button>
+            </div>
+
+            <!-- OVERVIEW TAB -->
+            <div id="tabOverview" class="tab-content active">
+                <div class="summary-grid">
+                    <div class="summary-card">
+                        <div class="summary-value" id="overviewTotalDeliveries">0</div>
+                        <div class="summary-label">Total Deliveries</div>
+                    </div>
+                    <div class="summary-card">
+                        <div class="summary-value" id="overviewAvgPerDelivery">₹0</div>
+                        <div class="summary-label">Avg per Delivery</div>
+                    </div>
+                    <div class="summary-card">
+                        <div class="summary-value" id="overviewBestDay">₹0</div>
+                        <div class="summary-label">Best Day</div>
+                    </div>
+                    <div class="summary-card">
+                        <div class="summary-value" id="overviewCurrentStreak">0</div>
+                        <div class="summary-label">Current Streak (days)</div>
+                    </div>
+                </div>
+
+                <div style="margin-top:24px;">
+                    <h3 style="font-size:16px;font-weight:700;color:#1a2a1e;margin-bottom:16px;">📈 Weekly Earnings Chart</h3>
+                    <div class="chart-container" id="weeklyChart"></div>
+                </div>
+
+                <div style="margin-top:24px;">
+                    <h3 style="font-size:16px;font-weight:700;color:#1a2a1e;margin-bottom:16px;">📅 Monthly Earnings Chart</h3>
+                    <div class="chart-container" id="monthlyChart"></div>
+                </div>
+            </div>
+
+            <!-- HISTORY TAB -->
+            <div id="tabHistory" class="tab-content">
+                <div class="table-responsive">
+                    <table class="earnings-table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Order ID</th>
+                                <th>Customer</th>
+                                <th>Items</th>
+                                <th>Order Total</th>
+                                <th>Your Earnings</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="earningsHistoryTbody">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- PAYOUTS TAB -->
+            <div id="tabPayouts" class="tab-content">
+                <div class="table-responsive">
+                    <table class="earnings-table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Payout ID</th>
+                                <th>Amount</th>
+                                <th>Method</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="payoutsHistoryTbody">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- SCRIPTS -->
+    <script src="../store.js"></script>
+    <script src="auth.js"></script>
+
+    <script>
+        (function() {
+            // 1. Guard Page
+            const rider = window.GroceryRiderAuth.protectPage();
+            if (!rider) return;
+
+            // 2. Initialize UI
+            document.getElementById("riderProfileName").textContent = rider.name.split(" ")[0];
+            updateAvailabilityUI(rider.availability || "Available");
+            document.getElementById("availabilitySelect").value = rider.availability || "Available";
+
+            loadNotifications();
+
+            // 3. Render Earnings
+            renderEarnings();
+
+            // 4. Event Listeners
+            document.getElementById("availabilitySelect").addEventListener("change", function() {
+                updateAvailability(this.value);
+            });
+
+            function updateAvailabilityUI(status) {
+                const dot = document.getElementById("availabilityDot");
+                const text = document.getElementById("availabilityText");
+
+                dot.className = "status-dot";
+                if (status === "Available") {
+                    dot.classList.add("available");
+                    text.textContent = "Available";
+                } else if (status === "Busy") {
+                    dot.classList.add("busy");
+                    text.textContent = "Busy";
+                } else {
+                    dot.classList.add("offline");
+                    text.textContent = "Offline";
+                }
+            }
+
+            function updateAvailability(newStatus) {
+                const riders = window.GroceryRiderAuth.getRiders();
+                const riderIndex = riders.findIndex(r => r.id === rider.id);
+                if (riderIndex !== -1) {
+                    riders[riderIndex].availability = newStatus;
+                    window.GroceryRiderAuth.saveRiders(riders);
+
+                    const sessionRider = window.GroceryRiderAuth.getCurrentRider();
+                    sessionRider.availability = newStatus;
+                    window.GroceryRiderAuth.setCurrentRider(sessionRider, true);
+
+                    updateAvailabilityUI(newStatus);
+                    showToast("Availability updated to " + newStatus);
+                }
+            }
+
+            function renderEarnings() {
+                const earnings = window.GroceryStore.getRiderEarningsSummary(rider.id);
+                const history = earnings.history || [];
+
+                // Main stats
+                document.getElementById("statTotalEarnings").textContent = "₹" + (earnings.totalEarnings || 0).toLocaleString();
+                document.getElementById("statTodayEarnings").textContent = "₹" + (earnings.todayEarnings || 0).toLocaleString();
+                document.getElementById("statWeeklyEarnings").textContent = "₹" + (earnings.weeklyEarnings || 0).toLocaleString();
+                document.getElementById("statMonthlyEarnings").textContent = "₹" + (earnings.monthlyEarnings || 0).toLocaleString();
+
+                // Payout section
+                const totalEarned = earnings.totalEarnings || 0;
+                const paidOut = getPaidOutAmount(rider.id);
+                const pending = totalEarned - paidOut;
+
+                document.getElementById("payoutTotalEarned").textContent = "₹" + totalEarned.toLocaleString();
+                document.getElementById("payoutPaidOut").textContent = "₹" + paidOut.toLocaleString();
+                document.getElementById("payoutPending").textContent = "₹" + pending.toLocaleString();
+                document.getElementById("payoutAmount").textContent = "₹" + pending.toLocaleString();
+
+                // Next payout date (every Friday)
+                const nextFriday = getNextFriday();
+                document.getElementById("nextPayoutDate").textContent = nextFriday;
+
+                // Overview stats
+                const deliveries = history.filter(h => h.type === "delivery");
+                const totalDeliveries = deliveries.length;
+                const avgPerDelivery = totalDeliveries > 0 ? Math.round(totalEarned / totalDeliveries) : 0;
+
+                // Best day
+                const dailyEarnings = {};
+                deliveries.forEach(d => {
+                    dailyEarnings[d.date] = (dailyEarnings[d.date] || 0) + d.amount;
+                });
+                let bestDay = 0;
+                for (const day in dailyEarnings) {
+                    if (dailyEarnings[day] > bestDay) bestDay = dailyEarnings[day];
+                }
+
+                // Current streak
+                const currentStreak = calculateStreak(history);
+
+                document.getElementById("overviewTotalDeliveries").textContent = totalDeliveries;
+                document.getElementById("overviewAvgPerDelivery").textContent = "₹" + avgPerDelivery.toLocaleString();
+                document.getElementById("overviewBestDay").textContent = "₹" + bestDay.toLocaleString();
+                document.getElementById("overviewCurrentStreak").textContent = currentStreak;
+
+                // Charts
+                renderWeeklyChart(deliveries);
+                renderMonthlyChart(deliveries);
+
+                // Earnings History Tab
+                renderEarningsHistory(history);
+
+                // Payouts History Tab
+                renderPayoutsHistory();
+            }
+
+            function getPaidOutAmount(riderId) {
+                const payouts = getPayouts(riderId);
+                return payouts.filter(p => p.status === "Completed").reduce((sum, p) => sum + p.amount, 0);
+            }
+
+            function getPayouts(riderId) {
+                try {
+                    const data = localStorage.getItem("riderPayouts_" + riderId);
+                    return data ? JSON.parse(data) : [];
+                } catch (e) {
+                    return [];
+                }
+            }
+
+            function savePayouts(riderId, payouts) {
+                localStorage.setItem("riderPayouts_" + riderId, JSON.stringify(payouts));
+            }
+
+            function getNextFriday() {
+                const today = new Date();
+                const dayOfWeek = today.getDay(); // 0 = Sunday, 5 = Friday
+                const daysUntilFriday = (5 - dayOfWeek + 7) % 7 || 7;
+                const nextFriday = new Date(today);
+                nextFriday.setDate(today.getDate() + daysUntilFriday);
+                return nextFriday.toLocaleDateString("en-IN", { weekday: "short", day: "numeric", month: "short" });
+            }
+
+            function calculateStreak(history) {
+                if (history.length === 0) return 0;
+
+                const deliveryDates = new Set(history.filter(h => h.type === "delivery").map(h => h.date));
+                let streak = 0;
+                const today = new Date().toISOString().split("T")[0];
+
+                // Check from today backwards
+                let checkDate = new Date(today);
+                for (let i = 0; i < 30; i++) {
+                    const dateStr = checkDate.toISOString().split("T")[0];
+                    if (deliveryDates.has(dateStr)) {
+                        streak++;
+                    } else if (dateStr !== today) {
+                        break;
+                    }
+                    checkDate.setDate(checkDate.getDate() - 1);
+                }
+                return streak;
+            }
+
+            function renderWeeklyChart(deliveries) {
+                const weekDays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+                const today = new Date();
+                const weekStart = new Date(today);
+                weekStart.setDate(today.getDate() - today.getDay()); // Start of week (Sunday)
+
+                const dailyAmounts = {};
+                weekDays.forEach((_, i) => {
+                    const date = new Date(weekStart);
+                    date.setDate(weekStart.getDate() + i);
+                    dailyAmounts[date.toISOString().split("T")[0]] = 0;
+                });
+
+                deliveries.forEach(d => {
+                    const date = d.date;
+                    if (dailyAmounts.hasOwnProperty(date)) {
+                        dailyAmounts[date] += d.amount;
+                    }
+                });
+
+                const maxAmount = Math.max(...Object.values(dailyAmounts), 1);
+                const chart = document.getElementById("weeklyChart");
+                chart.innerHTML = Object.entries(dailyAmounts).map(([date, amount]) => {
+                    const dayIndex = new Date(date).getDay();
+                    const height = Math.max(20, (amount / maxAmount) * 250);
+                    return `
+                        <div class="chart-bar" style="height:${height}px;">
+                            <span class="chart-bar-value">₹${amount}</span>
+                            <span class="chart-bar-label">${weekDays[dayIndex]}</span>
+                        </div>
+                    `;
+                }).join("");
+            }
+
+            function renderMonthlyChart(deliveries) {
+                const today = new Date();
+                const monthStart = new Date(today.getFullYear(), today.getMonth(), 1);
+                const weeksInMonth = Math.ceil((today.getDate() + monthStart.getDay()) / 7);
+
+                const weeklyAmounts = {};
+                for (let i = 0; i < weeksInMonth; i++) {
+                    weeklyAmounts[`Week ${i + 1}`] = 0;
+                }
+
+                deliveries.forEach(d => {
+                    const date = new Date(d.date);
+                    if (date.getMonth() === today.getMonth() && date.getFullYear() === today.getFullYear()) {
+                        const weekOfMonth = Math.ceil((date.getDate() + monthStart.getDay()) / 7);
+                        weeklyAmounts[`Week ${weekOfMonth}`] = (weeklyAmounts[`Week ${weekOfMonth}`] || 0) + d.amount;
+                    }
+                });
+
+                const maxAmount = Math.max(...Object.values(weeklyAmounts), 1);
+                const chart = document.getElementById("monthlyChart");
+                chart.innerHTML = Object.entries(weeklyAmounts).map(([week, amount]) => {
+                    const height = Math.max(20, (amount / maxAmount) * 250);
+                    return `
+                        <div class="chart-bar" style="height:${height}px;">
+                            <span class="chart-bar-value">₹${amount}</span>
+                            <span class="chart-bar-label">${week}</span>
+                        </div>
+                    `;
+                }).join("");
+            }
+
+            function renderEarningsHistory(history) {
+                const tbody = document.getElementById("earningsHistoryTbody");
+                const deliveries = history.filter(h => h.type === "delivery").slice(0, 50);
+
+                if (deliveries.length === 0) {
+                    tbody.innerHTML = `
+                        <tr>
+                            <td colspan="7" class="rider-empty-state">
+                                <div class="empty-state-icon">💰</div>
+                                <p>No earnings history yet</p>
+                                <small>Complete deliveries to see earnings</small>
+                            </td>
+                        </tr>
+                    `;
+                    return;
+                }
+
+                tbody.innerHTML = deliveries.map(d => {
+                    const order = window.GroceryStore.getOrders().find(o => o.id === d.orderId);
+                    return `
+                        <tr>
+                            <td><small>${d.date}</small></td>
+                            <td><span class="order-id">#${d.orderId}</span></td>
+                            <td>${order?.userName || "Customer"}</td>
+                            <td>${order?.items?.length || 0} items</td>
+                            <td>₹${(order?.total || 0).toLocaleString()}</td>
+                            <td class="earnings-positive">+₹${d.amount.toLocaleString()}</td>
+                            <td><span class="pill pill-rider-delivered">Delivered</span></td>
+                        </tr>
+                    `;
+                }).join("");
+            }
+
+            function renderPayoutsHistory() {
+                const tbody = document.getElementById("payoutsHistoryTbody");
+                const payouts = getPayouts(rider.id);
+
+                if (payouts.length === 0) {
+                    tbody.innerHTML = `
+                        <tr>
+                            <td colspan="5" class="rider-empty-state">
+                                <div class="empty-state-icon">💳</div>
+                                <p>No payout history yet</p>
+                                <small>Request your first payout when available</small>
+                            </td>
+                        </tr>
+                    `;
+                    return;
+                }
+
+                tbody.innerHTML = payouts.slice().reverse().map(p => {
+                    const statusClass = p.status === "Completed" ? "pill-rider-delivered" : "pill-rider-assigned";
+                    return `
+                        <tr>
+                            <td><small>${p.date}</small></td>
+                            <td>${p.id}</td>
+                            <td class="earnings-positive">₹${p.amount.toLocaleString()}</td>
+                            <td>${p.method || "Bank Transfer"}</td>
+                            <td><span class="pill ${statusClass}">${p.status}</span></td>
+                        </tr>
+                    `;
+                }).join("");
+            }
+
+            window.switchEarningsTab = function(tab) {
+                // Update tab buttons
+                document.querySelectorAll(".earnings-tab").forEach(btn => btn.classList.remove("active"));
+                document.querySelectorAll(".tab-content").forEach(content => content.classList.remove("active"));
+
+                // Activate selected
+                document.querySelector(`.earnings-tab[onclick*="${tab}"]`)?.classList.add("active");
+                document.getElementById("tab" + tab.charAt(0).toUpperCase() + tab.slice(1))?.classList.add("active");
+            };
+
+            window.requestPayout = function() {
+                const pending = (window.GroceryStore.getRiderEarningsSummary(rider.id).totalEarnings || 0) - getPaidOutAmount(rider.id);
+
+                if (pending <= 0) {
+                    showToast("No pending amount to payout", "#d9534f");
+                    return;
+                }
+
+                if (confirm(`Request payout of ₹${pending.toLocaleString()}? This will be processed to your registered bank account.`)) {
+                    const payouts = getPayouts(rider.id);
+                    const newPayout = {
+                        id: "PAY" + Date.now(),
+                        amount: pending,
+                        date: new Date().toLocaleDateString("en-IN"),
+                        method: "Bank Transfer",
+                        status: "Pending"
+                    };
+                    payouts.unshift(newPayout);
+                    savePayouts(rider.id, payouts);
+
+                    showToast("✅ Payout requested successfully! It will be processed within 2-3 business days.");
+                    renderEarnings();
+                }
+            };
+
+            function loadNotifications() {
+                const notifications = window.GroceryStore.getRiderNotifications(rider.id);
+                const unreadCount = notifications.filter(n => !n.read).length;
+                const badge = document.getElementById("notificationBadge");
+                if (unreadCount > 0) {
+                    badge.textContent = unreadCount;
+                    badge.style.display = "flex";
+                } else {
+                    badge.style.display = "none";
+                }
+            }
+
+            window.toggleNotifications = function() {
+                const dropdown = document.getElementById("notificationsDropdown");
+                const isVisible = dropdown.style.display === "flex";
+                dropdown.style.display = isVisible ? "none" : "flex";
+
+                if (!isVisible) {
+                    renderNotifications();
+                }
+            };
+
+            window.closeNotifications = function() {
+                document.getElementById("notificationsDropdown").style.display = "none";
+            };
+
+            function renderNotifications() {
+                const notifications = window.GroceryStore.getRiderNotifications(rider.id);
+                const list = document.getElementById("notificationsList");
+
+                if (notifications.length === 0) {
+                    list.innerHTML = `<div style="padding:24px;text-align:center;color:#888;">No notifications</div>`;
+                    return;
+                }
+
+                list.innerHTML = notifications.slice(0, 20).map(n => `
+                    <div style="padding:12px 16px;border-radius:8px;margin-bottom:8px;background:${n.read ? "#fff" : "#f4faf6"};border:${n.read ? "1px solid #eef2ee" : "1px solid #cde8d5"};" onclick="markNotificationRead('${n.id}')">
+                        <div style="font-weight:600;font-size:13px;color:#1a2a1e;">${n.title}</div>
+                        <div style="font-size:12px;color:#666;margin-top:2px;">${n.message}</div>
+                        <div style="font-size:11px;color:#999;margin-top:4px;">${n.createdAt}</div>
+                    </div>
+                `).join("");
+            }
+
+            window.markNotificationRead = function(notificationId) {
+                window.GroceryStore.markRiderNotificationRead(rider.id, notificationId);
+                loadNotifications();
+                renderNotifications();
+            }
+
+            // Toast helper
+            function showToast(message, bgColor = "#17241b") {
+                let toast = document.getElementById("toast");
+                if (!toast) {
+                    toast = document.createElement("div");
+                    toast.id = "toast";
+                    toast.style.cssText = `position:fixed;bottom:24px;right:24px;padding:12px 22px;border-radius:8px;font-size:14px;font-weight:600;color:#fff;z-index:99999;box-shadow:0 8px 24px rgba(0,0,0,0.2);transition:opacity .3s,transform .3s;`;
+                    document.body.appendChild(toast);
+                }
+                toast.style.background = bgColor;
+                toast.textContent = message;
+                toast.style.display = "block";
+                toast.style.opacity = "1";
+                clearTimeout(window.__toastTimer);
+                window.__toastTimer = setTimeout(() => {
+                    toast.style.opacity = "0";
+                    setTimeout(() => toast.style.display = "none", 300);
+                }, 2500);
+            }
+        })();
+    </script>
+</body>
+
+</html>

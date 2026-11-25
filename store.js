@@ -15,7 +15,11 @@ const STORAGE_KEYS = {
     SUPPORT_TICKETS: "supportTickets",
     DELIVERY_LOCATION: "deliveryLocation",
     USERS: "users",
-    CURRENT_USER: "currentUser"
+    CURRENT_USER: "currentUser",
+    // Rider-specific keys
+    RIDER_EARNINGS: "riderEarnings",
+    RIDER_NOTIFICATIONS: "riderNotifications",
+    RIDER_ISSUES: "riderIssues"
 };
 
 // ============================================================
@@ -714,6 +718,21 @@ function initializeStorage() {
         if (!localStorage.getItem(STORAGE_KEYS.DELIVERY_LOCATION)) {
             localStorage.setItem(STORAGE_KEYS.DELIVERY_LOCATION, "Vijayawada");
         }
+
+        // Rider Earnings
+        if (!localStorage.getItem(STORAGE_KEYS.RIDER_EARNINGS)) {
+            localStorage.setItem(STORAGE_KEYS.RIDER_EARNINGS, JSON.stringify({}));
+        }
+
+        // Rider Notifications
+        if (!localStorage.getItem(STORAGE_KEYS.RIDER_NOTIFICATIONS)) {
+            localStorage.setItem(STORAGE_KEYS.RIDER_NOTIFICATIONS, JSON.stringify({}));
+        }
+
+        // Rider Issues
+        if (!localStorage.getItem(STORAGE_KEYS.RIDER_ISSUES)) {
+            localStorage.setItem(STORAGE_KEYS.RIDER_ISSUES, JSON.stringify({}));
+        }
     } catch (e) {
         console.error("Storage initialization error:", e);
     }
@@ -1319,6 +1338,234 @@ function saveOffers(offers) {
 }
 
 // ============================================================
+// RIDER EARNINGS
+// ============================================================
+
+function getRiderEarnings(riderId) {
+    try {
+        const data = localStorage.getItem(STORAGE_KEYS.RIDER_EARNINGS);
+        const allEarnings = data ? JSON.parse(data) : {};
+        return allEarnings[riderId] || null;
+    } catch (e) {
+        return null;
+    }
+}
+
+function saveRiderEarnings(riderId, earnings) {
+    try {
+        const data = localStorage.getItem(STORAGE_KEYS.RIDER_EARNINGS);
+        const allEarnings = data ? JSON.parse(data) : {};
+        allEarnings[riderId] = earnings;
+        localStorage.setItem(STORAGE_KEYS.RIDER_EARNINGS, JSON.stringify(allEarnings));
+    } catch (e) {
+        console.error("Failed to save rider earnings:", e);
+    }
+}
+
+function addRiderEarnings(riderId, amount, orderId) {
+    const earnings = getRiderEarnings(riderId) || {
+        totalEarnings: 0,
+        todayEarnings: 0,
+        weeklyEarnings: 0,
+        monthlyEarnings: 0,
+        lastUpdated: new Date().toISOString().split("T")[0],
+        history: []
+    };
+
+    const today = new Date().toISOString().split("T")[0];
+    const orderDate = new Date().toISOString().split("T")[0];
+
+    earnings.totalEarnings += amount;
+    earnings.todayEarnings = (earnings.lastUpdated === today ? earnings.todayEarnings : 0) + amount;
+    earnings.history.unshift({
+        orderId,
+        amount,
+        date: orderDate,
+        type: "delivery"
+    });
+
+    // Keep only last 100 history entries
+    if (earnings.history.length > 100) {
+        earnings.history = earnings.history.slice(0, 100);
+    }
+
+    // Recalculate weekly and monthly
+    const weekAgo = new Date();
+    weekAgo.setDate(weekAgo.getDate() - 7);
+    const weekAgoStr = weekAgo.toISOString().split("T")[0];
+
+    const monthAgo = new Date();
+    monthAgo.setMonth(monthAgo.getMonth() - 1);
+    const monthAgoStr = monthAgo.toISOString().split("T")[0];
+
+    earnings.weeklyEarnings = earnings.history
+        .filter(h => h.date >= weekAgoStr)
+        .reduce((sum, h) => sum + h.amount, 0);
+
+    earnings.monthlyEarnings = earnings.history
+        .filter(h => h.date >= monthAgoStr)
+        .reduce((sum, h) => sum + h.amount, 0);
+
+    earnings.lastUpdated = today;
+
+    saveRiderEarnings(riderId, earnings);
+    return earnings;
+}
+
+function getRiderEarningsSummary(riderId) {
+    const earnings = getRiderEarnings(riderId);
+    if (!earnings) {
+        return {
+            totalEarnings: 0,
+            todayEarnings: 0,
+            weeklyEarnings: 0,
+            monthlyEarnings: 0,
+            history: []
+        };
+    }
+    return earnings;
+}
+
+// ============================================================
+// RIDER NOTIFICATIONS
+// ============================================================
+
+function getRiderNotifications(riderId) {
+    try {
+        const data = localStorage.getItem(STORAGE_KEYS.RIDER_NOTIFICATIONS);
+        const allNotifications = data ? JSON.parse(data) : {};
+        return allNotifications[riderId] || [];
+    } catch (e) {
+        return [];
+    }
+}
+
+function saveRiderNotifications(riderId, notifications) {
+    try {
+        const data = localStorage.getItem(STORAGE_KEYS.RIDER_NOTIFICATIONS);
+        const allNotifications = data ? JSON.parse(data) : {};
+        allNotifications[riderId] = notifications;
+        localStorage.setItem(STORAGE_KEYS.RIDER_NOTIFICATIONS, JSON.stringify(allNotifications));
+    } catch (e) {
+        console.error("Failed to save rider notifications:", e);
+    }
+}
+
+function addRiderNotification(riderId, notification) {
+    const notifications = getRiderNotifications(riderId);
+    const newNotification = {
+        id: "NOTIF" + Date.now(),
+        title: notification.title || "Notification",
+        message: notification.message || "",
+        type: notification.type || "info", // info, warning, success, order, issue_created, issue_reply, issue_resolved, issue_assigned
+        read: false,
+        createdAt: new Date().toISOString(),
+        orderId: notification.orderId || null,
+        issueId: notification.issueId || null
+    };
+
+    notifications.unshift(newNotification);
+
+    // Keep only last 50 notifications
+    if (notifications.length > 50) {
+        notifications.splice(50);
+    }
+
+    saveRiderNotifications(riderId, notifications);
+    return newNotification;
+}
+
+function markRiderNotificationRead(riderId, notificationId) {
+    const notifications = getRiderNotifications(riderId);
+    const notification = notifications.find(n => n.id === notificationId);
+    if (notification) {
+        notification.read = true;
+        saveRiderNotifications(riderId, notifications);
+        return true;
+    }
+    return false;
+}
+
+function markAllRiderNotificationsRead(riderId) {
+    const notifications = getRiderNotifications(riderId);
+    notifications.forEach(n => n.read = true);
+    saveRiderNotifications(riderId, notifications);
+    return true;
+}
+
+// ============================================================
+// RIDER ISSUES / SUPPORT
+// ============================================================
+
+function getRiderIssues(riderId) {
+    try {
+        const data = localStorage.getItem(STORAGE_KEYS.RIDER_ISSUES);
+        const allIssues = data ? JSON.parse(data) : {};
+        return allIssues[riderId] || [];
+    } catch (e) {
+        return [];
+    }
+}
+
+function saveRiderIssues(riderId, issues) {
+    try {
+        const data = localStorage.getItem(STORAGE_KEYS.RIDER_ISSUES);
+        const allIssues = data ? JSON.parse(data) : {};
+        allIssues[riderId] = issues;
+        localStorage.setItem(STORAGE_KEYS.RIDER_ISSUES, JSON.stringify(allIssues));
+    } catch (e) {
+        console.error("Failed to save rider issues:", e);
+    }
+}
+
+function addRiderIssue(riderId, issue) {
+    const issues = getRiderIssues(riderId);
+    const newIssue = {
+        id: "ISSUE" + Date.now(),
+        title: issue.title || "Issue",
+        description: issue.description || "",
+        category: issue.category || "General", // General, Order Issue, Payment, Technical, Other
+        priority: issue.priority || "Normal", // Low, Normal, High, Urgent
+        status: "Open", // Open, In Progress, Resolved, Closed
+        adminResponse: "",
+        createdAt: new Date().toISOString().split("T")[0],
+        updatedAt: new Date().toISOString().split("T")[0],
+        orderId: issue.orderId || null
+    };
+
+    issues.unshift(newIssue);
+    saveRiderIssues(riderId, issues);
+    return newIssue;
+}
+
+function updateRiderIssue(riderId, issueId, updates) {
+    const issues = getRiderIssues(riderId);
+    const issue = issues.find(i => i.id === issueId);
+    if (!issue) return false;
+
+    if (updates.status) issue.status = updates.status;
+    if (updates.adminResponse !== undefined) issue.adminResponse = updates.adminResponse;
+    if (updates.priority) issue.priority = updates.priority;
+    if (updates.category) issue.category = updates.category;
+
+    issue.updatedAt = new Date().toISOString().split("T")[0];
+
+    saveRiderIssues(riderId, issues);
+    return true;
+}
+
+function getRiderIssuesSummary(riderId) {
+    const issues = getRiderIssues(riderId);
+    return {
+        total: issues.length,
+        open: issues.filter(i => i.status === "Open").length,
+        inProgress: issues.filter(i => i.status === "In Progress").length,
+        resolved: issues.filter(i => i.status === "Resolved").length,
+        closed: issues.filter(i => i.status === "Closed").length
+    };
+}
+
+// ============================================================
 // LOCATION
 // ============================================================
 
@@ -1386,5 +1633,22 @@ window.GroceryStore = {
     getDeliveryLocation,
     saveDeliveryLocation,
     getUsers,
-    saveUsers
+    saveUsers,
+    // Rider Earnings
+    getRiderEarnings,
+    saveRiderEarnings,
+    addRiderEarnings,
+    getRiderEarningsSummary,
+    // Rider Notifications
+    getRiderNotifications,
+    saveRiderNotifications,
+    addRiderNotification,
+    markRiderNotificationRead,
+    markAllRiderNotificationsRead,
+    // Rider Issues
+    getRiderIssues,
+    saveRiderIssues,
+    addRiderIssue,
+    updateRiderIssue,
+    getRiderIssuesSummary
 };

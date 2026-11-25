@@ -1,0 +1,1414 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GroceryGo - Availability Management</title>
+    <link rel="stylesheet" href="../admin.css">
+    <style>
+        /* Availability-specific extensions to shared admin.css classes */
+
+        /* Weekly Schedule */
+        .weekly-schedule {
+            overflow-x: auto;
+        }
+
+        .schedule-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .schedule-table th,
+        .schedule-table td {
+            padding: 12px 16px;
+            text-align: left;
+            border-bottom: 1px solid #eef2ee;
+        }
+
+        .schedule-table th {
+            background: #f9fbf9;
+            font-weight: 600;
+            color: #555;
+            font-size: 13px;
+            position: sticky;
+            top: 0;
+        }
+
+        .schedule-table td {
+            font-size: 14px;
+            color: #333;
+        }
+
+        .schedule-table tr:hover td {
+            background: #f9fbf9;
+        }
+
+        .day-cell {
+            font-weight: 600;
+            color: #1a2a1e;
+        }
+
+        .time-slot {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            background: #f3f6f4;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 500;
+            color: #555;
+            margin: 2px 0;
+        }
+
+        .time-slot.active {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .time-slot.inactive {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .add-slot-btn {
+            padding: 6px 12px;
+            font-size: 12px;
+            background: #f3f6f4;
+            border: 1px dashed #cde8d5;
+            color: #19a463;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .add-slot-btn:hover {
+            background: #dcfce7;
+            border-color: #19a463;
+        }
+
+        .slot-input-row {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .slot-input-row select,
+        .slot-input-row input {
+            padding: 8px 12px;
+            border: 1px solid #eef2ee;
+            border-radius: 6px;
+            font-size: 12px;
+            background: #fff;
+        }
+
+        .slot-input-row select:focus,
+        .slot-input-row input:focus {
+            outline: none;
+            border-color: #19a463;
+            box-shadow: 0 0 0 3px rgba(25, 164, 99, 0.1);
+        }
+
+        .remove-slot {
+            background: none;
+            border: none;
+            color: #ef4444;
+            cursor: pointer;
+            padding: 4px;
+            font-size: 16px;
+        }
+
+        /* Current Status Card */
+        .current-status {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+            padding: 24px;
+            background: linear-gradient(135deg, #f4faf6 0%, #e8f5ed 100%);
+            border-radius: 12px;
+            border: 1px solid #cde8d5;
+        }
+
+        .status-main {
+            flex: 1;
+        }
+
+        .status-main .status-label {
+            font-size: 13px;
+            font-weight: 600;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+
+        .status-main .status-value {
+            font-size: 36px;
+            font-weight: 800;
+            color: #1a2a1e;
+        }
+
+        .status-main .status-sub {
+            font-size: 14px;
+            color: #666;
+            margin-top: 4px;
+        }
+
+        .status-actions {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        /* Auto-offline settings */
+        .setting-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 0;
+            border-bottom: 1px solid #eef2ee;
+        }
+
+        .setting-row:last-child {
+            border-bottom: none;
+        }
+
+        .setting-info {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .setting-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+
+        .setting-text h4 {
+            font-size: 15px;
+            font-weight: 600;
+            color: #1a2a1e;
+            margin-bottom: 2px;
+        }
+
+        .setting-text p {
+            font-size: 13px;
+            color: #666;
+        }
+
+        .toggle-switch {
+            position: relative;
+            width: 56px;
+            height: 30px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #eef2ee;
+            transition: .3s;
+            border-radius: 30px;
+        }
+
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 24px;
+            width: 24px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .3s;
+            border-radius: 50%;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        input:checked + .toggle-slider {
+            background-color: #19a463;
+        }
+
+        input:checked + .toggle-slider:before {
+            transform: translateX(26px);
+        }
+
+        .setting-input {
+            padding: 8px 12px;
+            border: 1px solid #eef2ee;
+            border-radius: 8px;
+            font-size: 14px;
+            background: #fff;
+            width: 120px;
+        }
+
+        .setting-input:focus {
+            outline: none;
+            border-color: #19a463;
+            box-shadow: 0 0 0 3px rgba(25, 164, 99, 0.1);
+        }
+
+        /* Timezone selector */
+        .timezone-selector {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .timezone-display {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1a2a1e;
+        }
+
+        /* Stats overview */
+        .availability-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .avail-stat {
+            background: #fff;
+            border: 1px solid #eef2ee;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .avail-stat-value {
+            font-size: 28px;
+            font-weight: 800;
+            color: #19a463;
+            margin-bottom: 4px;
+        }
+
+        .avail-stat-label {
+            font-size: 13px;
+            color: #666;
+            font-weight: 500;
+        }
+
+        /* Holiday mode */
+        .holiday-card {
+            background: #fef3c7;
+            border: 1px solid #fde68a;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 24px;
+        }
+
+        .holiday-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .holiday-icon {
+            width: 40px;
+            height: 40px;
+            background: #fbbf24;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            color: white;
+        }
+
+        .holiday-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #92400e;
+        }
+
+        .holiday-desc {
+            font-size: 13px;
+            color: #78350f;
+            margin-bottom: 16px;
+        }
+
+        .holiday-inputs {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .holiday-inputs input[type="date"] {
+            padding: 10px 12px;
+            border: 1px solid #fde68a;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        /* Quick actions */
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+        }
+
+        .quick-action-card {
+            background: #fff;
+            border: 1px solid #eef2ee;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .quick-action-card:hover {
+            border-color: #19a463;
+            box-shadow: 0 4px 16px rgba(25, 164, 99, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .quick-action-icon {
+            font-size: 32px;
+            margin-bottom: 12px;
+        }
+
+        .quick-action-title {
+            font-size: 15px;
+            font-weight: 700;
+            color: #1a2a1e;
+            margin-bottom: 4px;
+        }
+
+        .quick-action-desc {
+            font-size: 13px;
+            color: #666;
+        }
+
+        /* Availability toggle select transparent style fix */
+        .rider-availability-toggle select {
+            background: transparent !important;
+            border: none !important;
+            color: white !important;
+            font-weight: 600 !important;
+            font-size: 13px !important;
+            padding: 4px !important;
+            cursor: pointer !important;
+        }
+
+        .rider-availability-toggle select option {
+            background: #17241b;
+            color: white;
+        }
+
+        /* Toast for availability page */
+        #toast {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            padding: 12px 22px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #fff;
+            z-index: 99999;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+            transition: opacity .3s, transform .3s;
+            display: none;
+        }
+
+        /* Mobile responsive - only custom overrides needed */
+        @media (max-width: 750px) {
+            .current-status {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 16px;
+            }
+
+            .status-actions {
+                width: 100%;
+            }
+
+            .status-actions .btn {
+                flex: 1;
+                justify-content: center;
+            }
+
+            .schedule-table th,
+            .schedule-table td {
+                padding: 10px 8px;
+                font-size: 12px;
+            }
+
+            .time-slot {
+                padding: 4px 8px;
+                font-size: 11px;
+            }
+
+            .slot-input-row {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .setting-row {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 12px;
+            }
+
+            .timezone-selector {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .availability-stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .quick-actions {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 500px) {
+            .availability-stats {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- RIDER NAVBAR -->
+    <header class="rider-navbar">
+        <div class="rider-navbar-inner">
+            <div class="rider-brand">
+                <div class="rider-logo">🛵</div>
+                <div>
+                    <div style="font-size:18px;font-weight:800;">GroceryGo</div>
+                    <span class="rider-badge">Rider Portal</span>
+                </div>
+            </div>
+
+            <nav class="rider-nav-links">
+                <a href="dashboard.html" class="rider-nav-item">📊 Dashboard</a>
+                <a href="orders.html" class="rider-nav-item">📦 My Orders</a>
+                <a href="earnings.html" class="rider-nav-item">💰 Earnings</a>
+                <a href="history.html" class="rider-nav-item">📜 History</a>
+                <a href="performance.html" class="rider-nav-item">📈 Performance</a>
+                <a href="availability.html" class="rider-nav-item active">🕐 Availability</a>
+                <a href="issues.html" class="rider-nav-item">🎫 Issues</a>
+                <a href="profile.html" class="rider-nav-item">👤 Profile</a>
+            </nav>
+
+            <div class="rider-nav-actions">
+                <div class="rider-availability-toggle">
+                    <span class="status-dot" id="availabilityDot"></span>
+                    <span id="availabilityText">Available</span>
+                    <select id="availabilitySelect" style="background:transparent;border:none;color:white;font-weight:600;font-size:13px;padding:4px;cursor:pointer;">
+                        <option value="Available">Available</option>
+                        <option value="Busy">Busy</option>
+                        <option value="Offline">Offline</option>
+                    </select>
+                </div>
+
+                <div class="notification-bell" onclick="toggleNotifications()">
+                    🔔
+                    <span class="notification-badge" id="notificationBadge" style="display:none;">0</span>
+                </div>
+
+                <div class="rider-profile-pill">
+                    <span>🛵</span>
+                    <span id="riderProfileName">Rider</span>
+                </div>
+                <button class="rider-logout-btn" onclick="riderLogout()">Logout</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- NOTIFICATIONS DROPDOWN -->
+    <div id="notificationsDropdown" class="gg-modal-overlay" style="display:none; max-width:400px; margin: 80px auto 0; width: 90%;">
+        <div class="gg-modal-content" style="max-height:500px; overflow:hidden;">
+            <div style="display:flex; align-items:center; justify-content:space-between; padding:16px 20px; border-bottom:1px solid #eef2ee;">
+                <h3 style="font-size:16px;font-weight:700;color:#1a2a1e;">🔔 Notifications</h3>
+                <button class="gg-modal-close" onclick="closeNotifications()">×</button>
+            </div>
+            <div id="notificationsList" style="max-height:400px; overflow-y:auto; padding:8px;">
+            </div>
+        </div>
+    </div>
+
+    <main class="rider-main">
+        <div class="rider-page-header">
+            <div>
+                <h1>Availability Management</h1>
+                <p>Set your working hours, schedule, and auto-offline preferences</p>
+            </div>
+        </div>
+
+        <!-- CURRENT STATUS -->
+        <div class="rider-card">
+            <div class="card-header">
+                <h2>📍 Current Status</h2>
+            </div>
+            <div class="card-body">
+                <div class="current-status">
+                    <div class="status-main">
+                        <div class="status-label">You are currently</div>
+                        <div class="status-value" id="currentStatusValue">Available</div>
+                        <div class="status-sub" id="currentStatusSub">Ready to accept deliveries</div>
+                    </div>
+                    <div class="status-actions">
+                        <button class="btn btn-primary" onclick="setAvailability('Available')">
+                            ✅ Go Available
+                        </button>
+                        <button class="btn btn-secondary" onclick="setAvailability('Busy')">
+                            ⏸️ Set Busy
+                        </button>
+                        <button class="btn btn-danger" onclick="setAvailability('Offline')">
+                            🔴 Go Offline
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- AVAILABILITY STATS -->
+        <div class="rider-stats-grid availability-stats">
+            <div class="stat-card avail-stat">
+                <div class="avail-stat-value" id="statWeeklyHours">0h</div>
+                <div class="avail-stat-label">Weekly Hours</div>
+            </div>
+            <div class="stat-card avail-stat">
+                <div class="avail-stat-value" id="statActiveDays">0</div>
+                <div class="avail-stat-label">Active Days</div>
+            </div>
+            <div class="stat-card avail-stat">
+                <div class="avail-stat-value" id="statAvgStart">--:--</div>
+                <div class="avail-stat-label">Avg Start Time</div>
+            </div>
+            <div class="stat-card avail-stat">
+                <div class="avail-stat-value" id="statAvgEnd">--:--</div>
+                <div class="avail-stat-label">Avg End Time</div>
+            </div>
+        </div>
+
+        <!-- WEEKLY SCHEDULE -->
+        <div class="rider-card">
+            <div class="card-header">
+                <h2>📅 Weekly Schedule</h2>
+            </div>
+            <div class="card-body">
+                <div class="weekly-schedule">
+                    <table class="schedule-table" id="scheduleTable">
+                        <thead>
+                            <tr>
+                                <th style="width:120px;">Day</th>
+                                <th>Working Hours</th>
+                                <th style="width:80px;">Status</th>
+                                <th style="width:100px;">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="scheduleBody">
+                        </tbody>
+                    </table>
+                </div>
+                <div style="margin-top: 16px; text-align: center;">
+                    <button class="btn btn-primary" onclick="saveSchedule()">
+                        💾 Save Schedule
+                    </button>
+                    <button class="btn btn-secondary" style="margin-left: 12px;" onclick="resetSchedule()">
+                        ↩️ Reset to Default
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- AUTO-OFFLINE SETTINGS -->
+        <div class="rider-card">
+            <div class="card-header">
+                <h2>⚙️ Auto-Offline Settings</h2>
+            </div>
+            <div class="card-body">
+                <div class="setting-row">
+                    <div class="setting-info">
+                        <div class="setting-icon" style="background:#dcfce7;color:#166534;">🕐</div>
+                        <div class="setting-text">
+                            <h4>Auto-Offline After Inactivity</h4>
+                            <p>Automatically set you to Offline after being idle</p>
+                        </div>
+                    </div>
+                    <div style="display:flex; align-items:center; gap:12px;">
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="autoOfflineEnabled" onchange="saveAutoOfflineSettings()">
+                            <span class="toggle-slider"></span>
+                        </label>
+                        <select id="autoOfflineMinutes" class="setting-input" onchange="saveAutoOfflineSettings()">
+                            <option value="15">15 min</option>
+                            <option value="30">30 min</option>
+                            <option value="60" selected>1 hour</option>
+                            <option value="120">2 hours</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="setting-row">
+                    <div class="setting-info">
+                        <div class="setting-icon" style="background:#dbeafe;color:#1e40af;">🌙</div>
+                        <div class="setting-text">
+                            <h4>Night Mode Auto-Offline</h4>
+                            <p>Automatically go offline during night hours</p>
+                        </div>
+                    </div>
+                    <div style="display:flex; align-items:center; gap:12px;">
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="nightModeEnabled" onchange="saveAutoOfflineSettings()">
+                            <span class="toggle-slider"></span>
+                        </label>
+                        <span style="color:#666;font-size:13px;">From</span>
+                        <input type="time" id="nightModeStart" class="setting-input" value="22:00" onchange="saveAutoOfflineSettings()">
+                        <span style="color:#666;font-size:13px;">To</span>
+                        <input type="time" id="nightModeEnd" class="setting-input" value="06:00" onchange="saveAutoOfflineSettings()">
+                    </div>
+                </div>
+
+                <div class="setting-row">
+                    <div class="setting-info">
+                        <div class="setting-icon" style="background:#f3e8ff;color:#7c3aed;">⚡</div>
+                        <div class="setting-text">
+                            <h4>Auto-Available on Login</h4>
+                            <p>Automatically set to Available when you log in</p>
+                        </div>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="autoAvailableLogin" checked onchange="saveAutoOfflineSettings()">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+
+                <div class="setting-row">
+                    <div class="setting-info">
+                        <div class="setting-icon" style="background:#fef3c7;color:#92400e;">🔔</div>
+                        <div class="setting-text">
+                            <h4>Notify Before Auto-Offline</h4>
+                            <p>Send notification 5 minutes before going offline</p>
+                        </div>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="notifyBeforeOffline" checked onchange="saveAutoOfflineSettings()">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <!-- TIMEZONE -->
+        <div class="rider-card">
+            <div class="card-header">
+                <h2>🌍 Timezone</h2>
+            </div>
+            <div class="card-body">
+                <div class="timezone-selector">
+                    <div class="setting-info" style="flex:1;">
+                        <div class="setting-icon" style="background:#dbeafe;color:#1e40af;">🌐</div>
+                        <div class="setting-text">
+                            <h4>Your Timezone</h4>
+                            <p>All schedules use this timezone</p>
+                        </div>
+                    </div>
+                    <select id="timezoneSelect" class="setting-input" style="width:280px;" onchange="saveTimezone()">
+                    </select>
+                    <div class="timezone-display" id="currentTimeDisplay">--:-- --</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- HOLIDAY MODE -->
+        <div class="holiday-card" id="holidayCard">
+            <div class="holiday-header">
+                <div class="holiday-icon">🏖️</div>
+                <div class="holiday-title">Holiday Mode</div>
+            </div>
+            <div class="holiday-desc">Taking a break? Set holiday dates to auto-set your status to Offline and notify admins.</div>
+            <div class="holiday-inputs">
+                <input type="date" id="holidayStart" min="">
+                <span style="color:#92400e;">to</span>
+                <input type="date" id="holidayEnd" min="">
+                <button class="btn btn-primary" onclick="saveHoliday()">Set Holiday</button>
+                <button class="btn btn-secondary" onclick="clearHoliday()">Clear</button>
+            </div>
+            <div id="activeHoliday" style="display:none; margin-top:12px; padding:12px; background:#fff; border-radius:8px; border:1px solid #fde68a;">
+                <div style="font-weight:600;color:#92400e;">Active Holiday: <span id="holidayDates"></span></div>
+                <div style="font-size:12px;color:#78350f;margin-top:4px;">You will appear Offline during this period</div>
+            </div>
+        </div>
+
+        <!-- QUICK ACTIONS -->
+        <div class="rider-card">
+            <div class="card-header">
+                <h2>⚡ Quick Actions</h2>
+            </div>
+            <div class="card-body">
+                <div class="quick-actions">
+                    <div class="quick-action-card" onclick="quickSetAvailable()">
+                        <div class="quick-action-icon">✅</div>
+                        <div class="quick-action-title">Go Available Now</div>
+                        <div class="quick-action-desc">Immediately accept orders</div>
+                    </div>
+                    <div class="quick-action-card" onclick="quickSetBusy()">
+                        <div class="quick-action-icon">⏸️</div>
+                        <div class="quick-action-title">Set Busy</div>
+                        <div class="quick-action-desc">Pause for 30 minutes</div>
+                    </div>
+                    <div class="quick-action-card" onclick="quickSetOffline()">
+                        <div class="quick-action-icon">🔴</div>
+                        <div class="quick-action-title">Go Offline</div>
+                        <div class="quick-action-desc">Stop receiving orders</div>
+                    </div>
+                    <div class="quick-action-card" onclick="quickExtendShift()">
+                        <div class="quick-action-icon">⏰</div>
+                        <div class="quick-action-title">Extend Shift</div>
+                        <div class="quick-action-desc">Add 1 hour to current day</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- SLOT MODAL -->
+    <div id="slotModal" class="gg-modal-overlay" style="display:none;">
+        <div class="gg-modal-content" style="max-width:400px;">
+            <div style="display:flex; align-items:center; justify-content:space-between; padding:16px 20px; border-bottom:1px solid #eef2ee;">
+                <h3 style="font-size:16px;font-weight:700;color:#1a2a1e;">Add Time Slot</h3>
+                <button class="gg-modal-close" onclick="closeSlotModal()">×</button>
+            </div>
+            <div style="padding:20px;">
+                <input type="hidden" id="editingSlotDay">
+                <input type="hidden" id="editingSlotIndex">
+                <div style="margin-bottom:16px;">
+                    <label style="display:block;font-size:13px;font-weight:600;color:#333;margin-bottom:6px;">Day</label>
+                    <select id="slotDay" class="setting-input" style="width:100%;">
+                        <option value="Monday">Monday</option>
+                        <option value="Tuesday">Tuesday</option>
+                        <option value="Wednesday">Wednesday</option>
+                        <option value="Thursday">Thursday</option>
+                        <option value="Friday">Friday</option>
+                        <option value="Saturday">Saturday</option>
+                        <option value="Sunday">Sunday</option>
+                    </select>
+                </div>
+                <div style="display:flex; gap:12px; margin-bottom:16px;">
+                    <div style="flex:1;">
+                        <label style="display:block;font-size:13px;font-weight:600;color:#333;margin-bottom:6px;">Start Time</label>
+                        <input type="time" id="slotStart" class="setting-input" style="width:100%;">
+                    </div>
+                    <div style="flex:1;">
+                        <label style="display:block;font-size:13px;font-weight:600;color:#333;margin-bottom:6px;">End Time</label>
+                        <input type="time" id="slotEnd" class="setting-input" style="width:100%;">
+                    </div>
+                </div>
+                <div style="display:flex; gap:12px; justify-content:flex-end;">
+                    <button class="btn btn-secondary" onclick="closeSlotModal()">Cancel</button>
+                    <button class="btn btn-primary" onclick="saveSlot()">Save Slot</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SCRIPTS -->
+    <script src="../store.js"></script>
+    <script src="auth.js"></script>
+
+    <script>
+        (function() {
+            // 1. Guard Page
+            const rider = window.GroceryRiderAuth.protectPage();
+            if (!rider) return;
+
+            // 2. Initialize UI
+            document.getElementById("riderProfileName").textContent = rider.name.split(" ")[0];
+
+            // Initialize availability from rider data
+            const availability = rider.availability || "Available";
+            document.getElementById("availabilitySelect").value = availability;
+            updateAvailabilityUI(availability);
+
+            loadNotifications();
+
+            // 3. Load Timezones
+            loadTimezones();
+
+            // 4. Load Schedule
+            loadSchedule();
+
+            // 5. Load Settings
+            loadSettings();
+
+            // 6. Update Clock
+            updateClock();
+            setInterval(updateClock, 1000);
+
+            // 7. Event Listeners
+            document.getElementById("availabilitySelect").addEventListener("change", function() {
+                updateAvailability(this.value);
+            });
+
+            // Set min dates for holiday inputs
+            const today = new Date().toISOString().split("T")[0];
+            document.getElementById("holidayStart").min = today;
+            document.getElementById("holidayEnd").min = today;
+
+            function updateAvailabilityUI(status) {
+                const dot = document.getElementById("availabilityDot");
+                const text = document.getElementById("availabilityText");
+                const statusValue = document.getElementById("currentStatusValue");
+                const statusSub = document.getElementById("currentStatusSub");
+
+                dot.className = "status-dot";
+                if (status === "Available") {
+                    dot.classList.add("available");
+                    text.textContent = "Available";
+                    statusValue.textContent = "Available";
+                    statusSub.textContent = "Ready to accept deliveries";
+                    statusValue.style.color = "#166534";
+                } else if (status === "Busy") {
+                    dot.classList.add("busy");
+                    text.textContent = "Busy";
+                    statusValue.textContent = "Busy";
+                    statusSub.textContent = "Temporarily unavailable";
+                    statusValue.style.color = "#92400e";
+                } else {
+                    dot.classList.add("offline");
+                    text.textContent = "Offline";
+                    statusValue.textContent = "Offline";
+                    statusSub.textContent = "Not receiving orders";
+                    statusValue.style.color = "#991b1b";
+                }
+            }
+
+            function updateAvailability(newStatus) {
+                const riders = window.GroceryRiderAuth.getRiders();
+                const riderIndex = riders.findIndex(r => r.id === rider.id);
+                if (riderIndex !== -1) {
+                    riders[riderIndex].availability = newStatus;
+                    window.GroceryRiderAuth.saveRiders(riders);
+
+                    const sessionRider = window.GroceryRiderAuth.getCurrentRider();
+                    sessionRider.availability = newStatus;
+                    window.GroceryRiderAuth.setCurrentRider(sessionRider, true);
+
+                    updateAvailabilityUI(newStatus);
+                    showToast("Status updated to " + newStatus);
+                }
+            }
+
+            function loadTimezones() {
+                const select = document.getElementById("timezoneSelect");
+                const timezones = Intl.supportedValuesOf("timeZone");
+                const currentTZ = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
+                // Popular timezones first
+                const popular = ["UTC", "America/New_York", "America/Chicago", "America/Denver", "America/Los_Angeles",
+                    "Europe/London", "Europe/Paris", "Europe/Berlin", "Asia/Kolkata", "Asia/Tokyo",
+                    "Asia/Singapore", "Asia/Dubai", "Australia/Sydney", "Pacific/Auckland"];
+
+                let html = "";
+                popular.forEach(tz => {
+                    const offset = getTimezoneOffset(tz);
+                    const selected = tz === currentTZ ? "selected" : "";
+                    html += `<option value="${tz}" ${selected}>${tz} (GMT${offset})</option>`;
+                });
+
+                // Add rest
+                timezones.forEach(tz => {
+                    if (!popular.includes(tz)) {
+                        const offset = getTimezoneOffset(tz);
+                        html += `<option value="${tz}">${tz} (GMT${offset})</option>`;
+                    }
+                });
+
+                select.innerHTML = html;
+                select.value = currentTZ;
+            }
+
+            function getTimezoneOffset(tz) {
+                try {
+                    const now = new Date();
+                    const formatter = new Intl.DateTimeFormat("en-US", {
+                        timeZone: tz,
+                        hour: "numeric",
+                        minute: "2-digit",
+                        hour12: false
+                    });
+                    const parts = formatter.formatToParts(now);
+                    const hour = parseInt(parts.find(p => p.type === "hour").value);
+                    const utcHour = now.getUTCHours();
+                    const diff = hour - utcHour;
+                    const sign = diff >= 0 ? "+" : "";
+                    return `${sign}${diff}`;
+                } catch {
+                    return "";
+                }
+            }
+
+            function updateClock() {
+                const tz = document.getElementById("timezoneSelect").value;
+                try {
+                    const now = new Date();
+                    const formatter = new Intl.DateTimeFormat("en-US", {
+                        timeZone: tz,
+                        hour: "2-digit",
+                        minute: "2-digit",
+                        second: "2-digit",
+                        hour12: true,
+                        timeZoneName: "short"
+                    });
+                    document.getElementById("currentTimeDisplay").textContent = formatter.format(now);
+                } catch {
+                    document.getElementById("currentTimeDisplay").textContent = new Date().toLocaleTimeString();
+                }
+            }
+
+            function saveTimezone() {
+                const tz = document.getElementById("timezoneSelect").value;
+                const riders = window.GroceryRiderAuth.getRiders();
+                const riderIndex = riders.findIndex(r => r.id === rider.id);
+                if (riderIndex !== -1) {
+                    riders[riderIndex].timezone = tz;
+                    window.GroceryRiderAuth.saveRiders(riders);
+                    updateClock();
+                    showToast("Timezone saved");
+                }
+            }
+
+            function loadSchedule() {
+                const schedule = rider.schedule || getDefaultSchedule();
+                const tbody = document.getElementById("scheduleBody");
+                const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+
+                let totalHours = 0;
+                let activeDays = 0;
+                let totalStartMin = 0;
+                let totalEndMin = 0;
+                let dayCount = 0;
+
+                tbody.innerHTML = "";
+                days.forEach(day => {
+                    const slots = schedule[day] || [];
+                    if (slots.length > 0) activeDays++;
+
+                    const slotsHtml = slots.map((slot, index) => `
+                        <span class="time-slot ${slot.enabled !== false ? "active" : "inactive"}"
+                              data-day="${day}" data-index="${index}">
+                            ${slot.start} - ${slot.end}
+                            <button class="remove-slot" onclick="removeSlot('${day}', ${index})">×</button>
+                        </span>
+                    `).join("");
+
+                    const addBtn = `<button class="add-slot-btn" onclick="openSlotModal('${day}')">+ Add Slot</button>`;
+
+                    // Calculate stats
+                    slots.forEach(slot => {
+                        if (slot.enabled !== false) {
+                            const start = timeToMinutes(slot.start);
+                            const end = timeToMinutes(slot.end);
+                            totalHours += (end - start) / 60;
+                            totalStartMin += start;
+                            totalEndMin += end;
+                            dayCount++;
+                        }
+                    });
+
+                    tbody.innerHTML += `
+                        <tr>
+                            <td class="day-cell">${day}</td>
+                            <td>
+                                <div class="slot-input-row" id="slots-${day}">
+                                    ${slotsHtml}
+                                    ${addBtn}
+                                </div>
+                            </td>
+                            <td>
+                                <span class="pill ${slots.length > 0 ? "pill-green" : "pill-amber"}">
+                                    ${slots.length > 0 ? "Scheduled" : "Off"}
+                                </span>
+                            </td>
+                            <td>
+                                <button class="btn btn-secondary" style="padding:6px 12px;font-size:12px;" onclick="clearDay('${day}')">Clear</button>
+                            </td>
+                        </tr>
+                    `;
+                });
+
+                // Update stats
+                document.getElementById("statWeeklyHours").textContent = totalHours.toFixed(1) + "h";
+                document.getElementById("statActiveDays").textContent = activeDays;
+                document.getElementById("statAvgStart").textContent = dayCount > 0 ? minutesToTime(Math.round(totalStartMin / dayCount)) : "--:--";
+                document.getElementById("statAvgEnd").textContent = dayCount > 0 ? minutesToTime(Math.round(totalEndMin / dayCount)) : "--:--";
+            }
+
+            function getDefaultSchedule() {
+                return {
+                    Monday: [{ start: "09:00", end: "18:00", enabled: true }],
+                    Tuesday: [{ start: "09:00", end: "18:00", enabled: true }],
+                    Wednesday: [{ start: "09:00", end: "18:00", enabled: true }],
+                    Thursday: [{ start: "09:00", end: "18:00", enabled: true }],
+                    Friday: [{ start: "09:00", end: "18:00", enabled: true }],
+                    Saturday: [{ start: "10:00", end: "16:00", enabled: true }],
+                    Sunday: []
+                };
+            }
+
+            function timeToMinutes(time) {
+                const [h, m] = time.split(":").map(Number);
+                return h * 60 + m;
+            }
+
+            function minutesToTime(minutes) {
+                const h = Math.floor(minutes / 60);
+                const m = minutes % 60;
+                return `${h.toString().padStart(2, "0")}:${m.toString().padStart(2, "0")}`;
+            }
+
+            function openSlotModal(day, index = null) {
+                document.getElementById("editingSlotDay").value = day;
+                document.getElementById("editingSlotIndex").value = index !== null ? index : "";
+                document.getElementById("slotDay").value = day;
+
+                if (index !== null) {
+                    const schedule = rider.schedule || getDefaultSchedule();
+                    const slot = schedule[day][index];
+                    document.getElementById("slotStart").value = slot.start;
+                    document.getElementById("slotEnd").value = slot.end;
+                } else {
+                    document.getElementById("slotStart").value = "09:00";
+                    document.getElementById("slotEnd").value = "18:00";
+                }
+
+                document.getElementById("slotModal").style.display = "flex";
+            }
+
+            window.closeSlotModal = function() {
+                document.getElementById("slotModal").style.display = "none";
+            };
+
+            function saveSlot() {
+                const day = document.getElementById("editingSlotDay").value;
+                const index = document.getElementById("editingSlotIndex").value;
+                const start = document.getElementById("slotStart").value;
+                const end = document.getElementById("slotEnd").value;
+
+                if (!start || !end) {
+                    showToast("Please select both start and end time", "#ef4444");
+                    return;
+                }
+
+                if (timeToMinutes(start) >= timeToMinutes(end)) {
+                    showToast("End time must be after start time", "#ef4444");
+                    return;
+                }
+
+                const riders = window.GroceryRiderAuth.getRiders();
+                const riderIndex = riders.findIndex(r => r.id === rider.id);
+                if (riderIndex !== -1) {
+                    if (!riders[riderIndex].schedule) {
+                        riders[riderIndex].schedule = getDefaultSchedule();
+                    }
+
+                    const slot = { start, end, enabled: true };
+
+                    if (index !== "") {
+                        riders[riderIndex].schedule[day][index] = slot;
+                    } else {
+                        riders[riderIndex].schedule[day].push(slot);
+                    }
+
+                    window.GroceryRiderAuth.saveRiders(riders);
+                    rider.schedule = riders[riderIndex].schedule;
+
+                    closeSlotModal();
+                    loadSchedule();
+                    showToast("Time slot saved");
+                }
+            }
+
+            function removeSlot(day, index) {
+                const riders = window.GroceryRiderAuth.getRiders();
+                const riderIndex = riders.findIndex(r => r.id === rider.id);
+                if (riderIndex !== -1 && riders[riderIndex].schedule && riders[riderIndex].schedule[day]) {
+                    riders[riderIndex].schedule[day].splice(index, 1);
+                    window.GroceryRiderAuth.saveRiders(riders);
+                    rider.schedule = riders[riderIndex].schedule;
+                    loadSchedule();
+                    showToast("Time slot removed");
+                }
+            }
+
+            function clearDay(day) {
+                if (!confirm(`Clear all time slots for ${day}?`)) return;
+
+                const riders = window.GroceryRiderAuth.getRiders();
+                const riderIndex = riders.findIndex(r => r.id === rider.id);
+                if (riderIndex !== -1 && riders[riderIndex].schedule) {
+                    riders[riderIndex].schedule[day] = [];
+                    window.GroceryRiderAuth.saveRiders(riders);
+                    rider.schedule = riders[riderIndex].schedule;
+                    loadSchedule();
+                    showToast(`${day} schedule cleared`);
+                }
+            }
+
+            function saveSchedule() {
+                // Schedule is saved automatically when slots are added/removed
+                showToast("Schedule saved successfully");
+            }
+
+            function resetSchedule() {
+                if (!confirm("Reset to default schedule (Mon-Fri 9-6, Sat 10-4, Sun off)?")) return;
+
+                const riders = window.GroceryRiderAuth.getRiders();
+                const riderIndex = riders.findIndex(r => r.id === rider.id);
+                if (riderIndex !== -1) {
+                    riders[riderIndex].schedule = getDefaultSchedule();
+                    window.GroceryRiderAuth.saveRiders(riders);
+                    rider.schedule = riders[riderIndex].schedule;
+                    loadSchedule();
+                    showToast("Schedule reset to default");
+                }
+            }
+
+            function loadSettings() {
+                const settings = rider.autoOfflineSettings || {
+                    enabled: true,
+                    minutes: 60,
+                    nightMode: false,
+                    nightStart: "22:00",
+                    nightEnd: "06:00",
+                    autoAvailableLogin: true,
+                    notifyBeforeOffline: true
+                };
+
+                document.getElementById("autoOfflineEnabled").checked = settings.enabled;
+                document.getElementById("autoOfflineMinutes").value = settings.minutes;
+                document.getElementById("nightModeEnabled").checked = settings.nightMode;
+                document.getElementById("nightModeStart").value = settings.nightStart;
+                document.getElementById("nightModeEnd").value = settings.nightEnd;
+                document.getElementById("autoAvailableLogin").checked = settings.autoAvailableLogin;
+                document.getElementById("notifyBeforeOffline").checked = settings.notifyBeforeOffline;
+
+                // Load timezone
+                if (rider.timezone) {
+                    document.getElementById("timezoneSelect").value = rider.timezone;
+                }
+
+                // Load holiday
+                if (rider.holiday) {
+                    document.getElementById("holidayStart").value = rider.holiday.start;
+                    document.getElementById("holidayEnd").value = rider.holiday.end;
+                    showActiveHoliday(rider.holiday);
+                }
+            }
+
+            function saveAutoOfflineSettings() {
+                const settings = {
+                    enabled: document.getElementById("autoOfflineEnabled").checked,
+                    minutes: parseInt(document.getElementById("autoOfflineMinutes").value),
+                    nightMode: document.getElementById("nightModeEnabled").checked,
+                    nightStart: document.getElementById("nightModeStart").value,
+                    nightEnd: document.getElementById("nightModeEnd").value,
+                    autoAvailableLogin: document.getElementById("autoAvailableLogin").checked,
+                    notifyBeforeOffline: document.getElementById("notifyBeforeOffline").checked
+                };
+
+                const riders = window.GroceryRiderAuth.getRiders();
+                const riderIndex = riders.findIndex(r => r.id === rider.id);
+                if (riderIndex !== -1) {
+                    riders[riderIndex].autoOfflineSettings = settings;
+                    window.GroceryRiderAuth.saveRiders(riders);
+                }
+            }
+
+            function saveHoliday() {
+                const start = document.getElementById("holidayStart").value;
+                const end = document.getElementById("holidayEnd").value;
+
+                if (!start || !end) {
+                    showToast("Please select both start and end dates", "#ef4444");
+                    return;
+                }
+
+                if (start > end) {
+                    showToast("End date must be after start date", "#ef4444");
+                    return;
+                }
+
+                const holiday = { start, end };
+
+                const riders = window.GroceryRiderAuth.getRiders();
+                const riderIndex = riders.findIndex(r => r.id === rider.id);
+                if (riderIndex !== -1) {
+                    riders[riderIndex].holiday = holiday;
+                    window.GroceryRiderAuth.saveRiders(riders);
+                    showActiveHoliday(holiday);
+                    showToast("Holiday set successfully");
+                }
+            }
+
+            function clearHoliday() {
+                const riders = window.GroceryRiderAuth.getRiders();
+                const riderIndex = riders.findIndex(r => r.id === rider.id);
+                if (riderIndex !== -1) {
+                    delete riders[riderIndex].holiday;
+                    window.GroceryRiderAuth.saveRiders(riders);
+                    document.getElementById("activeHoliday").style.display = "none";
+                    document.getElementById("holidayStart").value = "";
+                    document.getElementById("holidayEnd").value = "";
+                    showToast("Holiday cleared");
+                }
+            }
+
+            function showActiveHoliday(holiday) {
+                document.getElementById("holidayDates").textContent = `${formatDate(holiday.start)} to ${formatDate(holiday.end)}`;
+                document.getElementById("activeHoliday").style.display = "block";
+            }
+
+            function formatDate(dateStr) {
+                const date = new Date(dateStr);
+                return date.toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" });
+            }
+
+            // Quick Actions
+            function quickSetAvailable() {
+                updateAvailability("Available");
+            }
+
+            function quickSetBusy() {
+                updateAvailability("Busy");
+                // Auto back to available after 30 min
+                setTimeout(() => {
+                    const currentRider = window.GroceryRiderAuth.getCurrentRider();
+                    if (currentRider && currentRider.availability === "Busy") {
+                        updateAvailability("Available");
+                        showToast("Auto-set to Available after 30 minutes");
+                    }
+                }, 30 * 60 * 1000);
+            }
+
+            function quickSetOffline() {
+                updateAvailability("Offline");
+            }
+
+            function quickExtendShift() {
+                // Add 1 hour to today's schedule
+                const today = new Date().toLocaleDateString("en-US", { weekday: "long" });
+                const schedule = rider.schedule || getDefaultSchedule();
+                const slots = schedule[today] || [];
+
+                if (slots.length > 0) {
+                    const lastSlot = slots[slots.length - 1];
+                    const endMinutes = timeToMinutes(lastSlot.end);
+                    const newEnd = minutesToTime(endMinutes + 60);
+
+                    const riders = window.GroceryRiderAuth.getRiders();
+                    const riderIndex = riders.findIndex(r => r.id === rider.id);
+                    if (riderIndex !== -1) {
+                        if (!riders[riderIndex].schedule) riders[riderIndex].schedule = getDefaultSchedule();
+                        riders[riderIndex].schedule[today][slots.length - 1].end = newEnd;
+                        window.GroceryRiderAuth.saveRiders(riders);
+                        rider.schedule = riders[riderIndex].schedule;
+                        loadSchedule();
+                        showToast(`Shift extended to ${newEnd} today`);
+                    }
+                } else {
+                    showToast("No schedule for today to extend", "#ef4444");
+                }
+            }
+
+            function loadNotifications() {
+                const notifications = window.GroceryStore.getRiderNotifications(rider.id);
+                const unreadCount = notifications.filter(n => !n.read).length;
+                const badge = document.getElementById("notificationBadge");
+                if (unreadCount > 0) {
+                    badge.textContent = unreadCount;
+                    badge.style.display = "flex";
+                } else {
+                    badge.style.display = "none";
+                }
+            }
+
+            window.toggleNotifications = function() {
+                const dropdown = document.getElementById("notificationsDropdown");
+                const isVisible = dropdown.style.display === "flex";
+                dropdown.style.display = isVisible ? "none" : "flex";
+
+                if (!isVisible) {
+                    renderNotifications();
+                }
+            };
+
+            window.closeNotifications = function() {
+                document.getElementById("notificationsDropdown").style.display = "none";
+            };
+
+            function renderNotifications() {
+                const notifications = window.GroceryStore.getRiderNotifications(rider.id);
+                const list = document.getElementById("notificationsList");
+
+                if (notifications.length === 0) {
+                    list.innerHTML = `<div style="padding:24px;text-align:center;color:#888;">No notifications</div>`;
+                    return;
+                }
+
+                list.innerHTML = notifications.slice(0, 20).map(n => `
+                    <div style="padding:12px 16px;border-radius:8px;margin-bottom:8px;background:${n.read ? "#fff" : "#f4faf6"};border:${n.read ? "1px solid #eef2ee" : "1px solid #cde8d5"};" onclick="markNotificationRead('${n.id}')">
+                        <div style="font-weight:600;font-size:13px;color:#1a2a1e;">${n.title}</div>
+                        <div style="font-size:12px;color:#666;margin-top:2px;">${n.message}</div>
+                        <div style="font-size:11px;color:#999;margin-top:4px;">${n.createdAt}</div>
+                    </div>
+                `).join("");
+            }
+
+            window.markNotificationRead = function(notificationId) {
+                window.GroceryStore.markRiderNotificationRead(rider.id, notificationId);
+                loadNotifications();
+                renderNotifications();
+            }
+
+            // Toast helper
+            function showToast(message, bgColor = "#17241b") {
+                let toast = document.getElementById("toast");
+                if (!toast) {
+                    toast = document.createElement("div");
+                    toast.id = "toast";
+                    toast.style.cssText = `position:fixed;bottom:24px;right:24px;padding:12px 22px;border-radius:8px;font-size:14px;font-weight:600;color:#fff;z-index:99999;box-shadow:0 8px 24px rgba(0,0,0,0.2);transition:opacity .3s,transform .3s;`;
+                    document.body.appendChild(toast);
+                }
+                toast.style.background = bgColor;
+                toast.textContent = message;
+                toast.style.display = "block";
+                toast.style.opacity = "1";
+                clearTimeout(window.__toastTimer);
+                window.__toastTimer = setTimeout(() => {
+                    toast.style.opacity = "0";
+                    setTimeout(() => toast.style.display = "none", 300);
+                }, 2500);
+            }
+        })();
+    </script>
+</body>
+
+</html>

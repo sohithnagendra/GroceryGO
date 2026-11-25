@@ -5,7 +5,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GroceryGo Admin - Operations Dashboard</title>
-    <link rel="stylesheet" href="../style.css">
     <link rel="stylesheet" href="../admin.css">
 </head>
 
@@ -26,6 +25,7 @@
             <a href="inventory.html" class="admin-nav-item">📦 Inventory</a>
             <a href="orders.html" class="admin-nav-item">🛍️ Orders</a>
             <a href="riders.html" class="admin-nav-item">🛵 Riders</a>
+            <a href="rider-support.html" class="admin-nav-item">🎫 Rider Support</a>
             <a href="users.html" class="admin-nav-item">👥 Users</a>
             <a href="offers.html" class="admin-nav-item">🏷️ Offers</a>
             <a href="reports.html" class="admin-nav-item">📈 Reports</a>
@@ -52,11 +52,11 @@
             <p>Real-time overview of catalog, orders, deliveries, inventory, and revenue metrics.</p>
         </div>
 
-        <div style="display:flex;gap:10px;">
+        <div class="flex-gap-10">
             <a href="orders.html" class="header-action-btn">
                 ⚡ View Active Orders
             </a>
-            <a href="products.html" class="header-action-btn" style="background:#2c3e32;">
+            <a href="products.html" class="header-action-btn secondary">
                 + Add Product
             </a>
         </div>
@@ -156,19 +156,19 @@
     </div>
 
     <!-- CUSTOMER EXPERIENCE & SUPPORT ANALYTICS (Section 10) -->
-    <div class="admin-card" style="background:#fafdfb;border:1.5px solid #d4ebd9;">
-        <div class="card-title-bar" style="border-bottom:1px solid #e1efe4;">
+    <div class="admin-card highlight">
+        <div class="card-title-bar divided">
             <div>
-                <h2 style="color:#148550;">🎧 Customer Experience & Service Analytics</h2>
-                <small style="color:#666;">Aggregated satisfaction ratings, sentiment insights, and support resolution speed</small>
+                <h2 class="text-green">🎧 Customer Experience & Service Analytics</h2>
+                <small class="text-muted">Aggregated satisfaction ratings, sentiment insights, and support resolution speed</small>
             </div>
-            <div style="display:flex;gap:10px;">
-                <a href="support.html" class="header-action-btn" style="background:#19a463;font-size:12px;padding:6px 12px;">Support Desk →</a>
-                <a href="reviews.html" class="header-action-btn" style="background:#2c3e32;font-size:12px;padding:6px 12px;">Review Moderation →</a>
+            <div class="action-group">
+                <a href="support.html" class="header-action-btn small primary">Support Desk →</a>
+                <a href="reviews.html" class="header-action-btn small secondary">Review Moderation →</a>
             </div>
         </div>
 
-        <div class="stats-grid" style="margin-top:16px;margin-bottom:0;">
+        <div class="stats-grid compact">
             <div class="stat-card">
                 <div class="stat-top">
                     <div class="stat-icon icon-amber">⭐</div>
@@ -210,7 +210,7 @@
                     <div class="stat-icon icon-red">⚠️</div>
                     <span class="pill pill-red">Top Concern</span>
                 </div>
-                <div class="stat-val" id="csTopIssue" style="font-size:15px;line-height:1.2;font-weight:700;">Packaging</div>
+                <div class="stat-val large-text" id="csTopIssue">Packaging</div>
                 <div class="stat-label">Most Reported Issue Category</div>
             </div>
 
@@ -219,7 +219,7 @@
                     <div class="stat-icon icon-purple">🍎</div>
                     <span class="pill pill-purple">Popular Pick</span>
                 </div>
-                <div class="stat-val" id="csTopProduct" style="font-size:15px;line-height:1.2;font-weight:700;">Organic Apples</div>
+                <div class="stat-val large-text" id="csTopProduct">Organic Apples</div>
                 <div class="stat-label">Most Reviewed Product</div>
             </div>
         </div>
@@ -229,7 +229,7 @@
     <div class="admin-card">
         <div class="card-title-bar">
             <h2>Recent Customer Orders</h2>
-            <a href="orders.html" style="color:#19a463;font-weight:700;font-size:13px;">View All Orders →</a>
+            <a href="orders.html" class="card-link">View All Orders →</a>
         </div>
 
         <div class="table-responsive">
@@ -254,12 +254,12 @@
     </div>
 
     <!-- TWO COLUMNS: LOW STOCK & ACTIVE DELIVERIES -->
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;">
+    <div class="two-col-grid">
         <!-- LOW STOCK ALERT -->
-        <div class="admin-card" style="margin-bottom:0;">
+        <div class="admin-card no-margin-bottom">
             <div class="card-title-bar">
                 <h2>Low Stock Inventory Alerts</h2>
-                <a href="inventory.html" style="color:#19a463;font-weight:700;font-size:13px;">Manage Stock →</a>
+                <a href="inventory.html" class="card-link">Manage Stock →</a>
             </div>
 
             <div class="table-responsive">
@@ -280,10 +280,10 @@
         </div>
 
         <!-- ACTIVE TRANSIT DELIVERIES -->
-        <div class="admin-card" style="margin-bottom:0;">
+        <div class="admin-card no-margin-bottom">
             <div class="card-title-bar">
                 <h2>Live Transit Deliveries</h2>
-                <a href="riders.html" style="color:#19a463;font-weight:700;font-size:13px;">Rider Ops →</a>
+                <a href="riders.html" class="card-link">Rider Ops →</a>
             </div>
 
             <div class="table-responsive">

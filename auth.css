@@ -501,6 +501,44 @@ body {
 
 
 /* =========================================
+   RIDER SECTION
+========================================= */
+
+.rider-divider {
+    margin-top: 28px;
+}
+
+.rider-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 16px;
+}
+
+.rider-primary-btn {
+    background: linear-gradient(135deg, #19a463, #158b50);
+    color: white;
+    border: none;
+}
+
+.rider-primary-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 8px 20px rgba(25, 164, 99, 0.20);
+}
+
+.rider-secondary-btn {
+    background: #fff;
+    color: #19a463;
+    border: 2px solid #19a463;
+}
+
+.rider-secondary-btn:hover {
+    background: #f0fdf4;
+    transform: translateY(-1px);
+    box-shadow: 0 8px 20px rgba(25, 164, 99, 0.15);
+}
+
+/* =========================================
    RESPONSIVE
 ========================================= */
 
